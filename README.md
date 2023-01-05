@@ -67,6 +67,8 @@ The following list is divided for class of usage and roles
 * `lsbr`: show the list of remote branches
 * `bsw`: short for `git switch`, the branch name as arg
 * `lgrp`: find a string into the `lg` output
+* `bcur`: short for `git branch --show-current`
+* `hcur`: short for `git rev-parse --short HEAD`
 
 #### Command execution on multiple branches
 

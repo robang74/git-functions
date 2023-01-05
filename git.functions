@@ -230,11 +230,20 @@ function bsw() {
 }
 export -f bsw
 
+function bcur() {
+    git branch --show-current
+}
+export -f bcur
+
+function hcur() {
+    git rev-parse --short HEAD
+}
+export -f hcur
+
 function for-all-other-branches() {
     test -z "$1" && return 1
 
-#   local sha=$(git rev-parse --short HEAD)
-    local cur=$(git branch --show-current)
+    local cur=$(bcur)
     if [ "$cur" == "" ]; then
         echo -e "${ERROR}: this is not the HEAD of a branch. Abort!" >&2
         return 1
