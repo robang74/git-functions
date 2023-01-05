@@ -31,7 +31,7 @@ elif [ "$1" == "update" -a -d "${DESTDIR}" ]; then
 elif [ "$1" == "update" -a ! -d "${DESTDIR}" ]; then
     echo "\n${NOTICE}: folder ${DESTDIR} is not present, installing...\n"
 elif [ "$1" == "help" -o "x$1" == "x-h" ]; then
-    echo "\n${USAGE}: ${THISCMD} [uninstall|update|help]\n"
+    echo "\n${USAGE}: ${THISCMD} [ uninstall | update | help ]\n"
     exit 0
 elif [ -n "$1" ]; then
     echo "\n${ERROR}: unrecognised '$1' option, try with help (-h)\n"
