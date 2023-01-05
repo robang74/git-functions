@@ -99,10 +99,9 @@ then decide to proceed further with `exit` or definitely stop with `exit 1`.
     Your branch is up-to-date with 'origin/devel'.
 
     branch: devel, KO
-    fix the problem and then type exit
-    or type exit 1 to abort completely
+    fix the problem and then enter 'exit'
+    or enter 'exit 1' to abort completely
 
-    bash: /tmp/colors.shell: No such file or directory
     +git:devel> exit 1
 
 

@@ -324,8 +324,8 @@ function for-all-other-branches() {
         else
             echo
             echo -e "${bired}branch: $branch, KO${coloff}"
-            echo "fix the problem and then type exit"
-            echo "or type exit 1 to abort completely"
+            echo "fix the problem and then enter 'exit'"
+            echo "or enter 'exit 1' to abort completely"
             echo
             local ret=0
             bash --rcfile "$gitrc" -ri || ret=$?
