@@ -259,7 +259,7 @@ function for-all-other-branches() {
         return 1
     fi
 
-    local rpull="true" stashpop=0
+    local rpull="true" stashpop=0 nofail=""
     while true; do
         if [ "x$1" == "x-p" ]; then
             rpull="git pull"
@@ -269,6 +269,8 @@ function for-all-other-branches() {
             BRANCHES=$(lsbr)
         elif [ "x$1" == "x-s" ]; then
             stashpop=1
+        elif [ "x$1" == "x-n" ]; then
+            nofail="; true"
         else
             break
         fi
@@ -283,8 +285,8 @@ function for-all-other-branches() {
         fi
     fi
 
-    curdir=$(readlink -f $PWD)
-    topdir=$(readlink -f $(git rev-parse --show-toplevel))
+    local curdir=$(readlink -f $PWD)
+    local topdir=$(readlink -f $(git rev-parse --show-toplevel))
     if [ "$curdir" == "$topdir" ]; then
         true
     elif ! cd $topdir; then
@@ -295,6 +297,7 @@ function for-all-other-branches() {
 
     test $stashpop -ne 0 && stash
 
+    declare -i ret=0
     BRANCHES=${BRANCHES:-$(lsbr | grep -vwe "$cur")}
 	for branch in ${BRANCHES}; do
         if ! bsw $branch; then
@@ -302,31 +305,27 @@ function for-all-other-branches() {
             echo -e "${byellow}branch: $branch, SKIP${coloff}"
             echo "press ENTER to continue..."
             read
-        elif eval "$rpull" && eval "$@"; then
+        elif eval "$rpull" && eval "$@""${nofail}"; then
             echo
             echo -e "${bgreen}branch: $branch, OK${coloff}"
             echo
         else
             echo
-            echo -e "${bired}mbranch: $branch, KO${coloff}"
+            echo -e "${bired}branch: $branch, KO${coloff}"
             echo "fix the problem and then type exit"
             echo "or type exit 1 to abort completely"
             echo
             local ret=0
-            gitrc=$(mktemp -p "$TMPDIR" gitrc.XXXX)
+            local gitrc=$(mktemp -p "$TMPDIR" gitrc.XXXX)
             cat git.functions >"$gitrc"
             echo "PS1='${bcyan}+git${coloff}:${byellow}'$branch'${coloff}> '" >>"$gitrc"
-            if ! bash --rcfile "$gitrc" -ri; then
-                rm -f "$gitrc"
-                bsw $cur
-                return 1
-            fi
-            rm -f "$gitrc"
+            bash --rcfile "$gitrc" -ri || ret=$?
         fi
 	done
     unset BRANCHES
     test "$cur" != "$branch" && bsw $cur
     test $stashpop -ne 0 && pop
+    return $ret
 }
 export -f for-all-other-branches
 
