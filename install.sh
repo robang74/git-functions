@@ -17,16 +17,17 @@ THISCMD="$(basename $0)"
 set -e
 source "$(dirname $0)/colors.shell"
 trap 'echo -e "\n${ERROR} in line ${LINENO} occured, try again with set -x.\n"' ERR
+BRANCH="$(bcur)"
 cd $HONE
 
 if [ "$1" == "uninstall" ]; then
     test ! -d "${DESTDIR}" && exit 0
     rm -rf "${DESTDIR}" && echo "\n${DONE}: uninstall\n"
-    bashrc=$(grep -v -- "${SRCCMD}" .bashrc) 
+    bashrc=$(grep -v -- "${SRCCMD}" .bashrc)
     echo "$bashrc" >.bashrc
     exit $?
 elif [ "$1" == "update" -a -d "${DESTDIR}" ]; then
-    cd "${DESTDIR}" && git pull --rebase
+    cd "${DESTDIR}" && bsw ${BRANCH} && rpull
     exit $?
 elif [ "$1" == "update" -a ! -d "${DESTDIR}" ]; then
     echo "\n${NOTICE}: folder ${DESTDIR} is not present, installing...\n"
@@ -45,12 +46,11 @@ if [ -d "${DESTDIR}" ]; then
     exit 1
 fi
 
-git clone ${GITREPO} "${DESTDIR}"
+git clone ${GITREPO} "${DESTDIR}" && bsw ${BRANCH}
 if ! grep -- "${SRCCMD}" .bashrc 2>/dev/null; then
     echo "${SRCCMD}" >> .bashrc
-fi 
+fi
 echo "\n${DONE}: git-functions installed in ${HOME}/${DESTDIR}\n"
 echo "The git-function will be loaded into the next ~/.bashrc enviroment"
 echo "For this bash load them with source ~/${DESTDIR}/git.functions"
 echo
-    
