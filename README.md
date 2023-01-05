@@ -2,6 +2,7 @@
 
 source the `git.functions` to improve the git users experience in your bash
 
+
 List of the functions
 ---------------------
 
@@ -54,14 +55,6 @@ Pure git functions which do NOT alter the local nor the remote repositories:
 * `for-all-other-branches`: execute the args as commands for every branch
 * `lgrp`: find a string into the `lg` output
 
-Password cache
---------------
-
-The use of the password cache function `pcache` could undermine your git remote
-repository security especially if used in combination with `.gitpasswd`.
-Moreover the use of the password cache or saving your git password in plain
-text in a file of your workstation disk could go against your company security
-policies.   
 
 Usage
 -----
@@ -74,6 +67,7 @@ them in your git local repository
 this file also source the `colors.shell` in order to produce a color full
 output  
 
+
 Installation
 ------------
 
@@ -85,6 +79,22 @@ script without any argument
 then follow the instructions, in particular source the `git.fuctions` in your
 current bash environment
 
+
+Password cache
+--------------
+
+The use of the password cache function `pcache` could undermine your git remote
+repository security especially if used in combination with `.gitpasswd`.
+Moreover the use of the password cache or saving your git password in plain
+text in a file of your workstation disk could go against your company security
+policies. For extra security you can disable this function with
+
+    unset pcache
+
+You might also want to add after the source `git.function` in your `~/.bashrc`
+to make this choice as the default one.
+
+
 License
 -------
 
@@ -94,6 +104,7 @@ header, here summarised:
 * `colors.shell`: MIT
 * `git.functions`: GPLv3
 * `install.sh`: GPLv3
+
 
 Author
 ------
