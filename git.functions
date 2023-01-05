@@ -331,9 +331,18 @@ function for-all-other-branches() {
 export -f for-all-other-branches
 
 function lgrp() {
+    declare -i shaonly=0
+    if [ "$1" == "-s" ]; then
+        shaonly=1
+        shift
+    fi
     test -z "$1" && return 1
-    local strn=$1; shift
-    lg "$@" | grep "$strn" | awk '{print $2}' | egrep .
+    local strn="$1"; shift
+    if [ $shaonly -ne 0 ]; then
+        lg "$@" | grep -e "$strn" | awk '{print $2}' | egrep --color=never .
+    else
+        lg "$@" | grep -e "$strn"
+    fi
 }
 export -f lgrp
 
