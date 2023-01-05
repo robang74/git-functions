@@ -78,6 +78,7 @@ This is a special function used to execute commands (cmds) on multiple branches:
   * -p: `git pull` before cmds
   * -r: `git pull --rebase` before cmds
   * -s: `git stash` before go and `git stash pop` when returns
+  * -n: not fail despite the last command failure
 
 A custom branches selction could be specified in this way:
 
@@ -87,6 +88,20 @@ The `branch` variable is defined in the loop and its value is the branch name
 on which commands are currently executing. The single quotes around the
 commands string are necessary to avoid that the variable is expanded before
 starting the loop.
+
+In case the last command fails then the loop stops and spwan a emergency `bash`
+in that shell - which is restricted - the operator can handle the issue and
+then decide to proceed further with `exit` or definitely stop with `exit 1`.
+
+    Switched to branch 'devel'
+    Your branch is up-to-date with 'origin/devel'.
+
+    branch: devel, KO
+    fix the problem and then type exit
+    or type exit 1 to abort completely
+
+    bash: /tmp/colors.shell: No such file or directory
+    +git:devel> exit 1
 
 
 Usage
