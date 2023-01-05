@@ -18,19 +18,21 @@ than their minds. Have fun <3
 List of the functions
 ---------------------
 
-Service functions:
+The following list is divided for class of usage and roles
+
+#### Service functions
 
 * `gfreload`: reload the functions
 * `gfupdate`: update the installation and reload the functions
 * `gflist`: list the functions available
 * `gfhelp`: like `gflist` but in a fancier way
 
-Configure functions:
+#### Configure functions
 
 * `pcache`: set the password cache for 1h of inactivity, deal with `.gitpasswd`
 * `editorset`: set your default editor
 
-Pure git functions which alter also the remote repository:
+#### Pure git functions which alter also the remote repository
 
 * `push`: short for `git pull`
 * `fpush`: short for `git push --force`
@@ -38,7 +40,7 @@ Pure git functions which alter also the remote repository:
 * `tagadd`: add a tag to a commit (sha as arg) and push tags
 * `tagdel`: del a tag (as arg) and push the change
 
-Pure git functions which alter the local repository:
+#### Pure git functions which alter the local repository
 
 * `irebase`: rebase starting from the hash passed
 * `add`: short for `git add`
@@ -53,19 +55,38 @@ Pure git functions which alter the local repository:
 * `pull`: short for `git pull`
 * `chpk`: short for `git cherry-pick`
 
-Pure git functions which do NOT alter the local nor the remote repositories:
+#### Pure git functions which do NOT alter the repositories
  
-* `lg`: show the log in a compact and fancy way
-* `lt`: like lg but with all branches shown
+* `lg`: show the log in a compact and fancy way, SHAs or files as args
+* `lt`: like lg but with all branches shown, files as args
 * `st`: short for `git status`
 * `ff`: short for `git diff`
 * `rl`: short for `git reflog`
 * `sw`: short for `git show`
-* `fpatch`: do a `git format-patch` for the commit, sha in arg
+* `fpatch`: do a `git format-patch` for the commit, SHA and opts in arg
 * `lsbr`: show the list of remote branches
 * `bsw`: short for `git switch`, the branch name as arg
-* `for-all-other-branches`: execute the args as commands for every branch
 * `lgrp`: find a string into the `lg` output
+
+#### Command execution on multiple branches
+
+This is a special function used to execute commands (cmds) on multiple branches:
+
+* `for-all-other-branches`: execute the args as commands for the branches
+  * --: per default runs over all the branches but not the current one
+  * -a: all the branches included the current
+  * -p: `git pull` before cmds
+  * -r: `git pull --rebase` before cmds
+  * -s: `git stash` before go and `git stash pop` when returns
+
+A custom branches selction could be specified in this way:
+
+    BRANCHES="uno due tre" for-all-other-branches 'cmds ${branch}'
+
+The `branch` variable is defined in the loop and its value is the branch name
+on which commands are currently executing. The single quotes around the
+commands string are necessary to avoid that the variable is expanded before
+starting the loop.
 
 
 Usage
