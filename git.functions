@@ -96,11 +96,6 @@ function amend() {
 }
 export -f amend
 
-function rebcont() {
-	git rebase --continue "$@"
-}
-export -f rebcont
-
 function editorset() {
     test -z "$1" && return 1
     git config --global core.editor "$1"
