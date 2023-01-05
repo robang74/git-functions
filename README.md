@@ -123,7 +123,7 @@ Installation
 To install in your system in a way they will be loaded by `~/.bashrc` use this
 script without any argument
 
-    ./install.sh [ uninstall | update | help ]
+    ./install.sh [ uninstall | update | reinstall | help ]
 
 then follow the instructions, in particular source the `git.fuctions` in your
 current bash environment
