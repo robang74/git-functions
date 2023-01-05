@@ -89,10 +89,17 @@ Moreover the use of the password cache or saving your git password in plain
 text in a file of your workstation disk could go against your company security
 policies. For extra security you can disable this function with
 
-    unset pcache
+    unset pcache
 
 You might also want to add after the source `git.function` in your `~/.bashrc`
-to make this choice as the default one.
+to make this choice as the default one. However, `gfreload` and `gfupdate` will
+load again into your current bash environment. To avoid this risk, then use:
+
+    unset pcache gfreload gfupdate
+
+So, no one of these functions will be able to interfere with your security
+policy but you will need to use `install.sh update` to update your
+git-functions installation.
 
 
 License
