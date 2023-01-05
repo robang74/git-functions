@@ -1,1 +1,3 @@
 /.gitpasswd
+/isatty_override.o
+/isatty_override.so

@@ -57,6 +57,16 @@ fi
 cd "${DESTDIR}"
 bsw "${BRANCH}"
 
+if which cc >/dev/null; then
+    cc -c -fPIC isatty_override.c -o isatty_override.o
+    cc isatty_override.o -shared -o isatty_override.so
+    strip isatty_override.so 2>/dev/null || :
+    echo
+    echo -n "${bicyan}Compiled${coloff}: "
+    du -b isatty_override.so
+    rm -f isatty_override.o
+fi
+
 echo "\n${DONE}: git-functions installed in ${HOME}/${DESTDIR}\n"
 echo "The git-function will be loaded into the next ~/.bashrc enviroment"
 echo "For this bash load them with source ~/${DESTDIR}/git.functions"
