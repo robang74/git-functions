@@ -295,6 +295,9 @@ function for-all-other-branches() {
     fi
     forig || return $?
 
+    local gitrc=$(mktemp -p "$TMPDIR" gitrc.XXXX)
+    cat git.functions >"$gitrc"
+    echo "PS1='${bcyan}+git${coloff}:${bigreen}'$branch'${coloff}> '" >>"$gitrc"
     test $stashpop -ne 0 && stash
 
     declare -i ret=0
@@ -316,12 +319,10 @@ function for-all-other-branches() {
             echo "or type exit 1 to abort completely"
             echo
             local ret=0
-            local gitrc=$(mktemp -p "$TMPDIR" gitrc.XXXX)
-            cat git.functions >"$gitrc"
-            echo "PS1='${bcyan}+git${coloff}:${bigreen}'$branch'${coloff}> '" >>"$gitrc"
             bash --rcfile "$gitrc" -ri || ret=$?
         fi
 	done
+    rm -f "$gitrc"
     unset BRANCHES
     test "$cur" != "$branch" && bsw $cur
     test $stashpop -ne 0 && pop
