@@ -201,16 +201,6 @@ function tagadd() {
 }
 export -f tagadd
 
-function reflog() {
-	git reflog "$@"
-}
-export -f reflog
-
-function push() {
-	git push "$@"
-}
-export -f push
-
 function pull() {
 	git pull "$@"
 }
