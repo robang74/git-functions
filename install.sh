@@ -10,7 +10,7 @@
 
 DESTDIR=".git-functions"
 SRCNAME="~/${DESTDIR}/git.functions"
-SRCCMD="test -r \"${SRCNAME}\" && source \"${SRCNAME}\""
+SRCCMD="test -r ${SRCNAME} && source ${SRCNAME}"
 GITREPO="https://github.com/robang74/git-functions.git"
 THISCMD="$(basename $0)"
 
