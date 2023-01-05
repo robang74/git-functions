@@ -3,6 +3,18 @@
 source the `git.functions` to improve the git users experience in your bash
 
 
+Rationale
+---------
+
+Every comfortable command-line UI should be verbose enough to be descriptive
+and self-explanatory and IMHO `git` achieved this goal very well. However, for
+an intensive use - after having learned the command-line UI - verbosity impairs
+productivity and there is no way to avoid writing `git` in front of every 
+command unless a functions-set wrap layer is used. This is the point in which
+`git-functions` arrives and aim to help those whose hands wish to be faster
+than their minds. Have fun <3
+
+
 List of the functions
 ---------------------
 
