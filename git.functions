@@ -12,6 +12,8 @@ SRC_FILE=$(readlink -f ${BASH_SOURCE[0]})
 source "$(dirname ${SRC_FILE})/colors.shell"
 export gfreload_pathname="${SRC_FILE}"
 
+test ${gflistshow:-0} -ne 0 && set -x
+
 function gfreload() {
     source "${gfreload_pathname}"
 }
@@ -21,6 +23,18 @@ function gfupdate() {
     eval ${gfreload_pathname/git.functions/install.sh update} && gfreload
 }
 export -f gfupdate
+
+function gflist() {
+    gflistshow=1
+    gfreload 2>&1 | sed -ne "s,.*export -f ,,p"
+    gflistshow=0
+}
+export -f gflist
+
+function gfhelp() {
+    echo -e "\n${USAGE}: $(gflist | tr '\n' ' ')\n"
+}
+export -f gfhelp
 
 function irebase() {
     test -z "$1" && return 1
@@ -337,3 +351,5 @@ function lgrp() {
     lg "$@" | grep "$strn" | awk '{print $2}' | egrep .
 }
 export -f lgrp
+
+test ${gflistshow:-0} -ne 0 && set +x
