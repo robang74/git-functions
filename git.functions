@@ -8,7 +8,19 @@
 # SPDX-License-Identifier: GPLv3
 #
 
-source "$(dirname $0)/colors.shell"
+SRC_FILE=$(readlink -f ${BASH_SOURCE[0]})
+source "$(dirname ${SRC_FILE})/colors.shell"
+export gfreload_pathname="${SRC_FILE}"
+
+function gfreload() {
+    source "${gfreload_pathname}"
+}
+export -f gfreload
+
+function gfupdate() {
+    eval ${gfreload_pathname/git.functions/install.sh update} && gfreload
+}
+export -f gfupdate
 
 function irebase() {
     test -z "$1" && return 1
@@ -85,6 +97,11 @@ function rpull() {
 	git pull --rebase "$@"
 }
 export -f rpull
+
+function push() {
+	git push "$@"
+}
+export -f push
 
 function fpush() {
 	git push --force "$@"
