@@ -132,7 +132,7 @@ function forig() {
 }
 export -f forig
 
-function ccache() {
+function pcache() {
 	local -i t=3600 runcmd=1
 	local d=$(git rev-parse --show-toplevel)
 	if [ "x$1" == "x--save" -a -n "$2" ]; then
@@ -169,7 +169,7 @@ function ccache() {
 	fi
 	test  "$1" != "" -a "$runcmd" == "1" && eval "$@"
 }
-export -f ccache
+export -f pcache
 
 function rcont() {
 	git rebase --continue
