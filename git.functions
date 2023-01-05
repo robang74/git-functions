@@ -318,7 +318,7 @@ function for-all-other-branches() {
             local ret=0
             local gitrc=$(mktemp -p "$TMPDIR" gitrc.XXXX)
             cat git.functions >"$gitrc"
-            echo "PS1='${bcyan}+git${coloff}:${byellow}'$branch'${coloff}> '" >>"$gitrc"
+            echo "PS1='${bcyan}+git${coloff}:${bigreen}'$branch'${coloff}> '" >>"$gitrc"
             bash --rcfile "$gitrc" -ri || ret=$?
         fi
 	done
