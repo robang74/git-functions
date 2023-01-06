@@ -26,6 +26,8 @@ The following list is divided for class of usage and roles
 * `gfupdate`: update the installation and reload the functions
 * `gflist`: list the functions available
 * `gfhelp`: like `gflist` but in a fancier way
+* `ugit`: unbuffered version of `git -P`
+* `less`: alias for `/bin/less -Fr`
 
 #### Configure functions
 

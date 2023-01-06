@@ -9,10 +9,27 @@
 #
 
 SRC_FILE=$(readlink -f ${BASH_SOURCE[0]})
-source "$(dirname ${SRC_FILE})/colors.shell"
+export gfrefdir_path="$(dirname ${SRC_FILE})"
 export gfreload_pathname="${SRC_FILE}"
+source "${gfrefdir_path}/colors.shell"
 
 test ${gflistshow:-0} -ne 0 && set -x
+
+#if [ -r "${gfrefdir_path}/isatty_override.so" ]; then
+#   this could be useful for the future
+#fi
+
+function less() {
+    /bin/less -Fr "$@"
+}
+export -f less
+
+function ugit() {
+    local solib="${gfrefdir_path}/isatty_override.so"
+    test -r "${solib}" || solib=""
+    LD_PRELOAD="${solib}" git -P "$@"
+}
+export -f ugit
 
 function gfreload() {
     source "${gfreload_pathname}"
@@ -250,26 +267,26 @@ function for-all-other-branches() {
 
     local cur=$(bcur)
     if [ "$cur" == "" ]; then
-        echo -e "${ERROR}: this is not the HEAD of a branch. Abort!" >&2
+        echo -e "${ERROR}: this is not the HEAD of a branch." >&2
         return 1
     fi
 
     declare -i nbr=$(lsbr | wc -l)
     if [ $nbr -le 1 ]; then
-        echo -e "${DONE}: there is only one branch '$cur' as current. Abort!" >&2
+        echo -e "${DONE}: there is only one branch '$cur' as current." >&2
         return 0
     fi
 
     if echo "x$@" | grep -q "fpush"; then
-        echo -e "${ERROR}: fpush is not allowed for safety. Abort!" >&2
+        echo -e "${ERROR}: fpush is not allowed for safety." >&2
         return 1
     fi
     if echo "x$@" | grep -qe "push.*-f"; then
-        echo -e "${ERROR}: push -f is not allowed for safety. Abort!" >&2
+        echo -e "${ERROR}: push -f is not allowed for safety." >&2
         return 1
     fi
     if echo "x$@" | grep -q -- "--force"; then
-        echo -e "${ERROR}: option --force is not allowed for safety. Abort!" >&2
+        echo -e "${ERROR}: option --force is not allowed for safety." >&2
         return 1
     fi
 
@@ -294,7 +311,7 @@ function for-all-other-branches() {
     if [ $stashpop -eq 0 ]; then
         local warn=$(st | grep -e "^Changes [not]* ")
         if [ -n "$warn" ]; then
-            echo -e "${WARNING}: changes pending, please stash (-s) or commit. Abort!" >&2
+            echo -e "${WARNING}: changes pending, please stash (-s) or commit." >&2
             return 1
         fi
     fi
@@ -304,7 +321,7 @@ function for-all-other-branches() {
     if [ "$curdir" == "$topdir" ]; then
         true
     elif ! cd $topdir; then
-        echo -e "${ERROR}: cannot change folder to the top level. Abort!" >&2
+        echo -e "${ERROR}: cannot change folder to the top level." >&2
         return 1
     fi
     forig || return $?
@@ -351,12 +368,19 @@ function lgrp() {
         shift
     fi
     test -z "$1" && return 1
+
     local strn="$1"; shift
+    local solib="${gfrefdir_path}/isatty_override.so"
+    test -r "${solib}" || solib=""
+
+    git() { /bin/git -P "$@"; }
+    egnc() { /bin/egrep --color=never "$@"; }
     if [ $shaonly -ne 0 ]; then
-        lg "$@" | grep -e "$strn" | awk '{print $2}' | egrep --color=never .
+        LD_PRELOAD="${solib}" lg "$@" | egnc "$strn" | awk '{print $2}' | egnc .
     else
-        lg "$@" | grep -e "$strn"
+        LD_PRELOAD="${solib}" lg "$@" | egrep "$strn"
     fi
+    unset -f git egnc
 }
 export -f lgrp
 
