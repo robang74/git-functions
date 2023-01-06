@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) Roberto A. Foglietta, 2022
+# Copyright (c) Roberto A. Foglietta, 2023
 #
 # Authors:
 #  Roberto A. Foglietta <roberto.foglietta@gmail.com>
