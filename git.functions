@@ -48,9 +48,12 @@ function pa() {
     test -z "$1" && return 1
     redef_git -u
     for i in "$@"; do
-        if ! _git apply --check --stat "$i" && \
-            _git am -p1 --keep-cr --signoff "$i" && sw -P; then
-            echo -e "\n${ERROR}: applying '$i', abort.\n"
+        if _git apply --check --stat "$i" && \
+           _git am -p1 --keep-cr --signoff "$i" \
+        && sw -P; then
+            echo -e "\n${DONE}: applying '$(basename $i)'.\n"
+        else
+            echo -e "\n${ERROR}: applying '$(basename $i)', abort.\n"
             break
         fi
     done
@@ -59,10 +62,11 @@ function pa() {
 export -f pa
 
 function ugit() {
+    declare -i ret=0
     local solib="${gfrefdir_path}/isatty_override.so"
     test -r "${solib}" || solib=""
-    LD_PRELOAD="${solib}" /bin/git -P "$@"
-    echo
+    LD_PRELOAD="${solib}" /bin/git -P "$@" || ret=$?
+    echo; return $ret
 }
 export -f ugit
 
@@ -89,8 +93,8 @@ function gfhelp() {
 export -f gfhelp
 
 function irebase() {
-    test -z "$1" && return 1
-    hash=$(_git rev-list --parents -n2 "$1" | tail -n1 | head -c40)
+    if [ -z "$1" ]; then irebase $(hcur); return $?; fi
+    local hash=$(_git rev-list --parents -n2 "$1" | tail -n1 | head -c40)
     test -n "$hash" && _git rebase -i $hash
 }
 export -f irebase
