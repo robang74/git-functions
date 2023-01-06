@@ -58,7 +58,8 @@ The following list is divided for class of usage and roles
 #### Pure git functions which do NOT alter the repositories
  
 * `lg`: show the log in a compact and fancy way, SHAs or files as args
-* `lt`: like lg but with all branches shown, files as args
+* `lt`: like `lg` but with all branches shown, files as args
+* `lg1`: like `lg` but just the first line
 * `st`: short for `git status`
 * `ff`: short for `git diff`
 * `rl`: short for `git reflog`
