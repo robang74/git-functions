@@ -62,9 +62,14 @@ if which cc >/dev/null; then
     cc isatty_override.o -shared -o isatty_override.so
     strip isatty_override.so 2>/dev/null || :
     echo
-    echo -n "${bicyan}Compiled${coloff}: "
+    echo -ne "${bicyan}Compiled${coloff}: "
     du -b isatty_override.so
     rm -f isatty_override.o
+elif [ "$(uname -m)" != "x86_64" ]; then
+    echo -e "\n${WARNING}: need to install the compiler for isatty_override.so"
+    rm -f isatty_override.so
+else
+    echo -e "\n${NOTICE}: using the pre-compiled x86_64 isatty_override.so"
 fi
 
 echo "\n${DONE}: git-functions installed in ${HOME}/${DESTDIR}\n"
