@@ -90,6 +90,7 @@ Example of `redef_git` and `reset_git` usage:
 * `lgrp`: find a string into the `lg` output
 * `bcur`: short for `git branch --show-current`
 * `hcur`: short for `git rev-parse --short HEAD`
+* `tagl`: short for `git tag -l`
 
 #### Command execution on multiple branches
 

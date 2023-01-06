@@ -473,4 +473,9 @@ function lgrp() {
 }
 export -f lgrp
 
+function tagl() {
+    _git tag -l "$@"
+}
+export -f tagl
+
 test ${gflistshow:-0} -ne 0 && set +x #########################################
