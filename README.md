@@ -24,10 +24,18 @@ The following list is divided for class of usage and roles
 
 * `gfreload`: reload the functions
 * `gfupdate`: update the installation and reload the functions
-* `gflist`: list the functions available
+* `redef_git`: redefine the function `_git()` which is used internally
+* `reset_git`: reset `_git()` to the default value `/bin/git "$@"`
 * `gfhelp`: like `gflist` but in a fancier way
+* `gflist`: list the functions available
 * `ugit`: unbuffered version of `git -P`
 * `less`: alias for `/bin/less -Fr`
+
+Example of `redef_git` and `reset_git` usage:
+
+    redef_git -u # every functions of this wrapper will use `ugit` instead of `git`
+    redef_git '/bin/git -P "$@"' # of this wrapper will use `git` with no pager
+    reset_git    # every functions of this wrapper will use `git` as default
 
 #### Configure functions
 

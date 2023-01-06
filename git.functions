@@ -13,11 +13,31 @@ export gfrefdir_path="$(dirname ${SRC_FILE})"
 export gfreload_pathname="${SRC_FILE}"
 source "${gfrefdir_path}/colors.shell"
 
-test ${gflistshow:-0} -ne 0 && set -x
+test ${gflistshow:-0} -ne 0 && set -x #########################################
 
 #if [ -r "${gfrefdir_path}/isatty_override.so" ]; then
 #   this could be useful for the future
 #fi
+
+function redef_git() {
+    unset -f _git
+    if [ "x$1" == "x-u" ]; then
+        function _git() { ugit "$@"; }
+    else
+        eval 'function _git() { '"$@"'; }'
+    fi
+    export -f _git
+}
+export -f redef_git
+
+function reset_git() {
+    unset -f _git
+    function _git() { /bin/git "$@"; }
+    export -f _git
+}
+export -f reset_git
+
+reset_git #####################################################################
 
 function less() {
     /bin/less -Fr "$@"
@@ -26,22 +46,23 @@ export -f less
 
 function pa() {
     test -z "$1" && return 1
-    git() { /bin/git -P "$@"; }
+    redef_git -u
     for i in "$@"; do
-        if ! git apply --check --stat "$i" && \
-            git am -p1 --keep-cr --signoff "$i" && sw -P; then
+        if ! _git apply --check --stat "$i" && \
+            _git am -p1 --keep-cr --signoff "$i" && sw -P; then
             echo -e "\n${ERROR}: applying '$i', abort.\n"
             break
         fi
     done
-    unset -f git
+    reset_git
 }
 export -f pa
 
 function ugit() {
     local solib="${gfrefdir_path}/isatty_override.so"
     test -r "${solib}" || solib=""
-    LD_PRELOAD="${solib}" git -P "$@"
+    LD_PRELOAD="${solib}" /bin/git -P "$@"
+    echo
 }
 export -f ugit
 
@@ -69,21 +90,22 @@ export -f gfhelp
 
 function irebase() {
     test -z "$1" && return 1
-    hash=$(git rev-list --parents -n2 "$1" | tail -n1 | head -c40)
-    test -n "$hash" && git rebase -i $hash
+    hash=$(_git rev-list --parents -n2 "$1" | tail -n1 | head -c40)
+    test -n "$hash" && _git rebase -i $hash
 }
 export -f irebase
 
 function repshrink() {
-	git reflog | egrep .
-	git gc --auto
-	git maintenance run --auto
-	git reflog expire --expire=now --all && git gc --prune=now --aggressive
+	_git reflog | egrep .
+	_git gc --auto
+	_git maintenance run --auto
+	_git reflog expire --expire=now --all && \
+        _git gc --prune=now --aggressive
 }
 export -f repshrink
 
 function lg() {
-	git log --abbrev-commit --format=format:'* %C(bold cyan)%h%C(reset) - %C(white)%s%C(reset) %C(bold green)%d%C(reset)' "$@"
+	_git log --abbrev-commit --format=format:'* %C(bold cyan)%h%C(reset) - %C(white)%s%C(reset) %C(bold green)%d%C(reset)' "$@"
 }
 export -f lg
 
@@ -93,12 +115,12 @@ function lg1() {
 export -f lg1
 
 function lt() {
-	git log --graph --abbrev-commit --decorate --format=format:'%C(bold cyan)%h%C(reset) - %C(white)%s%C(reset) %C(bold green)%d%C(reset)' --all "$@"
+	_git log --graph --abbrev-commit --decorate --format=format:'%C(bold cyan)%h%C(reset) - %C(white)%s%C(reset) %C(bold green)%d%C(reset)' --all "$@"
 }
 export -f lt
 
 function st() {
-	git status "$@"
+	_git status "$@"
 }
 export -f st
 
@@ -108,53 +130,53 @@ function ff() {
 		opt="--staged"
 		shift
 	fi
-	git diff $opt "$@"
+	_git diff $opt "$@"
 }
 export -f ff
 
 function rl() {
-	git reflog "$@"
+	_git reflog "$@"
 }
 export -f rl
 
 function add() {
-	git add "$@"
+	_git add "$@"
 }
 export -f add
 
 function cm() {
-	git commit --signoff "$@"
+	_git commit --signoff "$@"
 }
 export -f cm
 
 function amend() {
-	git commit --amend "$@"
+	_git commit --amend "$@"
 }
 export -f amend
 
 function editorset() {
     test -z "$1" && return 1
-    git config --global core.editor "$1"
+    _git config --global core.editor "$1"
 }
 export -f editorset
 
 function rpull() {
-	git pull --rebase "$@"
+	_git pull --rebase "$@"
 }
 export -f rpull
 
 function push() {
-	git push "$@"
+	_git push "$@"
 }
 export -f push
 
 function fpush() {
-	git push --force "$@"
+	_git push --force "$@"
 }
 export -f fpush
 
 function co() {
-	git checkout "$@"
+	_git checkout "$@"
 }
 export -f co
 
@@ -162,24 +184,24 @@ function sw() {
     if [ "x$1" == "x-P" ]; then
         shift; ugit show "$@"
     else
-	    git show "$@"
+	    _git show "$@"
     fi
 }
 export -f sw
 
 function sf() {
-    git show --raw "$@" | egrep "^:[0-9]*" | awk '{ print $6 }'
+    _git show --raw "$@" | egrep "^:[0-9]*" | awk '{ print $6 }'
 }
 export -f sf
 
 function forig() {
-    git fetch origin "$@"
+    _git fetch origin "$@"
 }
 export -f forig
 
 function pcache() {
 	local -i t=3600 runcmd=1
-	local d=$(git rev-parse --show-toplevel)
+	local d=$(_git rev-parse --show-toplevel)
 	if [ "x$1" == "x--save" -a -n "$2" ]; then
 		echo "$2" > $d/.gitpasswd
 		echo -e "\n${NOTICE}: password saved in $d/.gitpasswd\n"
@@ -195,8 +217,8 @@ function pcache() {
 		echo -e "\n${USAGE}: cchace [ --time 14400 | --save '.gitpasswd' | --stop | --help ]\n"
 		return
 	fi
-	git config credential.helper store
-	git config credential.helper "cache --timeout=$t"
+	_git config credential.helper store
+	_git config credential.helper "cache --timeout=$t"
 	if [ "$t" == "0" ]; then
 		echo -e "${DONE}: git password cache disabled"
 	else
@@ -206,7 +228,7 @@ function pcache() {
 			fi
             st "$d/.gitignore" | egrep -q .gitignore \
                 && echo -e "\n${WARNING}: add .gitignore and commit the change\n"
-			git -c credential.helper='!f() { echo "password=$(cat '$d/.gitpasswd')"; }; f' push --dry-run 2>/dev/null
+			_git -c credential.helper='!f() { echo "password=$(cat '$d/.gitpasswd')"; }; f' push --dry-run 2>/dev/null
 		else
 			forig
 		fi
@@ -217,71 +239,71 @@ function pcache() {
 export -f pcache
 
 function rcont() {
-	git rebase --continue
+	_git rebase --continue
 }
 export -f rcont
 
 function stash() {
-	git stash "$@"
+	_git stash "$@"
 }
 export -f stash
 
 function pop() {
-	git stash pop "$@"
+	_git stash pop "$@"
 }
 export -f pop
 
 function tagdel() {
     test -z "$1" && return 1
-    git push --delete origin "$1"
-    git tag -d "$@"
+    _git push --delete origin "$1"
+    _git tag -d "$@"
 }
 export -f tagdel
 
 function tagadd() {
     test -z "$1" && return 1
     local tag="$1"; shift
-    git tag -a "$tag" "$@" -m "$tag" && \
-        git push origin --tags
+    _git tag -a "$tag" "$@" -m "$tag" && \
+        _git push origin --tags
 }
 export -f tagadd
 
 function pull() {
-	git pull "$@"
+	_git pull "$@"
 }
 export -f pull
 
 function fpatch() {
     test -z "$1" && return 1
-	git format-patch -1 "$@"
+	_git format-patch -1 "$@"
 }
 export -f fpatch
 
 function chpk() {
 	for i in "$@"; do
-		git cherry-pick $i || return $?
+		_git cherry-pick $i || return $?
 	done
 }
 export -f chpk
 
 function lsbr() {
-    git branch -r | grep -ve "/HEAD$" -ve "/HEAD " | cut -d/ -f2-
+    _git branch -r | grep -ve "/HEAD$" -ve "/HEAD " | cut -d/ -f2-
 }
 export -f lsbr
 
 function bsw() {
     test -z "$1" && return 1
-    git switch "$@"
+    _git switch "$@"
 }
 export -f bsw
 
 function bcur() {
-    git branch --show-current
+    _git branch --show-current
 }
 export -f bcur
 
 function hcur() {
-    git rev-parse --short HEAD
+    _git rev-parse --short HEAD
 }
 export -f hcur
 
@@ -316,7 +338,7 @@ function for-all-other-branches() {
     local rpull="true" stashpop=0 nofail=""
     while true; do
         if [ "x$1" == "x-p" ]; then
-            rpull="git pull"
+            rpull="pull"
         elif [ "x$1" == "x-r" ]; then
             rpull="rpull"
         elif [ "x$1" == "x-a" ]; then
@@ -340,7 +362,7 @@ function for-all-other-branches() {
     fi
 
     local curdir=$(readlink -f $PWD)
-    local topdir=$(readlink -f $(git rev-parse --show-toplevel))
+    local topdir=$(readlink -f $(_git rev-parse --show-toplevel))
     if [ "$curdir" == "$topdir" ]; then
         true
     elif ! cd $topdir; then
@@ -393,18 +415,17 @@ function lgrp() {
     test -z "$1" && return 1
 
     local strn="$1"; shift
-    local solib="${gfrefdir_path}/isatty_override.so"
-    test -r "${solib}" || solib=""
 
-    git() { /bin/git -P "$@"; }
+    redef_git -u
     egnc() { /bin/egrep --color=never "$@"; }
     if [ $shaonly -ne 0 ]; then
-        LD_PRELOAD="${solib}" lg "$@" | egnc "$strn" | awk '{print $2}' | egnc .
+        lg "$@" | egnc "$strn" | awk '{print $2}' | egnc .
     else
-        LD_PRELOAD="${solib}" lg "$@" | egrep "$strn"
+        lg "$@" | egrep "$strn"
     fi
-    unset -f git egnc
+    reset_git
+    unset -f egnc
 }
 export -f lgrp
 
-test ${gflistshow:-0} -ne 0 && set +x
+test ${gflistshow:-0} -ne 0 && set +x #########################################
