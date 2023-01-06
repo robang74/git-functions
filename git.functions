@@ -149,6 +149,11 @@ function sw() {
 }
 export -f sw
 
+function sf() {
+    git show --raw "$@" | egrep "^:[0-9]*" | awk '{ print $6 }'
+}
+export -f sf
+
 function forig() {
     git fetch origin "$@"
 }

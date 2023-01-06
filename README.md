@@ -66,6 +66,7 @@ The following list is divided for class of usage and roles
 * `ff`: short for `git diff`
 * `rl`: short for `git reflog`
 * `sw`: short for `git show`
+* `sf`: show the file involved in a commit, SHAs as args
 * `fpatch`: do a `git format-patch` for the commit, SHA and opts in arg
 * `lsbr`: show the list of remote branches
 * `bsw`: short for `git switch`, the branch name as arg
