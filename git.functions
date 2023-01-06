@@ -65,6 +65,11 @@ function less() {
 }
 export -f less
 
+function egnc() {
+    /bin/egrep --color=never "$@"
+}
+export -f egnc
+
 function pa() {
     test -z "$1" && return 1
     redef_git -u
@@ -264,7 +269,10 @@ function pcache() {
 export -f pcache
 
 function opst() {
-    st | sed -ne s,' *(use "git \(.*\) --abort" .*',\\1,p
+    local i
+    for i in  abort skip edit-todo continue; do
+        st | sed -ne "s, *(use .git \(.*\) --$i. .*,\\1,p" | egnc . && break
+    done
 }
 export -f opst
 
@@ -462,14 +470,12 @@ function lgrp() {
     local strn="$1"; shift
 
     redef_git -u
-    egnc() { /bin/egrep --color=never "$@"; }
     if [ $shaonly -ne 0 ]; then
         lg "$@" | egnc "$strn" | awk '{print $2}' | egnc .
     else
         lg "$@" | egrep "$strn"
     fi
     reset_git
-    unset -f egnc
 }
 export -f lgrp
 

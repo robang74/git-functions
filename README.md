@@ -23,13 +23,14 @@ The following list is divided for class of usage and roles
 #### Service functions
 
 * `gfreload`: reload the functions
+* `gflist`: list the functions available
+* `gfhelp`: like `gflist` but in a fancier way
 * `gfupdate`: update the installation and reload the functions
 * `redef_git`: redefine the function `_git()` which is used internally
 * `reset_git`: reset `_git()` to the default value `/bin/git "$@"`
-* `gfhelp`: like `gflist` but in a fancier way
-* `gflist`: list the functions available
+* `egnc`: function alias for `/bin/egrep --color=never`
+* `less`: function alias for `/bin/less -Fr`
 * `ugit`: unbuffered version of `git -P`
-* `less`: alias for `/bin/less -Fr`
 
 Example of `redef_git` and `reset_git` usage:
 
