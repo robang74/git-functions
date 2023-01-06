@@ -45,6 +45,7 @@ The following list is divided for class of usage and roles
 #### Pure git functions which alter the local repository
 
 * `irebase`: rebase starting from the hash passed
+* `pa`: format patch apply and create signed commit
 * `add`: short for `git add`
 * `cm`: short for `git commit`
 * `amend`: short for `git amend`
@@ -65,7 +66,7 @@ The following list is divided for class of usage and roles
 * `st`: short for `git status`
 * `ff`: short for `git diff`
 * `rl`: short for `git reflog`
-* `sw`: short for `git show`
+* `sw`: short for `git show`, opt: -P for no pager
 * `sf`: show the file involved in a commit, SHAs as args
 * `fpatch`: do a `git format-patch` for the commit, SHA and opts in arg
 * `lsbr`: show the list of remote branches

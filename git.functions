@@ -24,6 +24,20 @@ function less() {
 }
 export -f less
 
+function pa() {
+    test -z "$1" && return 1
+    git() { /bin/git -P "$@"; }
+    for i in "$@"; do
+        if ! git apply --check --stat "$i" && \
+            git am -p1 --keep-cr --signoff "$i" && sw -P; then
+            echo -e "\n${ERROR}: applying '$i', abort.\n"
+            break
+        fi
+    done
+    unset -f git
+}
+export -f pa
+
 function ugit() {
     local solib="${gfrefdir_path}/isatty_override.so"
     test -r "${solib}" || solib=""
@@ -145,7 +159,11 @@ function co() {
 export -f co
 
 function sw() {
-	git show "$@"
+    if [ "x$1" == "x-P" ]; then
+        shift; ugit show "$@"
+    else
+	    git show "$@"
+    fi
 }
 export -f sw
 
