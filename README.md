@@ -94,7 +94,7 @@ on which commands are currently executing. The single quotes around the
 commands string are necessary to avoid that the variable is expanded before
 starting the loop.
 
-In case the last command fails then the loop stops and spwan a emergency `bash`
+In case the last command fails then the loop stops and spawn a emergency `bash`
 in that shell - which is restricted - the operator can handle the issue and
 then decide to proceed further with `exit` or definitely stop with `exit 1`.
 
@@ -129,7 +129,8 @@ script without any argument
     ./install.sh [ uninstall | update | reinstall | help ]
 
 then follow the instructions, in particular source the `git.fuctions` in your
-current bash environment
+current bash environment. To install the development version switch the branch
+with `git switch devel` and the run the installer from that branch.
 
 
 Password cache
@@ -141,17 +142,29 @@ Moreover the use of the password cache or saving your git password in plain
 text in a file of your workstation disk could go against your company security
 policies. For extra security you can disable this function with
 
-    unset pcache
+    unset pcache
 
 You might also want to add after the source `git.function` in your `~/.bashrc`
 to make this choice as the default one. However, `gfreload` and `gfupdate` will
 load again into your current bash environment. To avoid this risk, then use:
 
-    unset pcache gfreload gfupdate
+    unset pcache gfreload gfupdate
 
 So, no one of these functions will be able to interfere with your security
 policy but you will need to use `install.sh update` to update your
 git-functions installation.
+
+
+isatty() override
+-----------------
+
+To improve dramatically the fancy coloured output combined with some features
+like grepping and lessing, it has been used the trick to override `isatty()`
+using a small piece of code `isatty_override.c` which produces `.so` library:
+
+    LD_PRELOAD="${path}/isatty_override.so" git -P "$@"
+
+This is an example of usage which resembles the core of the 'ugit' function.
 
 
 License
@@ -161,6 +174,7 @@ The copyright notice, the license and the author is reported in each file
 header, here summarised:
 
 * `colors.shell`: MIT
+* `isatty_override.c`: MIT
 * `git.functions`: GPLv3
 * `install.sh`: GPLv3
 
