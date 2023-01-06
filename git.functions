@@ -13,6 +13,27 @@ export gfrefdir_path="$(dirname ${SRC_FILE})"
 export gfreload_pathname="${SRC_FILE}"
 source "${gfrefdir_path}/colors.shell"
 
+if echo "${PATH}" | egrep -q $gfrefdir_path; then
+    export PATH="$gfrefdir_path/bin:${PATH}"
+fi
+
+function _op_action() {
+    local op ret
+    case "$1" in
+    c) op="cherry-pick"
+        ;;
+    m) op="merge"
+        ;;
+    r) op="rebase"
+        ;;
+    *) op=$(opst)
+       ;;
+    esac
+    _git ${op:-none} $2 || return $?
+    test -z "$op" || echo -e "\ngit ${op} $2: ${OK}\n"
+}
+export -f _op_action
+
 test ${gflistshow:-0} -ne 0 && set -x #########################################
 
 #if [ -r "${gfrefdir_path}/isatty_override.so" ]; then
@@ -242,13 +263,33 @@ function pcache() {
 }
 export -f pcache
 
-function rcont() {
-	_git rebase --continue
+function opst() {
+    st | sed -ne s,' *(use "git \(.*\) --abort" .*',\\1,p
 }
-export -f rcont
+export -f opst
+
+function cont() {
+    _op_action "$1" --continue
+}
+export -f cont
+
+function abrt() {
+    _op_action "$1" --abort
+}
+export -f abrt
+
+function todo() {
+   _op_action "$1" --edit-todo
+}
+export -f todo
+
+function skip() {
+   _op_action "$1" --skip
+}
+export -f skip
 
 function stash() {
-	_git stash "$@"
+    _git stash "$@"
 }
 export -f stash
 

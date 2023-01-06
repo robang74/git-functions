@@ -42,6 +42,14 @@ Example of `redef_git` and `reset_git` usage:
 * `pcache`: set the password cache for 1h of inactivity, deal with `.gitpasswd`
 * `editorset`: set your default editor
 
+#### Operative functions
+
+* `opst`: shows the current operation pending: merge, rebase or cherry-pick
+* `todo`: short cut for `git --edit-todo`, arg: c,m,r or current operation
+* `cont`: short cut for `git --continue`, arg: c,m,r or current operation
+* `abrt`: short cut for `git --abort`, arg: c,m,r or current operation
+* `skip`: short cut for `git --skip`, arg: c,m,r or current operation
+
 #### Pure git functions which alter also the remote repository
 
 * `push`: short for `git pull`
