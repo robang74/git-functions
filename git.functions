@@ -104,14 +104,15 @@ function ce() {
         export commit_edit_head="$(hcur)"
         export commit_edit_csha="${1:-$commit_edit_head}"
         function exit() {
-            if st | egrep -q "run .git rebase"; then
-                echo -e "\n${WARNING}: rebase in progress, please complete the job or abort it."
-                echo -e "\n${NOTICE} : enter 'ce --abort' to abort and exit or 'unset -f exit; exit' to exit.\n"
+            local op=$(opst)
+            if [ -n "$op" ]; then
+                echo -e "\n${WARNING}: ${op} in progress, please complete the job or abort it."
+                echo -e "\n${NOTICE} : enter 'ce --abort' to abort and exit or 'command exit' to exit.\n"
                 return 1
             fi
             command exit ${1:-}
         }; export -pf exit
-        gitshell "$(declare -pf exit); git commit-edit" "$@" || ret=$?
+        gitshell "$(declare -pf exit); git commit-edit ""$@"' || exit $?' || ret=$?
         unset -f exit
     fi
     unset commit_edit_opts commit_edit_brch \
@@ -327,10 +328,8 @@ function pcache() {
 export -f pcache
 
 function opst() {
-    local i
-    for i in  abort skip edit-todo continue; do
-        st | sed -ne "s, *(use .git \(.*\) --$i. .*,\\1,p" | egnc . && break
-    done
+    st -v | grep -v "git commit --amend" |\
+        sed -ne 's,.*[userun]\{3\} .git \(.*\) --.*,\1,p'
 }
 export -f opst
 
@@ -417,12 +416,12 @@ function bsw() {
 export -f bsw
 
 function bcur() {
-    _git branch --show-current
+    _git branch --show-current | egnc .
 }
 export -f bcur
 
 function hcur() {
-    _git rev-parse --short HEAD
+    _git rev-parse --short HEAD | egnc .
 }
 export -f hcur
 
