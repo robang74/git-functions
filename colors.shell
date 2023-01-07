@@ -28,7 +28,9 @@ export -f echo
 #
 # echo -e "${BLRED} Hello world in light red! ${CRST}"
 #
-# echo -e "${DGRNOWHT} Ciao in dark green over white. ${CRST}"
+# auto-generated codes are also available in lower-case format
+#
+# echo -ne "${dgrnowht} Ciao in dark green over white. ${crst}\n"
 #
 
 # Displaying Modes
@@ -78,7 +80,8 @@ LWHT=";97m"             # ligth_white
 
 # Color Reset
 
-CRST="\033[0m"		    # reset
+CRST="\033[0;0m"		# reset
+crst="\033[0;0m"		# reset but in lower case
 
 ###############################################################################
 
@@ -115,6 +118,7 @@ function colors_codes_generation() {
 # Auto-generation of colors codes
 
 eval "$(colors_codes_generation)"
+eval "$(colors_codes_generation | tr [A-Z] [a-z])"
 
 ###############################################################################
 
@@ -131,10 +135,7 @@ NOTICE="${BLCYN}NOTICE${CRST}"
 ###############################################################################
 
 # Reset
-coloff='\033[0m'          # Text Reset
-
-# Blinking
-blink='\033[5m'           # Blinking Text
+coloff='\033[0;0m'        # Reset
 
 # Regular Colors
 black='\033[0;30m'        # Black
@@ -196,3 +197,6 @@ bipurple='\033[1;95m'     # Purple
 bicyan='\033[1;96m'       # Cyan
 biwhite='\033[1;97m'      # White
 
+###############################################################################
+
+true
