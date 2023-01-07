@@ -225,6 +225,11 @@ function rl() {
 }
 export -f rl
 
+function reflog() {
+	rl "$@"
+}
+export -f reflog
+
 function add() {
 	_git add "$@"
 }
@@ -235,8 +240,13 @@ function cm() {
 }
 export -f cm
 
-function amend() {
+function am() {
 	_git commit --amend "$@"
+}
+export -f am
+
+function amend() {
+	am "$@"
 }
 export -f amend
 

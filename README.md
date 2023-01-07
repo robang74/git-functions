@@ -47,10 +47,10 @@ Example of `redef_git` and `reset_git` usage:
 #### Operative functions
 
 * `opst`: shows the current operation pending: merge, rebase or cherry-pick
-* `todo`: short cut for `git --edit-todo`, arg: c,m,r or current operation
-* `cont`: short cut for `git --continue`, arg: c,m,r or current operation
-* `abrt`: short cut for `git --abort`, arg: c,m,r or current operation
-* `skip`: short cut for `git --skip`, arg: c,m,r or current operation
+* `todo`: short for `git --edit-todo`, arg: c,m,r or current operation
+* `cont`: short for `git --continue`, arg: c,m,r or current operation
+* `abrt`: short for `git --abort`, arg: c,m,r or current operation
+* `skip`: short for `git --skip`, arg: c,m,r or current operation
 
 #### Pure git functions which alter also the remote repository
 
@@ -65,16 +65,16 @@ Example of `redef_git` and `reset_git` usage:
 * `irebase`: rebase starting from the hash passed
 * `pa`: format patch apply and create signed commit
 * `ce`: commit edit within a restricted shell
+* `am`, amend`: shorts for `git amend`
 * `add`: short for `git add`
 * `cm`: short for `git commit`
-* `amend`: short for `git amend`
-* `rpull`: short for `git pull --rebase`
 * `co`: short for `git checkout`
-* `forig`: short for `git fetch origin`
+* `pull`: short for `git pull`
+* `rpull`: short for `git pull --rebase`
 * `rcont`: short for `git rebase --continue`
+* `forig`: short for `git fetch origin`
 * `stash`: short for `git stash`
 * `pop`: short for `git stash pop`
-* `pull`: short for `git pull`
 * `chpk`: short for `git cherry-pick`
 
 #### Pure git functions which do NOT alter the repositories
@@ -82,8 +82,7 @@ Example of `redef_git` and `reset_git` usage:
 * `lg`: show the log in a compact and fancy way, SHAs or files as args
 * `lt`: like `lg` but with all branches shown, files as args
 * `lg1`: like `lg` but just the first line
-* `st`: short for `git status`
-* `rl`: short for `git reflog`
+* `rl`, `reflog`: shorts for `git reflog`
 * `sw`: short for `git show`, opt:-P for no pager
 * `ff`: short for `git diff`, opts -s:staged -s:origin
 * `sf`: show the file involved in a commit, SHAs as args
@@ -94,6 +93,7 @@ Example of `redef_git` and `reset_git` usage:
 * `bcur`: short for `git branch --show-current`
 * `lsbr`: show the list of remote branches
 * `tagl`: short for `git tag -l`
+* `st`: short for `git status`
 
 #### Command execution on multiple branches
 
