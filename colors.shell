@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/env bash
 #
 # Copyright (c) Roberto A. Foglietta, 2023
 #
@@ -13,8 +13,128 @@ function echo() {
 }
 export -f echo
 
+###############################################################################
+
+#
+# Composition rule for printing colored text on the console
+#
+# echo -e "${mode}${textcolor}${text}${reset}" 
+#
+# to add a background color this is the rule with basic codes
+#
+# echo -e "${mode}${background}${textcolor}${text}${reset}" 
+#
+# or using the auto-generated codes like in these example
+#
+# echo -e "${BLRED} Hello world in light red! ${CRST}"
+#
+# echo -e "${DGRNOWHT} Ciao in dark green over white. ${CRST}"
+#
+
+# Displaying Modes
+
+NRM="\033[0"            # normal
+BLD="\033[1"            # bold
+DRK="\033[2"            # dark
+ITL="\033[3"            # italic
+UDL="\033[4"            # underline
+FLS="\033[5"            # blinking -> flashing
+RVS="\033[7"            # reverse
+HDN="\033[8"            # hidden
+STR="\033[9"            # strikethrough
+
+# Regular Colors
+
+BLK=";30m"              # black
+RED=";31m"              # red
+GRN=";32m"              # green
+YLW=";33m"              # yellow
+BLU=";34m"              # blue
+PRL=";35m"              # purple
+CYN=";36m"              # cyan
+WHT=";37m"              # white
+
+# Backgound Colors
+
+OBLK=";40"              # black
+ORED=";41"              # red
+OGRN=";42"              # green
+OYLW=";43"              # yellow
+OBLU=";44"              # blue
+OPRL=";45"              # purple
+OCYN=";46"              # cyan
+OWHT=";47"              # white
+
+# High Intensity Colors
+
+LBLK=";90m"             # light_black 
+LRED=";91m"             # light_red
+LGRN=";92m"             # light_green
+LYLW=";93m"             # light_yellow
+LBLU=";94m"             # light_blue
+LPRL=";95m"             # light_purple
+LCYN=";96m"             # light_cyan
+LWHT=";97m"             # ligth_white
+
+# Color Reset
+
+CRST="\033[0m"		    # reset
+
+###############################################################################
+
+# List of Colors and Displaying Modes
+
+COLORS="BLK RED GRN YLW BLU PRL CYN WHT"
+DMODES="NRM BLD DRK ITL UDL FLS RVS STR"
+
+# Auto-generating function for colors codes
+
+function colors_codes_generation() {
+    local i j l p s b g k
+    for i in ${DMODES}; do
+        for j in ${COLORS}; do
+            for b in '' ${COLORS}; do
+                for l in '' L; do
+                    p="${i:0:1}$l"
+                    k="O$b"
+                    k=${k%O}
+                    echo -n "$p$j$k='"
+                    g=${k:-''}
+                    g=${g/O/\$O}
+                    eval "printf '%s%s%s' \$$i $g \$$l$j"
+                    g="$k + "
+                    s=${b:-\\t}
+                    s=${s//[A-Z]/}
+                    echo "'$s\t# $i + ${g# + }$l$j"
+                 done
+             done
+        done
+    done
+}
+
+# Auto-generation of colors codes
+
+eval "$(colors_codes_generation)"
+
+###############################################################################
+
+# Relevant keyword coloured
+
+WARNING="${BLYLW}WARNING${CRST}"
+ERROR="${BLRED}ERROR${CRST}"
+DONE="${BLGRN}DONE${CRST}"
+OK="${BLGRN}OK${CRST}"
+KO="${BLRED}KO${CRST}"
+USAGE="${BLPRL}USAGE${CRST}"
+NOTICE="${BLCYN}NOTICE${CRST}"
+
+###############################################################################
+
 # Reset
 coloff='\033[0m'          # Text Reset
+
+# Blinking
+blink='\033[5m'           # Blinking Text
 
 # Regular Colors
 black='\033[0;30m'        # Black
@@ -76,11 +196,3 @@ bipurple='\033[1;95m'     # Purple
 bicyan='\033[1;96m'       # Cyan
 biwhite='\033[1;97m'      # White
 
-# Relevant keyword coloured
-WARNING="${biyellow}WARNING${coloff}"
-ERROR="${bired}ERROR${coloff}"
-DONE="${bigreen}DONE${coloff}"
-OK="${bigreen}OK${coloff}"
-KO="${bired}KO${coloff}"
-USAGE="${bipurple}USAGE${coloff}"
-NOTICE="${bicyan}NOTICE${coloff}"
