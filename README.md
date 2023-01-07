@@ -192,6 +192,22 @@ This is an example of usage which resembles the core of the 'ugit' function.
 License
 -------
 
+Almost all the files are under MIT license or GPLv3 and the others are in the
+public domain. However the composition of these files is protected by the GPLv3
+license.
+
+This means that everyone can use a single MIT licensed file or a part of it
+under the MIT license terms. Instead, using two of them or two parts of them
+implies that you are using a subset of this collection. Thus a derived work of
+this collection which is licensed under the GPLv3 also.
+
+The GPLv3 license applies to the composition unless you are the original
+copyright owner or the author of a specific unmodified file. This means that
+every one that can legally claim rights about the original files maintains its
+rights, obviously. So, it should not need to complain with the GPLv3 license
+applied to the composition. Unless, the composition is adopted for the part
+which had not the rights, before.
+
 The copyright notice, the license and the author is reported in each file
 header, here summarised:
 
