@@ -58,7 +58,7 @@ export -f redef_git
 
 function reset_git() {
     unset -f _git
-    function _git() { git "$@"; }
+    function _git() { command git "$@"; }
     export -f _git
 }
 export -f reset_git
@@ -81,11 +81,11 @@ function gitshell() {
     if true; then
         cat "${gfrefdir_path}/colors.shell"
         egnc -v "source.*colors.shell"  "${gfreload_pathname}"
-        echo 'PS1="${bcyan}+git${coloff}:${bigreen}$(bcur)${coloff}> "'
+        echo 'export PS1="${icyan}${gitshell_prefix}${coloff}:${igreen}git-\$(opst||printf 'shell')${coloff}:${iyellow}\$(bcur||hcur)${coloff}> "'
         echo "$@"
     fi > "$gitrc"
     bash --rcfile "$gitrc" -ri 3>/dev/null || ret=$?
-    rm -f "$gitrc"
+    rm -f "$gitrc"; unset gitshell_prefix
     return $ret
 }
 
@@ -96,6 +96,7 @@ function ce() {
         git reset --hard ${commit_edit_head} && abrt || ret=$?
         quit=1
     else
+        export gitshell_prefix="ce"
         export commit_edit_note=\
 "enter 'ce --abort' to abort and exit + "\
 "'cm' uses '--amend' by default here, enjoy."
