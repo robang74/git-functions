@@ -104,7 +104,7 @@ function ce() {
         export commit_edit_head="$(hcur)"
         export commit_edit_csha="${1:-$commit_edit_head}"
         function exit() {
-            if ! bsw ${commit_edit_brch} 2>&3; then
+            if st | egrep -q "run .git rebase"; then
                 echo -e "\n${WARNING}: rebase in progress, please complete the job or abort it."
                 echo -e "\n${NOTICE} : enter 'ce --abort' to abort and exit or 'unset -f exit; exit' to exit.\n"
                 return 1

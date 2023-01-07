@@ -197,6 +197,7 @@ header, here summarised:
 
 * `colors.shell`: MIT
 * `isatty_override.c`: MIT
+* `git-commit-edit`: public domain
 * `git-isar-send-patch`: GPLv3
 * `git.functions`: GPLv3
 * `install.sh`: GPLv3
