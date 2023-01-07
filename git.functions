@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -u
 #
 # Copyright (c) Roberto A. Foglietta, 2022-2023
 #
@@ -13,13 +13,13 @@ export gfrefdir_path="$(dirname ${SRC_FILE})"
 export gfreload_pathname="${SRC_FILE}"
 source "${gfrefdir_path}/colors.shell"
 
-if echo "${PATH}" | egrep -q $gfrefdir_path; then
+if ! echo "${PATH}" | egrep -q $gfrefdir_path; then
     export PATH="$gfrefdir_path/bin:${PATH}"
 fi
 
 function _op_action() {
     local op ret
-    case "$1" in
+    case "${1:-}" in
     c) op="cherry-pick"
         ;;
     m) op="merge"
@@ -34,6 +34,11 @@ function _op_action() {
 }
 export -f _op_action
 
+function pipenull() {
+    tail -n0 -
+}
+export -f pipenull
+
 test ${gflistshow:-0} -ne 0 && set -x #########################################
 
 #if [ -r "${gfrefdir_path}/isatty_override.so" ]; then
@@ -42,7 +47,7 @@ test ${gflistshow:-0} -ne 0 && set -x #########################################
 
 function redef_git() {
     unset -f _git
-    if [ "x$1" == "x-u" ]; then
+    if [ "x${1:-}" == "x-u" ]; then
         function _git() { ugit "$@"; }
     else
         eval 'function _git() { '"$@"'; }'
@@ -53,7 +58,7 @@ export -f redef_git
 
 function reset_git() {
     unset -f _git
-    function _git() { /bin/git "$@"; }
+    function _git() { git "$@"; }
     export -f _git
 }
 export -f reset_git
@@ -61,17 +66,63 @@ export -f reset_git
 reset_git #####################################################################
 
 function less() {
-    /bin/less -Fr "$@"
+    command less -Fr "$@"
 }
 export -f less
 
 function egnc() {
-    /bin/egrep --color=never "$@"
+    command egrep --color=never "$@"
 }
 export -f egnc
 
+function gitshell() {
+    local gitrc=$(mktemp -p "$TMPDIR" gitrc.XXXX)
+    declare -i ret=0
+    if true; then
+        cat "${gfrefdir_path}/colors.shell"
+        egnc -v "source.*colors.shell"  "${gfreload_pathname}"
+        echo 'PS1="${bcyan}+git${coloff}:${bigreen}$(bcur)${coloff}> "'
+        echo "$@"
+    fi > "$gitrc"
+    bash --rcfile "$gitrc" -ri 3>/dev/null || ret=$?
+    rm -f "$gitrc"
+    return $ret
+}
+
+function ce() {
+    test -z "${1:-}" && return 1
+    declare -i ret=0 quit=0
+    if [ "x${1:-}" == "x--abort" -a -n "${commit_edit_head}" ]; then
+        git reset --hard ${commit_edit_head} && abrt || ret=$?
+        quit=1
+    else
+        export commit_edit_note=\
+"enter 'ce --abort' to abort and exit + "\
+"'cm' uses '--amend' by default here, enjoy."
+        export commit_edit_opts="--amend"
+        export commit_edit_brch="$(bcur)"
+        export commit_edit_head="$(hcur)"
+        export commit_edit_csha="${1:-$commit_edit_head}"
+        function exit() {
+            if ! bsw ${commit_edit_brch} 2>&3; then
+                echo -e "\n${WARNING}: rebase in progress, please complete the job or abort it."
+                echo -e "\n${NOTICE} : enter 'ce --abort' to abort and exit or 'unset -f exit; exit' to exit.\n"
+                return 1
+            fi
+            command exit ${1:-}
+        }; export -pf exit
+        gitshell "$(declare -pf exit); git commit-edit" "$@" || ret=$?
+        unset -f exit
+    fi
+    unset commit_edit_opts commit_edit_brch \
+          commit_edit_head commit_edit_csha
+    test $quit -ne 0 && command exit $ret
+    return $ret
+}
+
+
 function pa() {
-    test -z "$1" && return 1
+    test -z "${1:-}" && return 1
     redef_git -u
     for i in "$@"; do
         if _git apply --check --stat "$i" && \
@@ -91,7 +142,7 @@ function ugit() {
     declare -i ret=0
     local solib="${gfrefdir_path}/isatty_override.so"
     test -r "${solib}" || solib=""
-    LD_PRELOAD="${solib}" /bin/git -P "$@" || ret=$?
+    LD_PRELOAD="${solib}" git -P "$@" || ret=$?
     echo; return $ret
 }
 export -f ugit
@@ -119,7 +170,7 @@ function gfhelp() {
 export -f gfhelp
 
 function irebase() {
-    if [ -z "$1" ]; then irebase $(hcur); return $?; fi
+    if [ -z "${1:-}" ]; then irebase $(hcur); return $?; fi
     local hash=$(_git rev-list --parents -n2 "$1" | tail -n1 | head -c40)
     test -n "$hash" && _git rebase -i $hash
 }
@@ -156,8 +207,11 @@ export -f st
 
 function ff() {
 	local opt
-	if [ "$1" == "-s" ]; then
+	if [ "${1:-}" == "-s" ]; then
 		opt="--staged"
+		shift
+	elif [ "${1:-}" == "-o" ]; then
+        opt="origin/${2:-$(bcur)}"
 		shift
 	fi
 	_git diff $opt "$@"
@@ -175,7 +229,7 @@ function add() {
 export -f add
 
 function cm() {
-	_git commit --signoff "$@"
+	_git commit ${commit_edit_opts} --signoff "$@"
 }
 export -f cm
 
@@ -185,7 +239,7 @@ function amend() {
 export -f amend
 
 function editorset() {
-    test -z "$1" && return 1
+    test -z "${1:-}" && return 1
     _git config --global core.editor "$1"
 }
 export -f editorset
@@ -211,7 +265,7 @@ function co() {
 export -f co
 
 function sw() {
-    if [ "x$1" == "x-P" ]; then
+    if [ "x${1:-}" == "x-P" ]; then
         shift; ugit show "$@"
     else
 	    _git show "$@"
@@ -232,18 +286,20 @@ export -f forig
 function pcache() {
 	local -i t=3600 runcmd=1
 	local d=$(_git rev-parse --show-toplevel)
-	if [ "x$1" == "x--save" -a -n "$2" ]; then
+	if [ "x${1:-}" == "x--save" -a -n "${2:-}" ]; then
 		echo "$2" > $d/.gitpasswd
 		echo -e "\n${NOTICE}: password saved in $d/.gitpasswd\n"
-		history -d -1 2>/dev/null || history -c
+        if true; then
+            history -d -2 || history -c
+        fi 2>&1 | pipenull
 		shift 2
-	elif [ "x$1" == "x--stop" ]; then
+	elif [ "x${1:-}" == "x--stop" ]; then
 		t=0; runcmd=0
-	elif [ "x$1" == "x--time" -a -n "$2" ]; then
+	elif [ "x${1:-}" == "x--time" -a -n "${2:-}" ]; then
 		t=$2; [ $t -lt 600 ] && t=600
 		echo -e "\n${NOTICE}: timeout '$2' has been set to $t seconds\n"
 		shift 2
-	elif [ "x$1" == "x--help" ]; then
+	elif [ "x${1:-}" == "x--help" ]; then
 		echo -e "\n${USAGE}: cchace [ --time 14400 | --save '.gitpasswd' | --stop | --help ]\n"
 		return
 	fi
@@ -253,18 +309,20 @@ function pcache() {
 		echo -e "${DONE}: git password cache disabled"
 	else
 		if [ -r "$d/.gitpasswd" ]; then
-			if ! grep -q "/.gitpasswd" "$d/.gitignore" 2>/dev/null; then
+            if [ ! -e "$d/.gitignore" ]; then
+				echo "/.gitpasswd" >> "$d/.gitignore"
+			elif ! grep -q "/.gitpasswd" "$d/.gitignore"; then
 				echo "/.gitpasswd" >> "$d/.gitignore"
 			fi
             st "$d/.gitignore" | egrep -q .gitignore \
                 && echo -e "\n${WARNING}: add .gitignore and commit the change\n"
-			_git -c credential.helper='!f() { echo "password=$(cat '$d/.gitpasswd')"; }; f' push --dry-run 2>/dev/null
+			_git -c credential.helper='!f() { echo "password=$(cat '$d/.gitpasswd')"; }; f' push --dry-run
 		else
 			forig
 		fi
 		echo -e "${DONE}: git password cache enable for ${t}s eq. to $[t/3600]h $[(t%3600)/60]m $[t%60]s\n"
 	fi
-	test  "$1" != "" -a "$runcmd" == "1" && eval "$@"
+	test  "${1:-}" != "" -a "$runcmd" == "1" && eval "$@"
 }
 export -f pcache
 
@@ -277,22 +335,22 @@ function opst() {
 export -f opst
 
 function cont() {
-    _op_action "$1" --continue
+    _op_action "${1:-}" --continue
 }
 export -f cont
 
 function abrt() {
-    _op_action "$1" --abort
+    _op_action "${1:-}" --abort
 }
 export -f abrt
 
 function todo() {
-   _op_action "$1" --edit-todo
+   _op_action "${1:-}" --edit-todo
 }
 export -f todo
 
 function skip() {
-   _op_action "$1" --skip
+   _op_action "${1:-}" --skip
 }
 export -f skip
 
@@ -307,14 +365,14 @@ function pop() {
 export -f pop
 
 function tagdel() {
-    test -z "$1" && return 1
+    test -z "${1:-}" && return 1
     _git push --delete origin "$1"
     _git tag -d "$@"
 }
 export -f tagdel
 
 function tagadd() {
-    test -z "$1" && return 1
+    test -z "${1:-}" && return 1
     local tag="$1"; shift
     _git tag -a "$tag" "$@" -m "$tag" && \
         _git push origin --tags
@@ -327,7 +385,7 @@ function pull() {
 export -f pull
 
 function fpatch() {
-    test -z "$1" && return 1
+    test -z "${1:-}" && return 1
 	_git format-patch -1 "$@"
 }
 export -f fpatch
@@ -345,8 +403,16 @@ function lsbr() {
 export -f lsbr
 
 function bsw() {
-    test -z "$1" && return 1
-    _git switch "$@"
+    test -z "${1:-}" && return 1
+    local nb="" bc="$(bcur)"
+    if [ "x$1" == "x-" -a -n "${2:-}" ]; then
+        return 1
+    elif [ "x$1" == "x-" ]; then
+        nb="${BRANCH_SWITCH_PREV:-$bc}"
+        shift
+    fi
+    _git switch "$@" ${nb} && \
+        export BRANCH_SWITCH_PREV="$bc"
 }
 export -f bsw
 
@@ -361,7 +427,7 @@ function hcur() {
 export -f hcur
 
 function for-all-other-branches() {
-    test -z "$1" && return 1
+    test -z "${1:-}" && return 1
 
     local cur=$(bcur)
     if [ "$cur" == "" ]; then
@@ -424,9 +490,6 @@ function for-all-other-branches() {
     fi
     forig || return $?
 
-    local gitrc=$(mktemp -p "$TMPDIR" gitrc.XXXX)
-    cat git.functions >"$gitrc"
-    echo "PS1='${bcyan}+git${coloff}:${bigreen}'$branch'${coloff}> '" >>"$gitrc"
     test $stashpop -ne 0 && stash
 
     declare -i ret=0
@@ -447,11 +510,9 @@ function for-all-other-branches() {
             echo "fix the problem and then enter 'exit'"
             echo "or enter 'exit 1' to abort completely"
             echo
-            local ret=0
-            bash --rcfile "$gitrc" -ri || ret=$?
+            gitshell || ret=$?
         fi
 	done
-    rm -f "$gitrc"
     unset BRANCHES
     test "$cur" != "$branch" && bsw $cur
     test $stashpop -ne 0 && pop
@@ -461,21 +522,22 @@ export -f for-all-other-branches
 
 function lgrp() {
     declare -i shaonly=0
-    if [ "$1" == "-s" ]; then
+    if [ "${1:-}" == "-s" ]; then
         shaonly=1
         shift
     fi
-    test -z "$1" && return 1
-
+    test -z "${1:-}" && return 1
     local strn="$1"; shift
 
     redef_git -u
+    declare -i ret=0
     if [ $shaonly -ne 0 ]; then
-        lg "$@" | egnc "$strn" | awk '{print $2}' | egnc .
+        lg "$@" | egnc "$strn" | awk '{print $2}' | egnc . || ret=1
     else
-        lg "$@" | egrep "$strn"
+        lg "$@" | egrep "$strn" || ret=1
     fi
     reset_git
+    return $ret
 }
 export -f lgrp
 

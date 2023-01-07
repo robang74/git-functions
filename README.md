@@ -26,16 +26,17 @@ The following list is divided for class of usage and roles
 * `gflist`: list the functions available
 * `gfhelp`: like `gflist` but in a fancier way
 * `gfupdate`: update the installation and reload the functions
+* `gitshell`: spawns a restricted shell with the git-funtions enviroment
 * `redef_git`: redefine the function `_git()` which is used internally
-* `reset_git`: reset `_git()` to the default value `/bin/git "$@"`
-* `egnc`: function alias for `/bin/egrep --color=never`
-* `less`: function alias for `/bin/less -Fr`
+* `reset_git`: reset `_git()` to the default command `git`
+* `egnc`: function alias for `egrep --color=never`
+* `less`: function alias for `command less -Fr`
 * `ugit`: unbuffered version of `git -P`
 
 Example of `redef_git` and `reset_git` usage:
 
     redef_git -u # every functions of this wrapper will use `ugit` instead of `git`
-    redef_git '/bin/git -P "$@"' # of this wrapper will use `git` with no pager
+    redef_git 'git -P "$@"'      # of this wrapper will use `git` with no pager
     reset_git    # every functions of this wrapper will use `git` as default
 
 #### Configure functions
@@ -59,10 +60,11 @@ Example of `redef_git` and `reset_git` usage:
 * `tagadd`: add a tag to a commit (sha as arg) and push tags
 * `tagdel`: del a tag (as arg) and push the change
 
-#### Pure git functions which alter the local repository
+#### Pure git functions which alter the local repository, only
 
 * `irebase`: rebase starting from the hash passed
 * `pa`: format patch apply and create signed commit
+* `ce`: commit edit within a restricted shell
 * `add`: short for `git add`
 * `cm`: short for `git commit`
 * `amend`: short for `git amend`
@@ -81,16 +83,16 @@ Example of `redef_git` and `reset_git` usage:
 * `lt`: like `lg` but with all branches shown, files as args
 * `lg1`: like `lg` but just the first line
 * `st`: short for `git status`
-* `ff`: short for `git diff`
 * `rl`: short for `git reflog`
-* `sw`: short for `git show`, opt: -P for no pager
+* `sw`: short for `git show`, opt:-P for no pager
+* `ff`: short for `git diff`, opts -s:staged -s:origin
 * `sf`: show the file involved in a commit, SHAs as args
+* `lgrp`: find a string into the `lg` output, opt -s:SHAs-only
 * `fpatch`: do a `git format-patch` for the commit, SHA and opts in arg
-* `lsbr`: show the list of remote branches
-* `bsw`: short for `git switch`, the branch name as arg
-* `lgrp`: find a string into the `lg` output
-* `bcur`: short for `git branch --show-current`
+* `bsw`: short for `git switch`, the branch name as arg or `-` for the last
 * `hcur`: short for `git rev-parse --short HEAD`
+* `bcur`: short for `git branch --show-current`
+* `lsbr`: show the list of remote branches
 * `tagl`: short for `git tag -l`
 
 #### Command execution on multiple branches

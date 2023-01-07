@@ -9,7 +9,7 @@
 #
 
 function echo() {
-    /usr/bin/echo -e "$@"
+    command echo -e "$@"
 }
 export -f echo
 

@@ -1,0 +1,46 @@
+#!/bin/bash
+#
+# https://stackoverflow.com/questions/1186535/how-do-i-modify-a-specific-commit
+#
+# Original author: Tom Hale <https://stackoverflow.com/users/5353461/tom-hale>
+#
+# Adaptation by Roberto A. Foglietta <roberto.foglietta@gmail.com>
+#
+
+set -euo pipefail
+
+script_name=${0##*/}
+source $(dirname $0)/../colors.shell # RAF
+
+warn () { printf '%s: %s\n' "$script_name" "$*" >&2; }
+die () { warn "$@"; exit 1; }
+
+[[ $# -ge 2 ]] && die "${ERROR}: expected single commit to edit. Defaults to HEAD~"
+
+# Default to editing the parent of the most recent commit
+# The most recent commit can be edited with `git commit --amend`
+commit=$(git rev-parse --short "${1:-HEAD~}")
+message=$(git log -1 --format='%h %s' "$commit")
+
+# RAF: this allows git-function:cm to behave properly
+if ! lgrp -s ${commit} >/dev/null; then
+    echo -e "\n${ERROR}: commit '${commit}' is out of this branch line, abort\n" >&2
+    unset -f exit
+    exit 1
+fi
+# RAF END
+
+if [[ $OSTYPE =~ ^darwin ]]; then
+  sed_inplace=(sed -Ei "")
+else
+  sed_inplace=(sed -Ei)
+fi
+
+export GIT_SEQUENCE_EDITOR="${sed_inplace[*]} "' "s/^pick ('"$commit"' .*)/edit \\1/"'
+git rebase --quiet --interactive --autostash --autosquash "$commit"~
+git reset --quiet @~ "$(git rev-parse --show-toplevel)"  # Reset the cache of the toplevel directory to the previous commit
+git commit --quiet --amend --no-edit --allow-empty  #  Commit an empty commit so that that cache diffs are un-reversed
+
+echo -e "\n${NOTICE}: ${commit_edit_note}\n" # RAF
+echo -e "${bipurple}Editing commit${coloff}: ${message}\n" >&2
+set +e

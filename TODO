@@ -1,0 +1,9 @@
+git config --global alias.amend-to '!f() { SHA=`git rev-parse "$1"`; git stash -k && git commit --fixup "$SHA" && GIT_SEQUENCE_EDITOR=true git rebase --interactive --autosquash "$SHA^" && git stash pop; }; f'
+
+The name amend-to seems appropriate IMHO. Compare the flow with --amend:
+
+git add . && git commit --amend --no-edit
+# vs
+git add . && git amend-to <REV>
+
+source: https://stackoverflow.com/questions/1186535/how-do-i-modify-a-specific-commit
