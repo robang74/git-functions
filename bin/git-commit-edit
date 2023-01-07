@@ -12,7 +12,7 @@ set -euo pipefail
 script_name=${0##*/}
 source $(dirname $0)/../colors.shell # RAF
 
-warn () { printf '%s: %s\n' "$script_name" "$*" >&2; }
+warn () { echo -e "$script_name: $*" >&2; }
 die () { warn "$@"; exit 1; }
 
 [[ $# -ge 2 ]] && die "${ERROR}: expected single commit to edit. Defaults to HEAD~"
