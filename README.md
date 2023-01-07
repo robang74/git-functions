@@ -62,7 +62,7 @@ Example of `redef_git` and `reset_git` usage:
 
 #### Pure git functions which alter the local repository, only
 
-* `irebase`: rebase starting from the hash passed
+* `irebase`: rebase starting from the hash passed or ~n, -n for `HEAD~n`
 * `pa`: format patch apply and create signed commit
 * `ce`: commit edit within a restricted shell
 * `am`, amend`: shorts for `git amend`

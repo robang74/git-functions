@@ -172,7 +172,12 @@ function gfhelp() {
 export -f gfhelp
 
 function irebase() {
-    if [ -z "${1:-}" ]; then irebase $(hcur); return $?; fi
+    if [ -z "${1:-}" ]; then irebase HEAD; return $?; fi
+    if [ "x${1:0:1}" == "x~" -o "x${1:0:1}" == "x-" ]; then
+        test -z "${1:1}" || \
+            irebase HEAD~${1:1}
+        return $?
+    fi
     local hash=$(_git rev-list --parents -n2 "$1" | tail -n1 | head -c40)
     test -n "$hash" && _git rebase -i $hash
 }
