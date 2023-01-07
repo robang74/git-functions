@@ -150,12 +150,18 @@ function ugit() {
 export -f ugit
 
 function gfreload() {
-    source "${gfreload_pathname}"
+    test -z "${1:-}" && p="${gfreload_pathname}" || p="$1"
+    if source "$p"; then
+        gfreload_pathname="$p"
+        gfrefdir_path=$(dirname "$p")
+        echo -e "\n${DONE}: install path ${gfrefdir_path}\n"
+    fi
 }
 export -f gfreload
 
 function gfupdate() {
-    eval ${gfreload_pathname/git.functions/install.sh update} && gfreload
+    eval ${gfreload_pathname/git.functions/install.sh update} \
+       && gfreload
 }
 export -f gfupdate
 
@@ -168,6 +174,7 @@ export -f gflist
 
 function gfhelp() {
     echo -e "\n${USAGE}: $(gflist | tr '\n' ' ')\n"
+    echo -e "${NOTICE}: install path ${gfrefdir_path}\n"
 }
 export -f gfhelp
 
@@ -562,3 +569,5 @@ function tagl() {
 export -f tagl
 
 test ${gflistshow:-0} -ne 0 && set +x #########################################
+
+true
