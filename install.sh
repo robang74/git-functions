@@ -9,9 +9,9 @@
 #
 
 DESTDIR=".git-functions"
-SRCNAME="~/${DESTDIR}/git.functions"
-SRCCMD="test -r ${SRCNAME} && source ${SRCNAME}"
+SRCNAME=$(readlink -f ~/"${DESTDIR}/git.functions")
 GITREPO="https://github.com/robang74/git-functions.git"
+SRCCMD="test -r ${SRCNAME} && source ${SRCNAME}"
 THISCMD="$(basename $0)"
 
 set -e
@@ -28,8 +28,12 @@ if [ "$1" == "uninstall" ]; then
     echo "$bashrc" >.bashrc
     exit $?
 elif [ "$1" == "update" -a -d "${DESTDIR}" ]; then
-    cd "${DESTDIR}" && bsw ${BRANCH} && rpull
-    exit $?
+    ret=0
+    op="${ERROR}"
+    cd "${DESTDIR}" && bsw ${BRANCH} && rpull && op="${DONE}" || ret=1
+    echo -e "\n$op: install path ${PWD}\n"
+    eval ${SRCCMD} || ret=1
+    exit $ret
 elif [ "$1" == "update" -a ! -d "${DESTDIR}" ]; then
     echo "\n${NOTICE}: folder ${DESTDIR} is not present, installing...\n"
 elif [ "$1" == "reinstall" -a -d "${DESTDIR}" ]; then
@@ -73,6 +77,7 @@ else
 fi
 
 echo "\n${DONE}: git-functions installed in ${HOME}/${DESTDIR}\n"
-echo "The git-function will be loaded into the next ~/.bashrc enviroment"
-echo "For this bash load them with source ~/${DESTDIR}/git.functions"
+echo "The git-function will be loaded by defaul vi ~/.bashrc enviroment"
+eval "${SRCCMD}"
+echo "For this bash, functions loaded via source ~/${DESTDIR}/git.functions"
 echo
