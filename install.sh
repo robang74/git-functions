@@ -42,7 +42,7 @@ elif [ "$1" == "update" -a ! -d "${DESTDIR}" ]; then
     echo "\n${NOTICE}: folder ${DESTDIR} is not present, installing...\n"
 elif [ "$1" == "reinstall" -a -d "${DESTDIR}" ]; then
     cd "${TOPDIR}"
-    ${THISCMD} uninstall
+    ./${THISCMD} uninstall
     cd
 elif [ "$1" == "reinstall" -a ! -d "${DESTDIR}" ]; then
     echo "\n${NOTICE}: folder ${DESTDIR} is not present, installing...\n"
