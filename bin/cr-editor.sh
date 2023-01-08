@@ -15,11 +15,11 @@ if test -n "${irebase_sha_to_reword:-}"; then
     tmpf=$(mktemp -p "$TMPDIR")
     if [ "${1##*/}" == "git-rebase-todo" ]; then
         echo "\ncr sedding in progress... " >&2 
-        cat "$1" >${tmpf}
+        cp -af "$1" ${tmpf}
         sed -i "s,pick \(${irebase_sha_to_reword} .*\),r \\1," ${tmpf}
     elif [ "${1##*/}" == "COMMIT_EDITMSG" ]; then
         echo "\ncr editing in progress... " >&2 
-        cat "$1" >${tmpf}
+        cp -af "$1" ${tmpf}
         vi ${tmpf}
     else
         rm -f ${tmpf}
@@ -27,7 +27,7 @@ if test -n "${irebase_sha_to_reword:-}"; then
     fi
     diff "$1" ${tmpf} | pipenull
     if [ ${PIPESTATUS} -ne 0 ]; then
-        cat ${tmpf} >"$1"
+        cp -af ${tmpf} "$1"
         rm -f ${tmpf}
         exit 0
     fi
