@@ -27,7 +27,7 @@ The following list is divided for class of usage and roles
 * `gfhelp`: like `gflist` but in a fancier way
 * `gfupdate`: update the installation and reload the functions
 * `gitshell`: spawns a restricted shell with the git-funtions enviroment
-* `pipenull`: `cmd | pipenull` instead of `cmd >/dev/null`, returns cmd's errcode
+* `pipenull`: `cmd | pipenull` instead of `cmd >/dev/null`, use ${PIPESTATUS[@]}
 * `redef_git`: redefine the function `_git()` which is used internally
 * `reset_git`: reset `_git()` to the default command `git`
 * `egnc`: function alias for `egrep --color=never`
@@ -63,9 +63,10 @@ Example of `redef_git` and `reset_git` usage:
 
 #### Pure git functions which alter the local repository, only
 
-* `irebase`: rebase starting from the hash passed or ~n, -n for `HEAD~n`
+* `irb`, `irebase`: rebase starting from the hash passed or ~n, -n for `HEAD~n`
 * `pa`: format patch apply and create signed commit
 * `ce`: commit edit within a restricted shell
+* `cr`: commit reword, a single SHA as arg
 * `am`, amend`: shorts for `git amend`
 * `add`: short for `git add`
 * `cm`: short for `git commit`

@@ -45,7 +45,6 @@ test ${gflistshow:-0} -ne 0 && set -x #########################################
 
 function pipenull() {
     tail -n0 -
-    return ${PIPESTATUS}
 }
 export -f pipenull
 
@@ -183,7 +182,8 @@ function gfhelp() {
 }
 export -f gfhelp
 
-function irebase() {
+function irb() {
+    if opst; then st; return 1; fi
     if [ -z "${1:-}" ]; then irebase HEAD; return $?; fi
     if [ "x${1:0:1}" == "x~" -o "x${1:0:1}" == "x-" ]; then
         test -z "${1:1}" || \
@@ -192,6 +192,11 @@ function irebase() {
     fi
     local hash=$(_git rev-list --parents -n2 "$1" | tail -n1 | head -c40)
     test -n "$hash" && _git rebase -i $hash
+}
+export -f irb
+
+function irebase() {
+    irb "$@"
 }
 export -f irebase
 
@@ -361,9 +366,9 @@ function pcache() {
 export -f pcache
 
 function opst() {
-    st -v | grep -v "git commit --amend" |\
+    st | grep -v "git commit --amend" |\
         sed -ne 's,.*[userun]\{3\} .git \(.*\) --.*,\1,p' |\
-            sort | head -n1
+            sort | head -n1 | egnc .
 }
 export -f opst
 
