@@ -17,6 +17,9 @@ if ! echo "${PATH}" | egrep -q $gfrefdir_path; then
     export PATH="$gfrefdir_path/bin:${PATH}"
 fi
 
+export BRNC_SWTC_PREV_BRNC=${BRNC_SWTC_PREV_BRNC:-}
+export BRNC_SWTC_PREV_HASH=${BRNC_SWTC_PREV_HASH:-}
+
 function _op_action() {
     local op ret
     case "${1:-}" in
@@ -285,7 +288,7 @@ function fpush() {
 export -f fpush
 
 function co() {
-	_git checkout "$@"
+    _git checkout "$@"
 }
 export -f co
 
@@ -425,17 +428,35 @@ function lsbr() {
 }
 export -f lsbr
 
+export BRNC_SWTC_CURR_BRNC="${BRNC_SWTC_CURR_BRNC:-}"
+
 function bsw() {
     test -z "${1:-}" && return 1
-    local nb="" bc="$(bcur)"
+    local cb="$(bcur)" ch=$(hcur) nb=""
+          cb=${cb:-$BRNC_SWTC_CURR_BRNC}
     if [ "x$1" == "x-" -a -n "${2:-}" ]; then
         return 1
-    elif [ "x$1" == "x-" ]; then
-        nb="${BRANCH_SWITCH_PREV:-$bc}"
-        shift
+    else
+        if [ "x$1" == "x-" ]; then
+            nb="${BRNC_SWTC_PREV_BRNC:-$cb}"
+            set --
+        fi
     fi
-    _git switch "$@" ${nb} && \
-        export BRANCH_SWITCH_PREV="$bc"
+    declare -i ret=0
+    if _git switch "$@" ${nb}; then
+        BRNC_SWTC_PREV_BRNC="${cb}"
+        if [ -n "${nb}" -a "$(hcur)" != "${BRNC_SWTC_PREV_HASH}" ]; then
+            co ${BRNC_SWTC_PREV_HASH} 2>&1 | head -n1
+            ret=${PIPESTATUS}
+        else
+            nb=$(bcur)
+        fi
+        BRNC_SWTC_PREV_HASH="${ch}"
+        BRNC_SWTC_CURR_BRNC="${nb}"
+    else
+        ret=1
+    fi
+    return $ret
 }
 export -f bsw
 
