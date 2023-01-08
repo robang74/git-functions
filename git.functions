@@ -543,16 +543,16 @@ function for-all-other-branches() {
 	for branch in ${BRANCHES}; do
         if ! bsw $branch; then
             echo
-            echo -e "${byellow}branch: $branch, SKIP${coloff}"
+            echo -e "${bylw}branch: $branch, SKIP${crst}"
             echo "press ENTER to continue..."
             read
         elif eval "$rpull" && eval "$@""${nofail}"; then
             echo
-            echo -e "${bgreen}branch: $branch, OK${coloff}"
+            echo -e "${blgrn}branch: $branch, OK${crst}"
             echo
         else
             echo
-            echo -e "${bired}branch: $branch, KO${coloff}"
+            echo -e "${blred}branch: $branch, KO${crst}"
             echo "fix the problem and then enter 'exit'"
             echo "or enter 'exit 1' to abort completely"
             echo

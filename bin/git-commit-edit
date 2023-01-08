@@ -42,5 +42,5 @@ git reset --quiet @~ "$(git rev-parse --show-toplevel)"  # Reset the cache of th
 git commit --quiet --amend --no-edit --allow-empty  #  Commit an empty commit so that that cache diffs are un-reversed
 
 echo -e "\n${NOTICE}: ${commit_edit_note}\n" # RAF
-echo -e "${bipurple}Editing commit${coloff}: ${message}\n" >&2
+echo -e "${blprl}Editing commit${crst}: ${message}\n" >&2
 set +e

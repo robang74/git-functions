@@ -71,7 +71,7 @@ if which cc >/dev/null; then
     cc isatty_override.o -shared -o isatty_override.so
     strip isatty_override.so 2>/dev/null || :
     echo
-    echo -ne "${bicyan}Compiled${coloff}: "
+    echo -ne "${blcyn}Compiled${crst}: "
     du -b isatty_override.so
     rm -f isatty_override.o
 elif [ "$(uname -m)" != "x86_64" ]; then
