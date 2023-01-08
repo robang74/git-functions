@@ -80,7 +80,7 @@ function egnc() {
 export -f egnc
 
 function gitshell() {
-    local gitrc=$(mktemp -p "$TMPDIR" gitrc.XXXX)
+    local gitrc=$(mktemp -p "${TMPDIR:-}")
     declare -i ret=0
     if true; then
         cat "${gfrefdir_path}/colors.shell"
