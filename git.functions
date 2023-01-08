@@ -200,6 +200,21 @@ function irebase() {
 }
 export -f irebase
 
+function cr() {
+    declare -i ret=0
+    test -z "${1:-}" && return 1
+    lgrp "$1" || return 1
+    export irebase_sha_to_reword="$1"
+    edcr="${gfrefdir_path}/bin/cr-editor.sh"
+    GIT_EDITOR="${edcr}" GIT_SEQUENCE_EDITOR="${edcr}" irebase "$1" || ret=1
+    unset irebase_sha_to_reword
+    if [ $ret -ne 0 ]; then
+        abrt; return 1
+    fi
+    return 0
+}
+export -f cr
+
 function repshrink() {
 	_git reflog | egrep .
 	_git gc --auto

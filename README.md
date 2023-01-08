@@ -220,6 +220,7 @@ header, here summarised:
 * `git-commit-edit`: public domain
 * `git-isar-send-patch`: GPLv3
 * `git.functions`: GPLv3
+* `cr-editor.sh`: GPLv3
 * `install.sh`: GPLv3
 
 
