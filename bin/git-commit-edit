@@ -19,10 +19,12 @@ die () { warn "$@"; exit 1; }
 
 # Default to editing the parent of the most recent commit
 # The most recent commit can be edited with `git commit --amend`
-commit=$(git rev-parse --short "${1:-HEAD~}")
+#commit=$(git rev-parse --short "${1:-HEAD~}")       # RAF
+commit=$(git rev-parse --short "${1:-HEAD}")         # RAF
 message=$(git log -1 --format='%h %s' "$commit")
 
 # RAF: this allows git-function:cm to behave properly
+test -n "${commit}" -a -n "${message}"
 if ! lgrp -s ${commit} >/dev/null; then
     echo -e "\n${ERROR}: commit '${commit}' is out of this branch line, abort\n" >&2
     unset -f exit
@@ -37,7 +39,8 @@ else
 fi
 
 export GIT_SEQUENCE_EDITOR="${sed_inplace[*]} "' "s/^pick ('"$commit"' .*)/edit \\1/"'
-git rebase --quiet --interactive --autostash --autosquash "$commit"~
+#git rebase --quiet --interactive --autostash --autosquash "$commit"~   # RAF
+git rebase --quiet --interactive --autostash "$commit"~                 # RAF
 git reset --quiet @~ "$(git rev-parse --show-toplevel)"  # Reset the cache of the toplevel directory to the previous commit
 git commit --quiet --amend --no-edit --allow-empty  #  Commit an empty commit so that that cache diffs are un-reversed
 
