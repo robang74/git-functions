@@ -8,24 +8,26 @@
 # SPDX-License-Identifier: GPLv3
 #
 
+source "$(dirname $0)/colors.shell"
+
+trap 'echo -e "\n${ERROR} in line ${LINENO} occured, try again with set -x.\n"' ERR
+set -eE
+
 DESTDIR=".git-functions"
-SRCNAME=$(readlink -f ~/"${DESTDIR}/git.functions")
+SRCNAME=$(readlink -f "$HOME/${DESTDIR}/git.functions")
 GITREPO="https://github.com/robang74/git-functions.git"
 SRCCMD="test -r ${SRCNAME} && source ${SRCNAME}"
 THISCMD="$(basename $0)"
-
-set -e
-TOPDIR=${PWD}
-source "$(dirname $0)/colors.shell"
-trap 'echo -e "\n${ERROR} in line ${LINENO} occured, try again with set -x.\n"' ERR
 BRANCH="$(bcur)"
+TOPDIR=${PWD}
 cd
 
 if [ "$1" == "uninstall" ]; then
     test ! -d "${DESTDIR}" && exit 0
     rm -rf "${DESTDIR}" && echo "\n${DONE}: uninstall\n"
-    bashrc=$(grep -v -- "${SRCCMD}" .bashrc)
-    echo "$bashrc" >.bashrc
+    bashrc=$(grep -ve "source.*git.functions" .bashrc ||:)
+    test -n "${bashrc}"
+    echo "${bashrc}" >.bashrc
     exit $?
 elif [ "$1" == "update" -a -d "${DESTDIR}" ]; then
     ret=0
@@ -37,11 +39,9 @@ elif [ "$1" == "update" -a -d "${DESTDIR}" ]; then
 elif [ "$1" == "update" -a ! -d "${DESTDIR}" ]; then
     echo "\n${NOTICE}: folder ${DESTDIR} is not present, installing...\n"
 elif [ "$1" == "reinstall" -a -d "${DESTDIR}" ]; then
-    set -e
     cd "${TOPDIR}"
-    eval "./${THISCMD}" uninstall
+    bash ${THISCMD} uninstall
     cd
-    set +e
 elif [ "$1" == "reinstall" -a ! -d "${DESTDIR}" ]; then
     echo "\n${NOTICE}: folder ${DESTDIR} is not present, installing...\n"
 elif [ "$1" == "help" -o "x$1" == "x-h" ]; then
