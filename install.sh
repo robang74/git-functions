@@ -8,18 +8,20 @@
 # SPDX-License-Identifier: GPLv3
 #
 
-source "$(dirname $0)/colors.shell"
+TOPDIR=$(dirname $(readlink -f $0))
+source "${TOPDIR}/colors.shell"
 
-trap 'echo -e "\n${ERROR} in line ${LINENO} occured, try again with set -x.\n"' ERR
+THISCMD="$(basename $0)"
+trap 'echo -e "\n'${ERROR}' in '${THISCMD}' at line ${LINENO} occured, try again with set -x\n"' ERR
 set -eE
 
 DESTDIR=".git-functions"
 SRCNAME=$(readlink -f "$HOME/${DESTDIR}/git.functions")
 GITREPO="https://github.com/robang74/git-functions.git"
 SRCCMD="test -r ${SRCNAME} && source ${SRCNAME}"
-THISCMD="$(basename $0)"
+
+cd "${TOPDIR}"
 BRANCH="$(bcur)"
-TOPDIR=${PWD}
 cd
 
 if [ "$1" == "uninstall" ]; then
@@ -40,13 +42,16 @@ elif [ "$1" == "update" -a ! -d "${DESTDIR}" ]; then
     echo "\n${NOTICE}: folder ${DESTDIR} is not present, installing...\n"
 elif [ "$1" == "reinstall" -a -d "${DESTDIR}" ]; then
     cd "${TOPDIR}"
-    bash ${THISCMD} uninstall
+    ${THISCMD} uninstall
     cd
 elif [ "$1" == "reinstall" -a ! -d "${DESTDIR}" ]; then
     echo "\n${NOTICE}: folder ${DESTDIR} is not present, installing...\n"
 elif [ "$1" == "help" -o "x$1" == "x-h" ]; then
-    echo "\n${USAGE}: ${THISCMD} [ uninstall | update | reinstall | help ]\n"
+    echo -e "\n${USAGE}: ${THISCMD} [ uninstall | update | reinstall | help ]\n"
     exit 0
+elif [ -d "${DESTDIR}" ]; then
+    echo -e "\n${ERROR}: folder ${TOPDIR}/${DESTDIR} exists, try with update or reinstall\n"
+    exit 1
 elif [ -n "$1" ]; then
     echo "\n${ERROR}: unrecognised '$1' option, try with help (-h)\n"
     trap - ERR

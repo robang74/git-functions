@@ -164,8 +164,7 @@ function gfreload() {
 export -f gfreload
 
 function gfupdate() {
-    eval ${gfreload_pathname/git.functions/install.sh update} \
-       && gfreload
+    ${gfreload_pathname/git.functions/install.sh} update
 }
 export -f gfupdate
 
