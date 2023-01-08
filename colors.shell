@@ -8,11 +8,6 @@
 # SPDX-License-Identifier: MIT
 #
 
-function echo() {
-    command echo -e "$@"
-}
-export -f echo
-
 ###############################################################################
 
 #
@@ -32,59 +27,90 @@ export -f echo
 #
 # echo -ne "${dgrnowht} Ciao in dark green over white. ${crst}\n"
 #
+
+###############################################################################
+
+# set -Eeuo pipefail # RAF: this is only for test with every restriction possible
+                     #      bash -c "source colors.shell && source colors.shell"
+
+trap 'echo -e "\nERROR: in COLORS at line ${LINENO} occured, try again with set -x\n"' ERR
+
+# The echo needs -e to print colored output
+
+function echo() {
+    command echo -e "$@"
+}
+export -f echo
+
+# This create an alterative to /dev/null in a restricted shell
+
+null=$(mktemp -p "${TMPDIR:-}")
+
+# The export of the basic variables statically defined
+
+optx="x" # uncomment to export color codes
+
+# To bound variable because set -u requires it
+
+optx=${optx:-}
+test "${optx}" != "x" && optx=""
+
+###############################################################################
+
 if true; then
 
 # Displaying Modes
 
-NRM="\033[0"            # normal
-BLD="\033[1"            # bold
-DRK="\033[2"            # dark
-ITL="\033[3"            # italic
-UDL="\033[4"            # underline
-FLS="\033[5"            # blinking -> flashing
-RVS="\033[7"            # reverse
-HDN="\033[8"            # hidden
-STR="\033[9"            # strikethrough
+declare -r${optx} NRM="\033[0"     || :   # normal
+declare -r${optx} BLD="\033[1"     || :   # bold
+declare -r${optx} DRK="\033[2"     || :   # dark
+declare -r${optx} ITL="\033[3"     || :   # italic
+declare -r${optx} UDL="\033[4"     || :   # underline
+declare -r${optx} FLS="\033[5"     || :   # blinking -> flashing
+declare -r${optx} RVS="\033[7"     || :   # reverse
+declare -r${optx} HDN="\033[8"     || :   # hidden
+declare -r${optx} STR="\033[9"     || :   # strikethrough
 
 # Regular Colors
 
-BLK=";30m"              # black
-RED=";31m"              # red
-GRN=";32m"              # green
-YLW=";33m"              # yellow
-BLU=";34m"              # blue
-PRL=";35m"              # purple
-CYN=";36m"              # cyan
-WHT=";37m"              # white
+declare -r${optx} BLK=";30m"       || :   # black
+declare -r${optx} RED=";31m"       || :   # red
+declare -r${optx} GRN=";32m"       || :   # green
+declare -r${optx} YLW=";33m"       || :   # yellow
+declare -r${optx} BLU=";34m"       || :   # blue
+declare -r${optx} PRL=";35m"       || :   # purple
+declare -r${optx} CYN=";36m"       || :   # cyan
+declare -r${optx} WHT=";37m"       || :   # white
 
 # Backgound Colors
 
-OBLK=";40"              # black
-ORED=";41"              # red
-OGRN=";42"              # green
-OYLW=";43"              # yellow
-OBLU=";44"              # blue
-OPRL=";45"              # purple
-OCYN=";46"              # cyan
-OWHT=";47"              # white
+declare -r${optx} OBLK=";40"       || :   # black
+declare -r${optx} ORED=";41"       || :   # red
+declare -r${optx} OGRN=";42"       || :   # green
+declare -r${optx} OYLW=";43"       || :   # yellow
+declare -r${optx} OBLU=";44"       || :   # blue
+declare -r${optx} OPRL=";45"       || :   # purple
+declare -r${optx} OCYN=";46"       || :   # cyan
+declare -r${optx} OWHT=";47"       || :   # white
 
 # High Intensity Colors
 
-LBLK=";90m"             # light_black 
-LRED=";91m"             # light_red
-LGRN=";92m"             # light_green
-LYLW=";93m"             # light_yellow
-LBLU=";94m"             # light_blue
-LPRL=";95m"             # light_purple
-LCYN=";96m"             # light_cyan
-LWHT=";97m"             # ligth_white
+declare -r${optx} LBLK=";90m"      || :   # light_black
+declare -r${optx} LRED=";91m"      || :   # light_red
+declare -r${optx} LGRN=";92m"      || :   # light_green
+declare -r${optx} LYLW=";93m"      || :   # light_yellow
+declare -r${optx} LBLU=";94m"      || :   # light_blue
+declare -r${optx} LPRL=";95m"      || :   # light_purple
+declare -r${optx} LCYN=";96m"      || :   # light_cyan
+declare -r${optx} LWHT=";97m"      || :   # ligth_white
 
 # Color Reset
 
-CRST="\033[0;0m"		# reset
-crst="\033[0;0m"		# reset but in lower case
+declare -r${optx} CRST="\033[0;0m" || :   # reset
+declare -r${optx} crst="\033[0;0m" || :   # reset but in lower case
 
-fi 2>&1 | grep -v readonly
+fi 2>$null
+
 ###############################################################################
 
 # List of Colors and Displaying Modes
@@ -92,20 +118,15 @@ fi 2>&1 | grep -v readonly
 COLORS="BLK RED GRN YLW BLU PRL CYN WHT"
 DMODES="NRM BLD DRK ITL UDL FLS RVS STR"
 
-# The export of the basic variables statically defined
-# export="x" # uncomment to export color codes
+# This declare the variable as read-onnly and export it with optx = x
 
-# To bound variable because set -u requires it
-export=${export:-}
-test "${export}" != "x" && export=""
-
-if true; then
-    declare -r${export} ${COLORS} ${DMODES} CRST crst
+if false; then
+    declare -r${optx} ${COLORS} ${DMODES} CRST crst || :
     for j in ${COLORS}; do
-        declare -r${export} O$j L$j
+        declare -r${optx} O$j L$j || :
     done
     unset j
-fi 2>&1 | grep -v readonly
+fi 2>$null
 
 # Auto-generating function for colors codes
 
@@ -118,14 +139,14 @@ function colors_codes_generation() {
                     p="${i:0:1}$l"
                     k="O$b"
                     k=${k%O}
-                    echo -n "declare -r${export} $p$j$k='"
+                    echo -n "declare -r${optx} $p$j$k='"
                     g=${k:-''}
                     g=${g/O/\$O}
                     eval "printf '%s%s%s' \$$i $g \$$l$j"
                     g="$k + "
                     s=${b:-\\t}
                     s=${s//[A-Z]/}
-                    echo "'  $s\t# $i + ${g# + }$l$j"
+                    echo "' || :  $s\t# $i + ${g# + }$l$j"
                  done
              done
         done
@@ -134,8 +155,18 @@ function colors_codes_generation() {
 
 # Auto-generation of colors codes
 
-eval "$(colors_codes_generation)" 2>&1 | grep -v readonly
-eval "$(colors_codes_generation | tr '[A-Z]' '[a-z]')" 2>&1 | grep -v readonly
+if true; then
+    eval "$(colors_codes_generation)"
+    eval "$(colors_codes_generation | tr '[A-Z]' '[a-z]')"
+else
+    tmp=$(mktemp -p "${TMPDIR:-}")
+    colors_codes_generation >$tmp
+    colors_codes_generation | tr '[A-Z]' '[a-z]' >>$tmp
+    source $tmp 2>$null
+    rm -f $tmp
+fi 2>$null
+
+rm -f $null
 
 ###############################################################################
 
@@ -151,4 +182,7 @@ NOTICE="${BLCYN}NOTICE${CRST}"
 
 ###############################################################################
 
+trap - EXIT
+#echo $DONE
+trap - ERR
 true
