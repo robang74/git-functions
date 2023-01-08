@@ -356,7 +356,8 @@ export -f pcache
 
 function opst() {
     st -v | grep -v "git commit --amend" |\
-        sed -ne 's,.*[userun]\{3\} .git \(.*\) --.*,\1,p'
+        sed -ne 's,.*[userun]\{3\} .git \(.*\) --.*,\1,p' |\
+            sort | head -n1
 }
 export -f opst
 
