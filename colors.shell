@@ -90,6 +90,20 @@ crst="\033[0;0m"		# reset but in lower case
 COLORS="BLK RED GRN YLW BLU PRL CYN WHT"
 DMODES="NRM BLD DRK ITL UDL FLS RVS STR"
 
+# The export of the basic variables statically defined
+# export="export" # uncomment to export or set by user
+
+# To bound variable because set -u requires it
+export=${export:-}
+
+if [ "${export}" == "export" ]; then
+    export ${COLORS} ${DMODES} CRST crst
+    for j in ${COLORS}; do
+        export O$j L$j
+    done
+    unset j
+fi
+
 # Auto-generating function for colors codes
 
 function colors_codes_generation() {
@@ -101,14 +115,14 @@ function colors_codes_generation() {
                     p="${i:0:1}$l"
                     k="O$b"
                     k=${k%O}
-                    echo -n "$p$j$k='"
+                    echo -n "${export} $p$j$k='"
                     g=${k:-''}
                     g=${g/O/\$O}
                     eval "printf '%s%s%s' \$$i $g \$$l$j"
                     g="$k + "
                     s=${b:-\\t}
                     s=${s//[A-Z]/}
-                    echo "'$s\t# $i + ${g# + }$l$j"
+                    echo "'  $s\t# $i + ${g# + }$l$j"
                  done
              done
         done
@@ -118,7 +132,7 @@ function colors_codes_generation() {
 # Auto-generation of colors codes
 
 eval "$(colors_codes_generation)"
-eval "$(colors_codes_generation | tr [A-Z] [a-z])"
+eval "$(colors_codes_generation | tr '[A-Z]' '[a-z]')"
 
 ###############################################################################
 
