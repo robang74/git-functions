@@ -34,16 +34,17 @@ function _op_action() {
 }
 export -f _op_action
 
-function pipenull() {
-    tail -n0 -
-}
-export -f pipenull
-
 test ${gflistshow:-0} -ne 0 && set -x #########################################
 
 #if [ -r "${gfrefdir_path}/isatty_override.so" ]; then
 #   this could be useful for the future
 #fi
+
+function pipenull() {
+    tail -n0 -
+    return ${PIPESTATUS}
+}
+export -f pipenull
 
 function redef_git() {
     unset -f _git

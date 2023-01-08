@@ -27,6 +27,7 @@ The following list is divided for class of usage and roles
 * `gfhelp`: like `gflist` but in a fancier way
 * `gfupdate`: update the installation and reload the functions
 * `gitshell`: spawns a restricted shell with the git-funtions enviroment
+* `pipenull`: `cmd | pipenull` instead of `cmd >/dev/null`, returns cmd's errcode
 * `redef_git`: redefine the function `_git()` which is used internally
 * `reset_git`: reset `_git()` to the default command `git`
 * `egnc`: function alias for `egrep --color=never`
