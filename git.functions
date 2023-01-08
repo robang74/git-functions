@@ -85,11 +85,13 @@ function gitshell() {
     if true; then
         cat "${gfrefdir_path}/colors.shell"
         egnc -v "source.*colors.shell"  "${gfreload_pathname}"
-        echo 'export PS1="${icyan}${gitshell_prefix}${coloff}:${igreen}git-\$(opst||printf 'shell')${coloff}:${iyellow}\$(bcur||hcur)${coloff}> "'
+        echo 'export PS1="\[${nlcyn}\]${gitshell_prefix}\[${crst}\]:\[${nlgrn}\]git-\$(opst||printf 'shell')\[${crst}\]:\[${nlylw}\]\$(bcur||hcur)\[${crst}\]> "'
+        echo "export term=XTERM"
         echo "$@"
-    fi > "$gitrc"
+    fi > "$gitrc"; chmod a-w "$gitrc"
     bash --rcfile "$gitrc" -ri 3>/dev/null || ret=$?
-    rm -f "$gitrc"; unset gitshell_prefix
+    unset gitshell_prefix
+    rm -f "$gitrc"
     return $ret
 }
 
