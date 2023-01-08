@@ -209,6 +209,11 @@ function lg() {
 }
 export -f lg
 
+function lgnc() {
+	_git log --abbrev-commit --format=format:'* %h - %s %d' "$@"
+}
+export -f lgnc
+
 function lg1() {
 	lg -n1 "$@"
 }
@@ -576,13 +581,14 @@ function lgrp() {
     local strn="$1"; shift
 
     redef_git -u
-    declare -i ret=0
     if [ $shaonly -ne 0 ]; then
-        lg "$@" | egnc "$strn" | awk '{print $2}' | egnc . || ret=1
+        lgnc "$@" | egnc "$strn" | awk '{print $2}'
     else
-        lg "$@" | egrep "$strn" || ret=1
+        lg "$@" | egrep "$strn"
     fi
+    ret=${PIPESTATUS[1]}
     reset_git
+
     return $ret
 }
 export -f lgrp
