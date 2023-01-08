@@ -32,6 +32,7 @@ The following list is divided for class of usage and roles
 * `reset_git`: reset `_git()` to the default command `git`
 * `egnc`: function alias for `egrep --color=never`
 * `less`: function alias for `command less -Fr`
+* `ps1p`: print a custom PS1 for git users
 * `ugit`: unbuffered version of `git -P`
 
 Example of `redef_git` and `reset_git` usage:

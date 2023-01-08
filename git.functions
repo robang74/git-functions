@@ -78,13 +78,19 @@ function egnc() {
 }
 export -f egnc
 
+function ps1p() {
+    echo 'export PS1="\[${nlcyn}\]${gitshell_prefix}\[${crst}\]:\[${nlgrn}\]'\
+'git-\$(opst||echo shell)\[${crst}\]:\[${nlylw}\]\$(bcur||hcur)\[${crst}\]> "'
+}
+export -f ps1p
+
 function gitshell() {
     local gitrc=$(mktemp -p "${TMPDIR:-}")
     declare -i ret=0
     if true; then
+        ps1p
         cat "${gfrefdir_path}/colors.shell"
         egnc -v "source.*colors.shell"  "${gfreload_pathname}"
-        echo 'export PS1="\[${nlcyn}\]${gitshell_prefix}\[${crst}\]:\[${nlgrn}\]git-\$(opst||printf 'shell')\[${crst}\]:\[${nlylw}\]\$(bcur||hcur)\[${crst}\]> "'
         echo "export term=XTERM"
         echo "$@"
     fi > "$gitrc"; chmod a-w "$gitrc"
@@ -126,7 +132,6 @@ function ce() {
     test $quit -ne 0 && command exit $ret
     return $ret
 }
-
 
 function pa() {
     test -z "${1:-}" && return 1
