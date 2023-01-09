@@ -646,8 +646,13 @@ function lgrp() {
 }
 export -f lgrp
 
-function tagl() {
+function lstag() {
     _git tag -l "$@"
+}
+export -f lstag
+
+function tagl() {
+    lstag
 }
 export -f tagl
 

@@ -104,7 +104,7 @@ Example of `redef_git` and `reset_git` usage:
 * `bcur`: short for `git branch --show-current`
 * `lsrmt`: shoe the list of remotes sources
 * `lsbr`: show the list of remote branches
-* `tagl`: short for `git tag -l`
+* `lstag`, `tagl`: shorts for `git tag -l`
 * `st`: short for `git status`
 
 #### Command execution on multiple branches
