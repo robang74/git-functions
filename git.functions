@@ -232,6 +232,11 @@ function repshrink() {
 }
 export -f repshrink
 
+function rmt() {
+    _git remote "$@"
+}
+export -f rmt
+
 function lg() {
 	_git log --abbrev-commit --format=format:'* %C(bold cyan)%h%C(reset) - %C(white)%s%C(reset) %C(bold green)%d%C(reset)' "$@"
 }
@@ -335,15 +340,27 @@ function sw() {
 }
 export -f sw
 
+function lsrmt() {
+    rmt -v | awk '{ print $1 }' | uniq
+}
+
 function sf() {
     _git show --raw "$@" | egrep "^:[0-9]*" | awk '{ print $6 }'
 }
 export -f sf
 
 function forig() {
-    _git fetch origin "$@"
+   local rmt=$(lsrmt | head -n1)
+   test -n "${rmt}" || return 1
+   echo "Fetching ${rmt}"
+    _git fetch ${rmt} "$@"
 }
 export -f forig
+
+function forigs() {
+    _git fetch --all "$@"
+}
+export -f forigs
 
 function pcache() {
 	local -i t=3600 runcmd=1
@@ -380,7 +397,7 @@ function pcache() {
                 && echo -e "\n${WARNING}: add .gitignore and commit the change\n"
 			_git -c credential.helper='!f() { echo "password=$(cat '$d/.gitpasswd')"; }; f' push --dry-run
 		else
-			forig
+			forig 2>&1 | pipenull
 		fi
 		echo -e "${DONE}: git password cache enable for ${t}s eq. to $[t/3600]h $[(t%3600)/60]m $[t%60]s\n"
 	fi

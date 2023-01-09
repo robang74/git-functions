@@ -61,9 +61,12 @@ Example of `redef_git` and `reset_git` usage:
 * `repshrink`: clean the reflog and shrink the repository
 * `tagadd`: add a tag to a commit (sha as arg) and push tags
 * `tagdel`: del a tag (as arg) and push the change
+* `rmt`: short for `git remote`
 
 #### Pure git functions which alter the local repository, only
 
+* `forigs`: short for `git fetch --all`
+* `forig`: short for `git fetch origin` but if not orig then the first in `lsrmt`
 * `irb`, `irebase`: rebase starting from the hash passed or ~n, -n for `HEAD~n`
 * `pa`: format patch apply and create signed commit
 * `ce`: commit edit within a restricted shell
@@ -75,7 +78,6 @@ Example of `redef_git` and `reset_git` usage:
 * `pull`: short for `git pull`
 * `rpull`: short for `git pull --rebase`
 * `rcont`: short for `git rebase --continue`
-* `forig`: short for `git fetch origin`
 * `stash`: short for `git stash`
 * `pop`: short for `git stash pop`
 * `chpk`: short for `git cherry-pick`
@@ -96,6 +98,7 @@ Example of `redef_git` and `reset_git` usage:
 * `bsw`: short for `git switch`, the branch name as arg or `-` for the last
 * `hcur`: short for `git rev-parse --short HEAD`
 * `bcur`: short for `git branch --show-current`
+* `lsrmt`: shoe the list of remotes sources
 * `lsbr`: show the list of remote branches
 * `tagl`: short for `git tag -l`
 * `st`: short for `git status`
