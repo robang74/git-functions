@@ -651,6 +651,36 @@ function tagl() {
 }
 export -f tagl
 
+function rst() {
+    local opt=""
+    if "x$1" == "x-h"; then
+        opt="--hard"
+        shift
+    fi
+    _git reset $opt "$@"
+}
+export -f rst
+
+function hrst() {
+    rst -h "$@"
+}
+export -f hrst
+
+function res() {
+    local opt=""
+    if [ "x$1" == "x-s" ]; then
+        opt="--staged"
+        shift
+    fi
+    _git restore $opt "$@"
+}
+export -f res
+
+function sres() {
+    res -h "$@"
+}
+export -f sres
+
 test ${gflistshow:-0} -ne 0 && set +x #########################################
 
 true

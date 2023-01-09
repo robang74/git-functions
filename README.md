@@ -81,6 +81,10 @@ Example of `redef_git` and `reset_git` usage:
 * `stash`: short for `git stash`
 * `pop`: short for `git stash pop`
 * `chpk`: short for `git cherry-pick`
+* `hrst()`: short for `git reset --hard`
+* `rst()`: short for `git reset`, opt -h:--hard
+* `res()`: short for `git restore`, opt -s:--staged
+* `sres()`: short for `git restore i--staged`
 
 #### Pure git functions which do NOT alter the repositories
  
