@@ -85,8 +85,9 @@ Example of `redef_git` and `reset_git` usage:
 * `chpk`: short for `git cherry-pick`
 * `hrst()`: short for `git reset --hard`
 * `rst()`: short for `git reset`, opt -h:--hard
-* `res()`: short for `git restore`, opt -s:--staged
+* `res()`: short for `git restore`, opt -S:--staged
 * `sres()`: short for `git restore i--staged`
+* `fres()`: final restore res -S and res, both
 
 #### Pure git functions which do NOT alter the repositories
  

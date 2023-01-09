@@ -686,7 +686,7 @@ export -f hrst
 
 function res() {
     local opt=""
-    if [ "x$1" == "x-s" ]; then
+    if [ "x$1" == "x-S" ]; then
         opt="--staged"
         shift
     fi
@@ -695,9 +695,15 @@ function res() {
 export -f res
 
 function sres() {
-    res -h "$@"
+    res -S "$@"
 }
 export -f sres
+
+function fres() {
+    res "$@"
+    res -S "$@"
+}
+export -f fres
 
 function search() {
     _git log --all -p --reverse --source -S "$@"
