@@ -349,18 +349,25 @@ function sf() {
 }
 export -f sf
 
-function forig() {
-   local rmt=$(lsrmt | head -n1)
-   test -n "${rmt}" || return 1
+function frmt() {
+   local rmt=""
+   if [ -z "${1:-}" ]; then
+       rmt=$(lsrmt | head -n1)
+       test -n "${rmt}" || return 1
+   elif [ "x$1" == "x-a" ]; then
+       rmt="--all"
+   elif lsrmt | egnc -qw -- "$1"; then
+        rmt="$1"; shift
+   fi
    echo "Fetching ${rmt}"
     _git fetch ${rmt} "$@"
 }
-export -f forig
+export -f frmt
 
-function forigs() {
-    _git fetch --all "$@"
+function forig() {
+    _git fetch origin "$@"
 }
-export -f forigs
+export -f forig
 
 function pcache() {
 	local -i t=3600 runcmd=1

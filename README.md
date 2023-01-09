@@ -65,8 +65,8 @@ Example of `redef_git` and `reset_git` usage:
 
 #### Pure git functions which alter the local repository, only
 
-* `forigs`: short for `git fetch --all`
-* `forig`: short for `git fetch origin` but if not orig then the first in `lsrmt`
+* `forig`: short for `git fetch origin`
+* `frmt`: short for `git fetch`, default the first in `lsrmt` or args with opt -a:--all
 * `irb`, `irebase`: rebase starting from the hash passed or ~n, -n for `HEAD~n`
 * `pa`: format patch apply and create signed commit
 * `ce`: commit edit within a restricted shell
