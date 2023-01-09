@@ -45,6 +45,14 @@ test ${gflistshow:-0} -ne 0 && set -x #########################################
 #   this could be useful for the future
 #fi
 
+function no-opts() {
+    local i
+    for i in "$@"; do
+        test "x${i:0:1}" != "x-" && echo $i
+    done
+}
+export -f no-opts
+
 function pipenull() {
     tail -n0 -
 }
@@ -333,10 +341,15 @@ export -f co
 
 function sw() {
     if [ "x${1:-}" == "x-P" ]; then
-        shift; ugit show "$@"
+        shift
+        ugit show "$@"
     else
 	    _git show "$@"
     fi
+    printf -- '_%.0s' {1..72}
+    echo -e "\nfiles in commited:"
+    sf $(no-opts "$@") | sed -e "s,\(.*\),\t\\1,"
+    echo
 }
 export -f sw
 
@@ -625,16 +638,16 @@ function for-all-other-branches() {
 export -f for-all-other-branches
 
 function lgrp() {
-    declare -i shaonly=0
+    declare -i sha=0
     if [ "${1:-}" == "-s" ]; then
-        shaonly=1
+        sha=1
         shift
     fi
     test -z "${1:-}" && return 1
     local strn="$1"; shift
 
     redef_git -u
-    if [ $shaonly -ne 0 ]; then
+    if [ $sha -ne 0 ]; then
         lgnc "$@" | egnc "$strn" | awk '{print $2}'
     else
         lg "$@" | egrep "$strn"
@@ -685,6 +698,11 @@ function sres() {
     res -h "$@"
 }
 export -f sres
+
+function search() {
+    _git log --all -p --reverse --source -S "$@"
+}
+export -f search
 
 test ${gflistshow:-0} -ne 0 && set +x #########################################
 

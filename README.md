@@ -25,6 +25,7 @@ The following list is divided for class of usage and roles
 * `gfreload`: reload the functions
 * `gflist`: list the functions available
 * `gfhelp`: like `gflist` but in a fancier way
+* `no-opts`: print every arg that does not start with minus
 * `gfupdate`: update the installation and reload the functions
 * `gitshell`: spawns a restricted shell with the git-funtions enviroment
 * `pipenull`: `cmd | pipenull` instead of `cmd >/dev/null`, use ${PIPESTATUS[@]}
@@ -67,6 +68,7 @@ Example of `redef_git` and `reset_git` usage:
 
 * `forig`: short for `git fetch origin`
 * `frmt`: short for `git fetch`, default the first in `lsrmt` or args with opt -a:--all
+* `search`: search for a string in all the commits and report the first found, arg string
 * `irb`, `irebase`: rebase starting from the hash passed or ~n, -n for `HEAD~n`
 * `pa`: format patch apply and create signed commit
 * `ce`: commit edit within a restricted shell
@@ -95,9 +97,9 @@ Example of `redef_git` and `reset_git` usage:
 * `lt`: like `lg` but with all branches shown, files as args
 * `lg1`: like `lg` but just the first line
 * `rl`, `reflog`: shorts for `git reflog`
-* `sw`: short for `git show`, opt:-P for no pager
 * `ff`: short for `git diff`, opts -s:staged -s:origin
 * `sf`: show the file involved in a commit, SHAs as args
+* `sw`: short for `git show` with `sf` after, opt:-P for no pager
 * `fpatch`: do a `git format-patch` for the commit, SHA and opts in arg
 * `bsw`: short for `git switch`, the branch name as arg or `-` for the last
 * `hcur`: short for `git rev-parse --short HEAD`
