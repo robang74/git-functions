@@ -1,4 +1,4 @@
-#!/bin/bash -u
+#!/bin/bash
 #
 # Copyright (c) Roberto A. Foglietta, 2022-2023
 #
@@ -7,6 +7,8 @@
 #
 # SPDX-License-Identifier: GPLv3
 #
+
+set -u # RAF: only for devel, comment in main
 
 SRC_FILE=$(readlink -f ${BASH_SOURCE[0]})
 export gfrefdir_path="$(dirname ${SRC_FILE})"
@@ -21,7 +23,7 @@ export BRNC_SWTC_PREV_BRNC=${BRNC_SWTC_PREV_BRNC:-}
 export BRNC_SWTC_PREV_HASH=${BRNC_SWTC_PREV_HASH:-}
 
 function _op_action() {
-    local op ret
+    local op
     case "${1:-}" in
     c) op="cherry-pick"
         ;;
@@ -79,7 +81,7 @@ function egnc() {
 export -f egnc
 
 function ps1p() {
-    echo 'export PS1="\[${nlcyn}\]${gitshell_prefix}\[${crst}\]:\[${nlgrn}\]'\
+    echo 'export PS1="\[${nlcyn}\]${gitshell_prefix:-+}\[${crst}\]:\[${nlgrn}\]'\
 'git-\$(opst||echo shell)\[${crst}\]:\[${nlylw}\]\$(bcur||hcur)\[${crst}\]> "'
 }
 export -f ps1p
@@ -87,16 +89,17 @@ export -f ps1p
 function gitshell() {
     local gitrc=$(mktemp -p "${TMPDIR:-}")
     declare -i ret=0
+    ps1p > "${gitrc}"
     if true; then
-        ps1p
         cat "${gfrefdir_path}/colors.shell"
         egnc -v "source.*colors.shell"  "${gfreload_pathname}"
         echo "export term=XTERM"
         echo "$@"
-    fi > "$gitrc"; chmod a-w "$gitrc"
-    bash --rcfile "$gitrc" -ri 3>/dev/null || ret=$?
+    fi >> "${gitrc}"
+    chmod a-w "$gitrc"
+    bash --rcfile "${gitrc}" -ri 3>/dev/null || ret=$?
     unset gitshell_prefix
-    rm -f "$gitrc"
+    rm -f "${gitrc}"
     return $ret
 }
 
@@ -255,7 +258,7 @@ function st() {
 export -f st
 
 function ff() {
-	local opt
+	local opt=""
 	if [ "${1:-}" == "-s" ]; then
 		opt="--staged"
 		shift
@@ -283,7 +286,7 @@ function add() {
 export -f add
 
 function cm() {
-	_git commit ${commit_edit_opts} --signoff "$@"
+	_git commit ${commit_edit_opts:-} --signoff "$@"
 }
 export -f cm
 
