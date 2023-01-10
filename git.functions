@@ -424,7 +424,7 @@ function pcache() {
                 && echo -e "\n${WARNING}: add .gitignore and commit the change\n"
 			command git -c credential.helper='!f() { echo "password=$(cat '$d/.gitpasswd')"; }; f' push --dry-run 2>&1 | pipenull
 		else
-			forig
+			frmt -a
 		fi
 		echo -e "${DONE}: git password cache enable for ${t}s eq. to $[t/3600]h $[(t%3600)/60]m $[t%60]s\n"
 	fi
@@ -619,7 +619,7 @@ function for-all-other-branches() {
         echo -e "${ERROR}: cannot change folder to the top level." >&2
         return 1
     fi
-    forig || return $?
+    frmt -a || return $?
 
     test $stashpop -ne 0 && stash
 
