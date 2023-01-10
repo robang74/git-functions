@@ -32,7 +32,7 @@ function _op_action() {
     r) op="rebase"
         ;;
     *) op=$(opst)
-       ;;
+        ;;
     esac
     _git ${op:-none} $2 || return $?
     test -z "$op" || echo -e "\ngit ${op} $2: ${OK}\n"
@@ -384,7 +384,7 @@ export -f forig
 
 function pcache() {
 	local -i t=3600 runcmd=1
-	local d=$(_git rev-parse --show-toplevel)
+	local d=$(command git rev-parse --show-toplevel)
 	if [ "x${1:-}" == "x--save" -a -n "${2:-}" ]; then
 		echo "$2" > $d/.gitpasswd
 		echo -e "\n${NOTICE}: password saved in $d/.gitpasswd\n"
@@ -402,8 +402,8 @@ function pcache() {
 		echo -e "\n${USAGE}: cchace [ --time 14400 | --save '.gitpasswd' | --stop | --help ]\n"
 		return
 	fi
-	_git config credential.helper store
-	_git config credential.helper "cache --timeout=$t"
+	command git config credential.helper store
+	command git config credential.helper "cache --timeout=$t"
 	if [ "$t" == "0" ]; then
 		echo -e "${DONE}: git password cache disabled"
 	else
@@ -415,9 +415,9 @@ function pcache() {
 			fi
             st "$d/.gitignore" | egrep -q .gitignore \
                 && echo -e "\n${WARNING}: add .gitignore and commit the change\n"
-			_git -c credential.helper='!f() { echo "password=$(cat '$d/.gitpasswd')"; }; f' push --dry-run
+			command git -c credential.helper='!f() { echo "password=$(cat '$d/.gitpasswd')"; }; f' push --dry-run 2>&1 | pipenull
 		else
-			forig 2>&1 | pipenull
+			forig
 		fi
 		echo -e "${DONE}: git password cache enable for ${t}s eq. to $[t/3600]h $[(t%3600)/60]m $[t%60]s\n"
 	fi
@@ -433,12 +433,12 @@ function opst() {
 export -f opst
 
 function cont() {
-    _op_action "${1:-}" --continue
+        _op_action "${1:-}" --continue
 }
 export -f cont
 
 function abrt() {
-    _op_action "${1:-}" --abort
+        _op_action "${1:-}" --abort
 }
 export -f abrt
 
@@ -671,7 +671,7 @@ export -f tagl
 
 function rst() {
     local opt=""
-    if "x$1" == "x-h"; then
+    if [ "x${1:-}" == "x-h" ]; then
         opt="--hard"
         shift
     fi
@@ -680,13 +680,13 @@ function rst() {
 export -f rst
 
 function hrst() {
-    rst -h "$@"
+       rst -h "$@"
 }
 export -f hrst
 
 function res() {
     local opt=""
-    if [ "x$1" == "x-S" ]; then
+    if [ "x${1:-}" == "x-S" ]; then
         opt="--staged"
         shift
     fi
@@ -706,7 +706,8 @@ function fres() {
 export -f fres
 
 function search() {
-    _git log --all -p --reverse --source -S "$@"
+    test -z "${1:-}" && return 1
+    _git log -p --source -s --oneline -S "$@"
 }
 export -f search
 
