@@ -29,6 +29,7 @@ The following list is divided for class of usage and roles
 * `gfupdate`: update the installation and reload the functions
 * `gitshell`: spawns a restricted shell with the git-funtions enviroment
 * `pipenull`: `cmd | pipenull` instead of `cmd >/dev/null`, use ${PIPESTATUS[@]}
+* `cdtop`: change directory to the top level of the repository and prints the full path
 * `redef_git`: redefine the function `_git()` which is used internally
 * `reset_git`: reset `_git()` to the default command `git`
 * `egnc`: function alias for `egrep --color=never`
@@ -122,6 +123,7 @@ This is a special function used to execute commands (cmds) on multiple branches:
   * -r: `git pull --rebase` before cmds
   * -s: `git stash` before go and `git stash pop` when returns
   * -n: not fail despite the last command failure
+  * -f: fetch all the remotes before starting
 
 A custom branches selction could be specified in this way:
 

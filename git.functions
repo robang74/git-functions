@@ -414,6 +414,7 @@ function pcache() {
 	if [ "$t" == "0" ]; then
 		echo -e "${DONE}: git password cache disabled"
 	else
+#		frmt -a
 		if [ -r "$d/.gitpasswd" ]; then
             if [ ! -e "$d/.gitignore" ]; then
 				echo "/.gitpasswd" >> "$d/.gitignore"
@@ -422,12 +423,12 @@ function pcache() {
 			fi
             st "$d/.gitignore" | egrep -q .gitignore \
                 && echo -e "\n${WARNING}: add .gitignore and commit the change\n"
-			command git -c credential.helper='!f() { echo "password=$(cat '$d/.gitpasswd')"; }; f' push --dry-run 2>&1 | pipenull
-		else
-			frmt -a
-		fi
+            local ch='!f() { echo "password=$(cat '$d/.gitpasswd')"; }; f'
+			command git -c credential.helper="$ch" push --dry-run 2>&1 | pipenull
+        fi
 		echo -e "${DONE}: git password cache enable for ${t}s eq. to $[t/3600]h $[(t%3600)/60]m $[t%60]s\n"
 	fi
+	command git push --dry-run 2>&1 | pipenull
 	test  "${1:-}" != "" -a "$runcmd" == "1" && eval "$@"
 }
 export -f pcache
@@ -552,6 +553,13 @@ function bcur() {
 }
 export -f bcur
 
+function cdtop() {
+    local topdir="$(readlink -f $(_git rev-parse --show-toplevel))"
+    cd "$topdir" || return $?
+    pwd
+}
+export -f cdtop
+
 function hcur() {
     _git rev-parse --short HEAD | egnc .
 }
@@ -585,7 +593,7 @@ function for-all-other-branches() {
         return 1
     fi
 
-    local rpull="true" stashpop=0 nofail=""
+    local rpull="true" stashpop=0 nofail="" fetch=""
     while true; do
         if [ "x$1" == "x-p" ]; then
             rpull="pull"
@@ -597,6 +605,8 @@ function for-all-other-branches() {
             stashpop=1
         elif [ "x$1" == "x-n" ]; then
             nofail="; true"
+        elif [ "x$1" == "x-f" ]; then
+            fetch="yes"
         else
             break
         fi
@@ -606,20 +616,19 @@ function for-all-other-branches() {
     if [ $stashpop -eq 0 ]; then
         local warn=$(st | grep -e "^Changes [not]* ")
         if [ -n "$warn" ]; then
-            echo -e "${WARNING}: changes pending, please stash (-s) or commit." >&2
+            echo -e "${WARNING}: changes pending, please stash (-s) or commit, abort." >&2
             return 1
         fi
     fi
 
-    local curdir=$(readlink -f $PWD)
-    local topdir=$(readlink -f $(_git rev-parse --show-toplevel))
-    if [ "$curdir" == "$topdir" ]; then
-        true
-    elif ! cd $topdir; then
-        echo -e "${ERROR}: cannot change folder to the top level." >&2
+    if ! cdtop; then
+        echo -e "${ERROR}: cannot change folder to the top level, abort." >&2
         return 1
     fi
-    frmt -a || return $?
+    if [ -n "$fetch" ] && ! frmt; then
+        echo -e "${ERROR}: cannot fetch all remotes, abort." >&2
+        return 1
+    fi
 
     test $stashpop -ne 0 && stash
 
