@@ -114,32 +114,39 @@ function gitshell() {
 function ce() {
     test -z "${1:-}" && return 1
     declare -i ret=0 quit=0
-    if [ "x${1:-}" == "x--abort" -a -n "${commit_edit_head}" ]; then
-        git reset --hard ${commit_edit_head} && abrt || ret=$?
+    if [ "x$1" == "x--abort" -a -n "${commit_edit_head:-}" ]; then
+        git reset --hard ${commit_edit_head:-} && abrt
+        ret=$?
+        quit=1
+    elif [ "x${1:0:6}" == "x--cont" -a -n "${commit_edit_hash:-}" ]; then
+        add $( sf ${commit_edit_hash} ) && \
+            GIT_EDITOR=touch cm -a --amend && \
+                cont
+        ret=$?
         quit=1
     else
         export gitshell_prefix="ce"
-        export commit_edit_note=\
-"enter 'ce --abort' to abort and exit + "\
-"'cm' uses '--amend' by default here, enjoy."
+        export commit_edit_note="use 'ce --abort/cont' while 'cm' has '--amend' by default here, enjoy."
         export commit_edit_opts="--amend"
         export commit_edit_brch="$(bcur)"
         export commit_edit_head="$(hcur)"
-        export commit_edit_csha="${1:-$commit_edit_head}"
+        export commit_edit_hash="${1:-$commit_edit_head}"
         function exit() {
             local op=$(opst)
             if [ -n "$op" ]; then
                 echo -e "\n${WARNING}: ${op} in progress, please complete the job or abort it."
-                echo -e "\n${NOTICE} : enter 'ce --abort' to abort and exit or 'command exit' to exit.\n"
+                echo -e "\n${NOTICE} : ${commit_edit_note}\n"
                 return 1
             fi
             command exit ${1:-}
-        }; export -pf exit
+        }
+        export -f exit
         gitshell "$(declare -pf exit); git commit-edit ""$@"' || exit $?' || ret=$?
         unset -f exit
     fi
     unset commit_edit_opts commit_edit_brch \
-          commit_edit_head commit_edit_csha
+          commit_edit_head commit_edit_hash \
+          commit_edit_note gitshell_prefix
     test $quit -ne 0 && command exit $ret
     return $ret
 }
@@ -433,12 +440,20 @@ function opst() {
 export -f opst
 
 function cont() {
+    if [ "${1:-}" == "ce" ]; then
+        ce --continue
+    else
         _op_action "${1:-}" --continue
+    fi
 }
 export -f cont
 
 function abrt() {
+    if [ "${1:-}" == "ce" ]; then
+        ce --abort
+    else
         _op_action "${1:-}" --abort
+    fi
 }
 export -f abrt
 

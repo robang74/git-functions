@@ -51,8 +51,8 @@ Example of `redef_git` and `reset_git` usage:
 
 * `opst`: shows the current operation pending: merge, rebase or cherry-pick
 * `todo`: short for `git --edit-todo`, arg: c,m,r or current operation
-* `cont`: short for `git --continue`, arg: c,m,r or current operation
-* `abrt`: short for `git --abort`, arg: c,m,r or current operation
+* `cont`: short for `git --continue`, arg: c,m,r,ce or current operation
+* `abrt`: short for `git --abort`, arg: c,m,r,ce or current operation
 * `skip`: short for `git --skip`, arg: c,m,r or current operation
 
 #### Pure git functions which alter also the remote repository
@@ -98,7 +98,7 @@ Example of `redef_git` and `reset_git` usage:
 * `lt`: like `lg` but with all branches shown, files as args
 * `lg1`: like `lg` but just the first line
 * `rl`, `reflog`: shorts for `git reflog`
-* `ff`: short for `git diff`, opts -s:staged -s:origin
+* `ff`: short for `git diff`, opts -s:staged -o:origin
 * `sf`: show the file involved in a commit, SHAs as args
 * `sw`: short for `git show` with `sf` after, opt:-P for no pager
 * `fpatch`: do a `git format-patch` for the commit, SHA and opts in arg
