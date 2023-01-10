@@ -33,7 +33,7 @@
 # set -Eeuo pipefail # RAF: this is only for test with every restriction possible
                      #      bash -c "source colors.shell && source colors.shell"
 
-trap 'echo -e "\nERROR: in COLORS at line ${LINENO} occured, try again with set -x\n"' ERR
+trap 'echo -e "\nERROR: in colors.shell at line ${LINENO} occured, try again with set -x\n"' ERR
 
 # The echo needs -e to print colored output
 
@@ -44,7 +44,7 @@ export -f echo
 
 # This create an alterative to /dev/null in a restricted shell
 
-null=$(mktemp -p "${TMPDIR:-}")
+_devnull_init
 
 # The export of the basic variables statically defined
 
@@ -109,7 +109,7 @@ declare -r${optx} LWHT=";97m"      || :   # ligth_white
 declare -r${optx} CRST="\033[0;0m" || :   # reset
 declare -r${optx} crst="\033[0;0m" || :   # reset but in lower case
 
-fi 2>$null
+fi 2>"$devnull"
 
 ###############################################################################
 
@@ -126,7 +126,7 @@ if false; then
         declare -r${optx} O$j L$j || :
     done
     unset j
-fi 2>$null
+fi 2>"$devnull"
 
 # Auto-generating function for colors codes
 
@@ -162,27 +162,27 @@ else
     tmp=$(mktemp -p "${TMPDIR:-}")
     colors_codes_generation >$tmp
     colors_codes_generation | tr '[A-Z]' '[a-z]' >>$tmp
-    source $tmp 2>$null
+    source $tmp 2>"$devnull"
     rm -f $tmp
-fi 2>$null
-
-rm -f $null
+fi 2>"$devnull"
 
 ###############################################################################
 
 # Relevant keyword coloured
 
-WARNING="${BLYLW}WARNING${CRST}"
-ERROR="${BLRED}ERROR${CRST}"
-DONE="${BLGRN}DONE${CRST}"
-OK="${BLGRN}OK${CRST}"
-KO="${BLRED}KO${CRST}"
-USAGE="${BLPRL}USAGE${CRST}"
-NOTICE="${BLCYN}NOTICE${CRST}"
+if true; then
+
+declare -r${optx} WARNING="${BLYLW}WARNING${CRST}"  || :
+declare -r${optx} ERROR="${BLRED}ERROR${CRST}"      || :
+declare -r${optx} DONE="${BLGRN}DONE${CRST}"        || :
+declare -r${optx} OK="${BLGRN}OK${CRST}"            || :
+declare -r${optx} KO="${BLRED}KO${CRST}"            || :
+declare -r${optx} USAGE="${BLPRL}USAGE${CRST}"      || :
+declare -r${optx} NOTICE="${BLCYN}NOTICE${CRST}"    || :
+
+fi 2>"$devnull"
 
 ###############################################################################
 
-trap - EXIT
-#echo $DONE
-trap - ERR
+trap - EXIT ERR
 true
