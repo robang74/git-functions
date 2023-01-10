@@ -224,9 +224,9 @@ function irebase() {
 export -f irebase
 
 function cr() {
-    declare -i ret=0
     test -z "${1:-}" && return 1
     lgrp "$1" || return 1
+    declare -i ret=0
     export irebase_sha_to_reword="$1"
     edcr="${gfrefdir_path}/bin/cr-editor.sh"
     GIT_EDITOR="${edcr}" GIT_SEQUENCE_EDITOR="${edcr}" irebase "$1" || ret=1
@@ -695,7 +695,12 @@ function rst() {
 export -f rst
 
 function hrst() {
+    test -z "${1:-}" && return 1
+    if [ "$1" == "x-r" ]; then
+       rst -h $(rcur) "$@"
+    else
        rst -h "$@"
+    fi
 }
 export -f hrst
 
@@ -714,17 +719,22 @@ function sres() {
 }
 export -f sres
 
-function fres() {
+function tres() {
     res "$@"
     res -S "$@"
 }
-export -f fres
+export -f tres
 
 function search() {
     test -z "${1:-}" && return 1
     _git log -p --source -s --oneline -S "$@"
 }
 export -f search
+
+function rcur() {
+    command git status -sb | head -n1 | cut -d '.' -f4 | awk '{ print $1 }'
+}
+export -f rcur
 
 test ${gflistshow:-0} -ne 0 && set +x #########################################
 

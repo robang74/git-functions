@@ -83,11 +83,11 @@ Example of `redef_git` and `reset_git` usage:
 * `stash`: short for `git stash`
 * `pop`: short for `git stash pop`
 * `chpk`: short for `git cherry-pick`
-* `hrst()`: short for `git reset --hard`
 * `rst()`: short for `git reset`, opt -h:--hard
 * `res()`: short for `git restore`, opt -S:--staged
+* `hrst()`: short for `git reset --hard`, opt -r:remote
 * `sres()`: short for `git restore i--staged`
-* `fres()`: final restore res -S and res, both
+* `tres()`: total restore res -S and res, both
 
 #### Pure git functions which do NOT alter the repositories
  
@@ -103,6 +103,7 @@ Example of `redef_git` and `reset_git` usage:
 * `sw`: short for `git show` with `sf` after, opt:-P for no pager
 * `fpatch`: do a `git format-patch` for the commit, SHA and opts in arg
 * `bsw`: short for `git switch`, the branch name as arg or `-` for the last
+* `rcur`: remote branch which the current s tracking
 * `hcur`: short for `git rev-parse --short HEAD`
 * `bcur`: short for `git branch --show-current`
 * `lsrmt`: shoe the list of remotes sources
