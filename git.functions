@@ -13,7 +13,6 @@ set -u # RAF: only for devel, comment in main
 SRC_FILE=$(readlink -f ${BASH_SOURCE[0]})
 export gfrefdir_path="$(dirname ${SRC_FILE})"
 export gfreload_pathname="${SRC_FILE}"
-source "${gfrefdir_path}/colors.shell"
 
 if ! echo "${PATH}" | egrep -q $gfrefdir_path; then
     export PATH="$gfrefdir_path/bin:${PATH}"
@@ -45,6 +44,8 @@ function _devnull_init() {
     devnull=${devnull:-/dev/null}
 }
 export -f _devnull_init
+
+source "${gfrefdir_path}/colors.shell"
 
 test ${gflistshow:-0} -ne 0 && set -x #########################################
 
@@ -105,11 +106,11 @@ function gitshell() {
     declare -i ret=0
     local gitrc=$(mktemp -p "${TMPDIR:-}")
     gitshell_prefix=${gitshell_prefix:-+}
-    ps1p > "${gitrc}"
     if true; then
-        cat "${gfrefdir_path}/colors.shell"
         egnc -v "source.*colors.shell"  "${gfreload_pathname}"
+        cat "${gfrefdir_path}/colors.shell"
         echo "export term=XTERM"
+        ps1p
         echo "$@"
     fi >> "${gitrc}"
     chmod a-w "$gitrc"
