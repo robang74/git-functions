@@ -512,7 +512,22 @@ function chpk() {
 export -f chpk
 
 function lsbr() {
-    _git branch -r | grep -ve "/HEAD$" -ve "/HEAD " | cut -d/ -f2-
+    local opt="-l"
+    if [ "x${1:-}" == "x-a" -o "x${1:-}" == "x-r" ]; then
+        opt="$1"; shift
+    fi
+    if test -z "${1:-}"; then
+        command git branch ${opt} --no-color | sed -e "s,..,," -e "s,remotes/,," |\
+            awk '{ print $1 }' | egnc -ve "/HEAD$" -ve "\(HEAD$" | sort
+        return 0
+    fi
+    declare -i ret=0
+    while test -n "${1:-}"; do
+        command git branch ${opt} --no-color --list "$1" |\
+           sed -e "s,..,," -e "s,remotes/,," | egnc . || ret=1
+        shift
+    done
+    return $ret
 }
 export -f lsbr
 
