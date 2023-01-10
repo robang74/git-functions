@@ -94,7 +94,6 @@ Example of `redef_git` and `reset_git` usage:
  
 * `lg`: show the log in a compact and fancy way, SHAs or files as args
 * `lgnc`: the same of `lg` but without colors, for scripting
-* `lgrp`: find a string into the `lg` output, opt -s:SHAs-only
 * `lgrpnc`: the same of `lgrp` but without colors, for scriptings
 * `lt`: like `lg` but with all branches shown, files as args
 * `lg1`: like `lg` but just the first line
@@ -104,6 +103,7 @@ Example of `redef_git` and `reset_git` usage:
 * `sw`: short for `git show` with `sf` after, opt:-P for no pager
 * `fpatch`: do a `git format-patch` for the commit, SHA and opts in arg
 * `bsw`: short for `git switch`, the branch name as arg or `-` for the last
+* `lgrp`: find a string into the `lg` output, opts -s:SHAs-only -1:first only
 * `rcur`: remote branch which the current s tracking
 * `hcur`: short for `git rev-parse --short HEAD`
 * `bcur`: short for `git branch --show-current`

@@ -662,15 +662,23 @@ function for-all-other-branches() {
 export -f for-all-other-branches
 
 function lgrp() {
-    declare -i sha=0
-    if [ "${1:-}" == "-s" ]; then
-        sha=1
-        shift
-    fi
     test -z "${1:-}" && return 1
-    local strn="$1"; shift
+    declare -i sha=0
+    while true; do
+        if [ "${1:-}" == "-s" ]; then
+            sha=1
+            shift
+        elif [ "${1:-}" == "-1" ]; then
+            shift
+            lgrp ${sha/1/-s} "$@" | head -1
+            return $?
+        else
+            break
+        fi
+    done
 
     redef_git -u
+    local strn="$1"; shift
     if [ $sha -ne 0 ]; then
         lgnc "$@" | egnc "$strn" | awk '{print $2}'
     else
