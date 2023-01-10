@@ -39,6 +39,13 @@ function _op_action() {
 }
 export -f _op_action
 
+export devnull=${devnull:-/dev/null}
+function _devnull_init() {
+    devnull=${gitshell_prefix+&3}
+    devnull=${devnull:-/dev/null}
+}
+export -f _devnull_init
+
 test ${gflistshow:-0} -ne 0 && set -x #########################################
 
 #if [ -r "${gfrefdir_path}/isatty_override.so" ]; then
@@ -95,8 +102,9 @@ function ps1p() {
 export -f ps1p
 
 function gitshell() {
-    local gitrc=$(mktemp -p "${TMPDIR:-}")
     declare -i ret=0
+    local gitrc=$(mktemp -p "${TMPDIR:-}")
+    gitshell_prefix=${gitshell_prefix:-+}
     ps1p > "${gitrc}"
     if true; then
         cat "${gfrefdir_path}/colors.shell"
@@ -353,10 +361,12 @@ function sw() {
     else
 	    _git show "$@"
     fi
-    printf -- '_%.0s' {1..72}
-    echo -e "\nfiles in commited:"
-    sf $(no-opts "$@") | sed -e "s,\(.*\),\t\\1,"
-    echo
+    if ! echo "$@" | egnc -q -- "--oneline"; then
+        printf -- '_%.0s' {1..72}
+        echo -e "\nfiles in commited:"
+        sf $(no-opts "$@") | sed -e "s,\(.*\),\t\\1,"
+        echo
+    fi
 }
 export -f sw
 
@@ -409,8 +419,11 @@ function pcache() {
 		echo -e "\n${USAGE}: cchace [ --time 14400 | --save '.gitpasswd' | --stop | --help ]\n"
 		return
 	fi
+    _devnull_init
+    local gc="fetch -a --dry-run"
+    local pc="cache --timeout=$t"
 	command git config credential.helper store
-	command git config credential.helper "cache --timeout=$t"
+	command git config credential.helper "$pc"
 	if [ "$t" == "0" ]; then
 		echo -e "${DONE}: git password cache disabled"
 	else
@@ -423,12 +436,12 @@ function pcache() {
 			fi
             st "$d/.gitignore" | egrep -q .gitignore \
                 && echo -e "\n${WARNING}: add .gitignore and commit the change\n"
-            local ch='!f() { echo "password=$(cat '$d/.gitpasswd')"; }; f'
-			command git -c credential.helper="$ch" push --dry-run 2>&1 | pipenull
+            local ch='!f() { echo "password=$(cat '$d/.gitpasswd')"; }; '$pc'; f'
+			command git -c credential.helper="$ch" $gc 2>$devnull
         fi
 		echo -e "${DONE}: git password cache enable for ${t}s eq. to $[t/3600]h $[(t%3600)/60]m $[t%60]s\n"
 	fi
-	command git push --dry-run 2>&1 | pipenull
+	command git fetch $gc 2>$devnull
 	test  "${1:-}" != "" -a "$runcmd" == "1" && eval "$@"
 }
 export -f pcache
