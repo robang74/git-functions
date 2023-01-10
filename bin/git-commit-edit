@@ -25,7 +25,7 @@ message=$(git log -1 --format='%h %s' "$commit")
 
 # RAF: this allows git-function:cm to behave properly
 test -n "${commit}" -a -n "${message}"
-if ! lgrp -s ${commit} >/dev/null; then
+if ! lgrp -s "${commit}" | egnc -q .; then
     echo -e "\n${ERROR}: commit '${commit}' is out of this branch line, abort\n" >&2
     unset -f exit
     exit 1
