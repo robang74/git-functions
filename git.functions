@@ -234,16 +234,16 @@ export -f irebase
 
 function cr() {
     test -z "${1:-}" && return 1
-    lgrp "$1" || return 1
+    export irebase_sha_to_reword=$(lgrp -s "${1:0:7}")
+    test -n "${irebase_sha_to_reword}" || return 1
+    lgrp "${irebase_sha_to_reword}" || return 1
+
     declare -i ret=0
-    export irebase_sha_to_reword="$1"
-    edcr="${gfrefdir_path}/bin/cr-editor.sh"
+    local edcr="${gfrefdir_path}/bin/cr-editor.sh"
     GIT_EDITOR="${edcr}" GIT_SEQUENCE_EDITOR="${edcr}" irebase "$1" || ret=1
     unset irebase_sha_to_reword
-    if [ $ret -ne 0 ]; then
-        abrt; return 1
-    fi
-    return 0
+    test $ret -ne 0 && abrt
+    return $ret
 }
 export -f cr
 

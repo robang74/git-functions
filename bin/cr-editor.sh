@@ -16,7 +16,7 @@ if test -n "${irebase_sha_to_reword:-}"; then
     if [ "${1##*/}" == "git-rebase-todo" ]; then
         echo "\ncr sedding in progress... " >&2 
         cp -af "$1" ${tmpf}
-        sed -i "s,pick \(${irebase_sha_to_reword} .*\),r \\1," ${tmpf}
+        sed -i "s,pick \(${irebase_sha_to_reword:0:7} .*\),r \\1," ${tmpf}
     elif [ "${1##*/}" == "COMMIT_EDITMSG" ]; then
         echo "\ncr editing in progress... " >&2 
         cp -af "$1" ${tmpf}
