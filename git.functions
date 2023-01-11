@@ -22,7 +22,7 @@ export BRNC_SWTC_PREV_BRNC=${BRNC_SWTC_PREV_BRNC:-}
 export BRNC_SWTC_PREV_HASH=${BRNC_SWTC_PREV_HASH:-}
 
 function _op_action() {
-    local op
+    local op=""
     case "${1:-}" in
     c) op="cherry-pick"
         ;;
