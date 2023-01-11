@@ -355,6 +355,7 @@ export -f editorset
 
 function rpull() {
 	_git pull --rebase "$@"
+    _git rebase --reapply-cherry-picks
 }
 export -f rpull
 
