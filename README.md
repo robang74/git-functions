@@ -61,6 +61,7 @@ Example of `redef_git` and `reset_git` usage:
 * `push`: short for `git pull`
 * `fpush`: short for `git push --force`
 * `repshrink`: clean the reflog and shrink the repository
+* `tagmv`: move a tag to hash (as args) and push the changes
 * `tagadd`: add a tag to a commit (sha as arg) and push tags
 * `tagdel`: del a tag (as arg) and push the change
 * `rmt`: short for `git remote`

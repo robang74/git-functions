@@ -525,6 +525,13 @@ function tagadd() {
 }
 export -f tagadd
 
+function tagmv() {
+    test -z "${2:-}" && return 1
+    tagdel "$1"
+    tagadd "$1" "$2"
+}
+export -f tagmv
+
 function pull() {
 	_git pull "$@"
 }
