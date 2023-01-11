@@ -28,7 +28,6 @@ The following list is divided for class of usage and roles
 * `no-opts`: print every arg that does not start with minus
 * `gfupdate`: update the installation and reload the functions
 * `gitshell`: spawns a restricted shell with the git-funtions enviroment
-* `pipenull`: `cmd | pipenull` instead of `cmd >/dev/null`, use ${PIPESTATUS[@]}
 * `cdtop`: change directory to the top level of the repository and prints the full path
 * `redef_git`: redefine the function `_git()` which is used internally
 * `reset_git`: reset `_git()` to the default command `git`

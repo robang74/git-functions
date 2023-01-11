@@ -30,6 +30,11 @@
 
 ###############################################################################
 
+# RAF: restricted shell cannot redirect to file but it is fine
+#      to redirect to a open file descriptor towards /dev/null
+#      So, also exec could fail but in gitshell &3 is just open
+exec 3>/dev/null
+
 # set -Eeuo pipefail # RAF: this is only for test with every restriction possible
                      #      bash -c "source colors.shell && source colors.shell"
 
@@ -41,10 +46,6 @@ function echo() {
     command echo -e "$@"
 }
 export -f echo
-
-# This create an alterative to /dev/null in a restricted shell
-
-_devnull_init
 
 # The export of the basic variables statically defined
 
@@ -109,7 +110,7 @@ declare -r${optx} LWHT=";97m"      || :   # ligth_white
 declare -r${optx} CRST="\033[0;0m" || :   # reset
 declare -r${optx} crst="\033[0;0m" || :   # reset but in lower case
 
-fi 2>"$devnull"
+fi 2>&3
 
 ###############################################################################
 
@@ -126,7 +127,7 @@ if false; then
         declare -r${optx} O$j L$j || :
     done
     unset j
-fi 2>"$devnull"
+fi 2>&3
 
 # Auto-generating function for colors codes
 
@@ -162,9 +163,9 @@ else
     tmp=$(mktemp -p "${TMPDIR:-}")
     colors_codes_generation >$tmp
     colors_codes_generation | tr '[A-Z]' '[a-z]' >>$tmp
-    source $tmp 2>"$devnull"
+    source $tmp 2>&3
     rm -f $tmp
-fi 2>"$devnull"
+fi 2>&3
 
 ###############################################################################
 
@@ -180,7 +181,7 @@ declare -r${optx} KO="${BLRED}KO${CRST}"            || :
 declare -r${optx} USAGE="${BLPRL}USAGE${CRST}"      || :
 declare -r${optx} NOTICE="${BLCYN}NOTICE${CRST}"    || :
 
-fi 2>"$devnull"
+fi 2>&3
 
 ###############################################################################
 

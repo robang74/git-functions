@@ -7,13 +7,19 @@
 #
 # SPDX-License-Identifier: GPLv3
 #
+#set -x
+
+# RAF: restricted shell cannot redirect to file but it is fine
+#      to redirect to a open file descriptor towards /dev/null
+#      So, also exec could fail but in gitshell &3 is just open
+if exec 3>/dev/null; then :; fi 2>&3
+
+THISCMD="$(basename $0)"
+trap 'echo -e "\n'${ERROR:-ERROR}' in '${THISCMD}' at line ${LINENO} occured, try again with set -x\n"' ERR
+set -eE
 
 TOPDIR=$(dirname $(readlink -f $0))
 source "${TOPDIR}/colors.shell"
-
-THISCMD="$(basename $0)"
-trap 'echo -e "\n'${ERROR}' in '${THISCMD}' at line ${LINENO} occured, try again with set -x\n"' ERR
-set -eE
 
 DESTDIR=".git-functions"
 SRCNAME=$(readlink -f "$HOME/${DESTDIR}/git.functions")
@@ -59,17 +65,17 @@ elif [ -n "$1" ]; then
 fi
 
 git clone ${GITREPO} "${DESTDIR}"
-if ! grep -- "${SRCCMD}" .bashrc 2>/dev/null; then
+if ! grep -- "${SRCCMD}" .bashrc 2>&3; then
     echo "${SRCCMD}" >> .bashrc
 fi
 
 cd "${DESTDIR}"
 bsw "${BRANCH}"
 
-if which cc >/dev/null; then
+if which cc >&3; then
     cc -c -fPIC isatty_override.c -o isatty_override.o
     cc isatty_override.o -shared -o isatty_override.so
-    strip isatty_override.so 2>/dev/null || :
+    strip isatty_override.so 2>&3 || :
     echo
     echo -ne "${blcyn}Compiled${crst}: "
     du -b isatty_override.so

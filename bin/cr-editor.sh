@@ -10,6 +10,13 @@
 # SPDX-License-Identifier: GPLv3
 #
 #set -x
+
+# RAF: restricted shell cannot redirect to file but it is fine
+#      to redirect to a open file descriptor towards /dev/null
+#      So, also exec could fail but in gitshell &3 is just open
+exec 3>/dev/null
+
+declare ret=1
 echo "\ncr in progress... " >&2 
 if test -n "${irebase_sha_to_reword:-}"; then
     tmpf="$(mktemp -d -p "$TMPDIR")/${1##*/}"
@@ -24,15 +31,11 @@ if test -n "${irebase_sha_to_reword:-}"; then
         echo "\ncr editing in progress... " >&2 
         cp -af "$1" ${tmpf}
         ${git_core_editor:-vi} ${tmpf}
-    else
-        rm -f ${tmpf}
-        exit 1
     fi
-    diff "$1" ${tmpf} | pipenull
-    if [ ${PIPESTATUS} -ne 0 ]; then
+    if ! diff "$1" ${tmpf} >&3; then
         cp -af ${tmpf} "$1"
         rm -f ${tmpf}
-        exit 0
+        ret=0
     fi
     rm -f ${tmpf}
 fi

@@ -7,8 +7,13 @@
 #
 # SPDX-License-Identifier: GPLv3
 #
-
+#set -x # RAF: source, paired with set +x at the end of file
 set -u # RAF: only for devel, comment in main
+
+# RAF: restricted shell cannot redirect to file but it is fine
+#      to redirect to a open file descriptor towards /dev/null
+#      So, also exec could fail but in gitshell &3 is just open
+exec 3>/dev/null
 
 SRC_FILE=$(readlink -f ${BASH_SOURCE[0]})
 export gfrefdir_path="$(dirname ${SRC_FILE})"
@@ -52,13 +57,6 @@ function git_core_editor_export() {
 }
 export -f git_core_editor_export
 
-export devnull=${devnull:-/dev/null}
-function _devnull_init() {
-    devnull=${gitshell_prefix+&3}
-    devnull=${devnull:-/dev/null}
-}
-export -f _devnull_init
-
 source "${gfrefdir_path}/colors.shell"
 
 test ${gflistshow:-0} -ne 0 && set -x #########################################
@@ -74,11 +72,6 @@ function no-opts() {
     done
 }
 export -f no-opts
-
-function pipenull() {
-    tail -n0 -
-}
-export -f pipenull
 
 function redef_git() {
     unset -f _git
@@ -427,7 +420,7 @@ function pcache() {
 		echo -e "\n${NOTICE}: password saved in $d/.gitpasswd\n"
         if true; then
             history -d -2 || history -c
-        fi 2>&1 | pipenull
+        fi >&3 2>&1
 		shift 2
 	elif [ "x${1:-}" == "x--stop" ]; then
 		t=0; runcmd=0
@@ -439,7 +432,6 @@ function pcache() {
 		echo -e "\n${USAGE}: cchace [ --time 14400 | --save '.gitpasswd' | --stop | --help ]\n"
 		return
 	fi
-    _devnull_init
     local gc="fetch -a --dry-run"
     local pc="cache --timeout=$t"
 	command git config credential.helper store
@@ -457,11 +449,11 @@ function pcache() {
             st "$d/.gitignore" | egrep -q .gitignore \
                 && echo -e "\n${WARNING}: add .gitignore and commit the change\n"
             local ch='!f() { echo "password=$(cat '$d/.gitpasswd')"; }; '$pc'; f'
-			command git -c credential.helper="$ch" $gc 2>$devnull
+			command git -c credential.helper="$ch" $gc 2>&3
         fi
 		echo -e "${DONE}: git password cache enable for ${t}s eq. to $[t/3600]h $[(t%3600)/60]m $[t%60]s\n"
 	fi
-	command git fetch $gc 2>$devnull
+	command git fetch $gc 2>&3
 	test  "${1:-}" != "" -a "$runcmd" == "1" && eval "$@"
 }
 export -f pcache
@@ -815,4 +807,5 @@ export -f rcur
 
 test ${gflistshow:-0} -ne 0 && set +x #########################################
 
+#set +x
 true
