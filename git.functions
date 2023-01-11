@@ -761,7 +761,7 @@ export -f rst
 function hrst() {
     test -z "${1:-}" && return 1
     if [ "$1" == "x-r" ]; then
-       rst -h $(rcur) "$@"
+       rst -h $(rbcur) "$@"
     else
        rst -h "$@"
     fi
@@ -795,8 +795,13 @@ function search() {
 }
 export -f search
 
-function rcur() {
+function rbcur() {
     command git status -sb | head -n1 | cut -d '.' -f4 | awk '{ print $1 }'
+}
+export -f rbcur
+
+function rcur() {
+    rbcur | cut -d/ -f1
 }
 export -f rcur
 

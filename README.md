@@ -105,7 +105,8 @@ Example of `redef_git` and `reset_git` usage:
 * `bsw`: short for `git switch`, the branch name as arg or `-` for the last
 * `lgrp`: find a string into the `lg` output, opts -s:SHAs-only -1:first only
 * `lsbr`: show the list of branches, arg branch name, opt: -r:remotes, -a:all
-* `rcur`: remote branch which the current s tracking
+* `rbcur`: remote branch which the current brach is tracking
+* `rcur`: remote origin which the current branch is tracking
 * `hcur`: short for `git rev-parse --short HEAD`
 * `bcur`: short for `git branch --show-current`
 * `lsrmt`: shoe the list of remotes sources
