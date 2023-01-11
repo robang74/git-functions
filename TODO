@@ -44,3 +44,8 @@ radd/rdel: short for
 
 hrst with -o origin ?
 
+bsw - should keep in considerration the change of repository
+
+install.sh should relies on commit hash not branch
+
+lsbr() should be revisited and getops is necessary
