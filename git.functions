@@ -38,6 +38,20 @@ function _op_action() {
 }
 export -f _op_action
 
+function git_core_editor_export() {
+    unset -f vi vim
+    export git_core_editor="$(git config --default vi --get core.editor)"
+    return $?
+
+    if [ "${git_core_editor:0:2}" == "vi" ]; then
+        local gitcols="hi gitcommitSummary ctermfg=yellow ctermbg=red"
+        eval "$git_core_editor() { command $git_core_editor -c '$gitcols'"\
+             " \"\$@\"; } ; export -f $git_core_editor"
+#       $git_core_editor="$git_core_editor -c '"$gitcols"'"
+    fi
+}
+export -f git_core_editor_export
+
 export devnull=${devnull:-/dev/null}
 function _devnull_init() {
     devnull=${gitshell_prefix+&3}
@@ -134,6 +148,7 @@ function ce() {
         ret=$?
         quit=1
     else
+        git_core_editor_export
         export gitshell_prefix="ce"
         export commit_edit_note="use 'ce --abort/cont' while 'cm' has '--amend' by default here, enjoy."
         export commit_edit_opts="--amend"
@@ -150,12 +165,14 @@ function ce() {
             command exit ${1:-}
         }
         export -f exit
-        gitshell "$(declare -pf exit); git commit-edit ""$@"' || exit $?' || ret=$?
+        gitshell "$(declare -pf exit; declare -p git_core_editor);"\
+            "git commit-edit ""$@"' || exit $?' || ret=$?
         unset -f exit
     fi
     unset commit_edit_opts commit_edit_brch \
           commit_edit_head commit_edit_hash \
-          commit_edit_note gitshell_prefix
+          commit_edit_note gitshell_prefix \
+          git_core_editor
     test $quit -ne 0 && command exit $ret
     return $ret
 }
@@ -238,10 +255,11 @@ function cr() {
     test -n "${irebase_sha_to_reword}" || return 1
     lgrp "${irebase_sha_to_reword}" || return 1
 
-    declare -i ret=0
     local edcr="${gfrefdir_path}/bin/cr-editor.sh"
+    git_core_editor_export
+    declare -i ret=0
     GIT_EDITOR="${edcr}" GIT_SEQUENCE_EDITOR="${edcr}" irebase "$1" || ret=1
-    unset irebase_sha_to_reword
+    unset irebase_sha_to_reword git_core_editor_export
     test $ret -ne 0 && abrt
     return $ret
 }

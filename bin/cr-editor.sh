@@ -12,7 +12,10 @@
 #set -x
 echo "\ncr in progress... " >&2 
 if test -n "${irebase_sha_to_reword:-}"; then
-    tmpf=$(mktemp -p "$TMPDIR")
+    tmpf="$(mktemp -d -p "$TMPDIR")/${1##*/}"
+    echo "tmpfile: $tmpf"
+    echo -n " editor: ${git_core_editor:-vi} "
+    echo "and $(type ${git_core_editor:-vi})"
     if [ "${1##*/}" == "git-rebase-todo" ]; then
         echo "\ncr sedding in progress... " >&2 
         cp -af "$1" ${tmpf}
@@ -20,7 +23,7 @@ if test -n "${irebase_sha_to_reword:-}"; then
     elif [ "${1##*/}" == "COMMIT_EDITMSG" ]; then
         echo "\ncr editing in progress... " >&2 
         cp -af "$1" ${tmpf}
-        vi ${tmpf}
+        ${git_core_editor:-vi} ${tmpf}
     else
         rm -f ${tmpf}
         exit 1
