@@ -420,7 +420,7 @@ function forig() {
 export -f forig
 
 function pcache() {
-	local -i t=3600 runcmd=1
+	local -i t=3600
 	local d=$(command git rev-parse --show-toplevel)
 	if [ "x${1:-}" == "x--save" -a -n "${2:-}" ]; then
 		echo "$2" > $d/.gitpasswd
@@ -430,7 +430,7 @@ function pcache() {
         fi >&3 2>&1
 		shift 2
 	elif [ "x${1:-}" == "x--stop" ]; then
-		t=0; runcmd=0
+		t=0
 	elif [ "x${1:-}" == "x--time" -a -n "${2:-}" ]; then
 		t=$2; [ $t -lt 600 ] && t=600
 		echo -e "\n${NOTICE}: timeout '$2' has been set to $t seconds\n"
@@ -439,29 +439,28 @@ function pcache() {
 		echo -e "\n${USAGE}: cchace [ --time 14400 | --save '.gitpasswd' | --stop | --help ]\n"
 		return
 	fi
-    local gc="fetch -a --dry-run"
-    local pc="cache --timeout=$t"
-	command git config credential.helper store
-	command git config credential.helper "$pc"
+	local pc="cache --timeout=$t"
 	if [ "$t" == "0" ]; then
-		echo -e "${DONE}: git password cache disabled"
+		command git config --unset credential.helper
+        command git config --unset credential.credentialstore
+		echo -e "\n${DONE}: git password cache disabled\n"
 	else
-#		frmt -a
+		local ch='!f() { echo "password=$(cat '$d'/.gitpasswd)"; }; f'
+        command git config credential.credentialstore "$pc"
 		if [ -r "$d/.gitpasswd" ]; then
-            if [ ! -e "$d/.gitignore" ]; then
+			if [ ! -e "$d/.gitignore" ]; then
 				echo "/.gitpasswd" >> "$d/.gitignore"
 			elif ! grep -q "/.gitpasswd" "$d/.gitignore"; then
 				echo "/.gitpasswd" >> "$d/.gitignore"
 			fi
-            st "$d/.gitignore" | egrep -q .gitignore \
-                && echo -e "\n${WARNING}: add .gitignore and commit the change\n"
-            local ch='!f() { echo "password=$(cat '$d/.gitpasswd')"; }; '$pc'; f'
-			command git -c credential.helper="$ch" $gc 2>&3
-        fi
-		echo -e "${DONE}: git password cache enable for ${t}s eq. to $[t/3600]h $[(t%3600)/60]m $[t%60]s\n"
+			st "$d/.gitignore" | egrep -q .gitignore && \
+				echo -e "\n${WARNING}: add .gitignore and commit the change\n"
+		fi
+		command git config credential.helper "$pc"
+#       command git -c credential.helper="$ch" push --force --dry-run 2>&3
+		echo -e "\n${DONE}: git password cache enable for ${t}s eq. to $[t/3600]h $[(t%3600)/60]m $[t%60]s\n"
 	fi
-	command git fetch $gc 2>&3
-	test  "${1:-}" != "" -a "$runcmd" == "1" && eval "$@"
+#   command git config -l | egnc credential
 }
 export -f pcache
 
