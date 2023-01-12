@@ -12,29 +12,39 @@
 # RAF: restricted shell cannot redirect to file but it is fine
 #      to redirect to a open file descriptor towards /dev/null
 #      So, also exec could fail but in gitshell &3 is just open
-if exec 3>/dev/null; then :; fi 2>&3
+exec 3>/dev/null
 
 THISCMD="$(basename $0)"
 trap 'echo -e "\n'${ERROR:-ERROR}' in '${THISCMD}' at line ${LINENO} occured, try again with set -x\n"' ERR
 set -eE
 
 TOPDIR=$(dirname $(readlink -f $0))
-source "${TOPDIR}/colors.shell"
+source "${TOPDIR}/git.functions"
+cd ${TOPDIR}
 
 DESTDIR=".git-functions"
-SRCNAME=$(readlink -f "$HOME/${DESTDIR}/git.functions")
+SRCNAME=$(readlink -fem "$HOME/${DESTDIR}/git.functions")
 GITREPO="https://github.com/robang74/git-functions.git"
 SRCCMD="test -r ${SRCNAME} && source ${SRCNAME}"
-
-cd "${TOPDIR}"
 BRANCH="$(bcur)"
-cd
 
-if [ "$1" == "uninstall" ]; then
+if [ -z "${BRANCH}" ]; then
+    echo "\n${ERROR}: branch not defined, abort.\n"
+    exit 1
+fi
+
+cd
+set -- "${1:-}"
+if [ "$1" == "install" -o -z "$1" ]; then
+    if [ -d "${DESTDIR}" ]; then
+        echo "\n${NOTICE}: folder ${DESTDIR} is present, use update\n"
+        exit 1
+    fi
+elif [ "$1" == "uninstall" ]; then
     test ! -d "${DESTDIR}" && exit 0
     rm -rf "${DESTDIR}" && echo "\n${DONE}: uninstall\n"
     bashrc=$(grep -ve "source.*git.functions" .bashrc ||:)
-    test -n "${bashrc}"
+    test -n "${bashrc}" || exit 0
     echo "${bashrc}" >.bashrc
     exit $?
 elif [ "$1" == "update" -a -d "${DESTDIR}" ]; then
@@ -45,11 +55,10 @@ elif [ "$1" == "update" -a -d "${DESTDIR}" ]; then
     eval ${SRCCMD} || ret=1
     exit $ret
 elif [ "$1" == "update" -a ! -d "${DESTDIR}" ]; then
-    echo "\n${NOTICE}: folder ${DESTDIR} is not present, installing...\n"
+    echo "\n${NOTICE}: folder ${DESTDIR} is not present, use install\n"
+    exit 1
 elif [ "$1" == "reinstall" -a -d "${DESTDIR}" ]; then
-    cd "${TOPDIR}"
-    ./${THISCMD} uninstall
-    cd
+    eval "${TOPDIR}/${THISCMD} uninstall"
 elif [ "$1" == "reinstall" -a ! -d "${DESTDIR}" ]; then
     echo "\n${NOTICE}: folder ${DESTDIR} is not present, installing...\n"
 elif [ "$1" == "help" -o "x$1" == "x-h" ]; then
@@ -89,6 +98,5 @@ fi
 
 echo "\n${DONE}: git-functions installed in ${HOME}/${DESTDIR}\n"
 echo "The git-function will be loaded by defaul vi ~/.bashrc enviroment"
-eval "${SRCCMD}"
-echo "For this bash, functions loaded via source ~/${DESTDIR}/git.functions"
+echo "For this bash, load functions via source ~/${DESTDIR}/git.functions"
 echo
