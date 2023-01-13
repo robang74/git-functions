@@ -76,7 +76,7 @@ Example of `redef_git` and `reset_git` usage:
 * `pa`: format patch apply and create signed commit
 * `ce`: commit edit within a restricted shell
 * `cr`: commit reword, a single SHA as arg
-* `am`, amend`: shorts for `git amend`
+* `amd`, amend`: shorts for `git amend`
 * `add`: short for `git add`
 * `cm`: short for `git commit`
 * `co`: short for `git checkout`
@@ -91,6 +91,7 @@ Example of `redef_git` and `reset_git` usage:
 * `hrst()`: short for `git reset --hard`, opt -r:remote
 * `sres()`: short for `git restore i--staged`
 * `tres()`: total restore res -S and res, both
+* `ampatch()`: short for `git amend` a patch/set
 
 #### Functions which do NOT alter the repositories
  

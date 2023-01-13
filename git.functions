@@ -29,6 +29,8 @@ export BRNC_SWTC_PREV_HASH=${BRNC_SWTC_PREV_HASH:-}
 function _op_action() {
     local op=""
     case "${1:-}" in
+    a) op="am"
+        ;;
     c) op="cherry-pick"
         ;;
     m) op="merge"
@@ -361,15 +363,24 @@ function cm() {
 }
 export -f cm
 
-function am() {
+function amd() {
 	_git commit --amend "$@"
 }
-export -f am
+export -f amd
 
 function amend() {
-	am "$@"
+	amd "$@"
 }
 export -f amend
+
+function ampatch() {
+    for i in "$@"; do
+        if ! _git am --keep-cr < "$i"; then
+            gitshell "git am --show-current-patch=diff" || return $?
+        fi
+    done
+}
+export -f ampatch
 
 function editorset() {
     test -z "${1:-}" && return 1
