@@ -125,9 +125,9 @@ This is a special function used to execute commands (cmds) on multiple branches:
   * -a: all the branches included the current
   * -p: `git pull` before cmds
   * -r: `git pull --rebase` before cmds
-  * -s: `git stash` before go and `git stash pop` when returns
   * -n: not fail despite the last command failure
-  * -f: fetch all the remotes before starting
+  * -s: `git stash` before go and `git stash pop` when returns
+  * -f: fetch all the remotes before starting otherwise run only on locals
 
 A custom branches selction could be specified in this way:
 

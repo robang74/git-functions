@@ -143,11 +143,14 @@ function ce() {
         ret=$?
         quit=1
     elif [ "x${1:0:6}" == "x--cont" -a -n "${commit_edit_hash:-}" ]; then
-        add $( sf ${commit_edit_hash} ) && \
-            GIT_EDITOR=touch cm -a --amend && \
-                cont
-        ret=$?
-        quit=1
+        add $( sf ${commit_edit_hash} )
+        if GIT_EDITOR="touch" cm -a --amend; then
+            cont
+            ret=$?
+            quit=1
+        else
+            ret=1
+        fi
     else
         _git_core_editor_export
         export gitshell_prefix="ce"
@@ -628,8 +631,11 @@ function bcur() {
 export -f bcur
 
 function cdtop() {
-    local topdir="$(readlink -f $(_git rev-parse --show-toplevel))"
-    cd "$topdir" || return $?
+    local curdir="$(readlink -f $PWD)"
+    local topdir="$(_git rev-parse --show-toplevel)"
+    if [ "$topdir" != "$curdir" ]; then
+        cd "$topdir" || return $?
+    fi
     pwd
 }
 export -f cdtop
@@ -644,6 +650,8 @@ function hcur() {
 }
 export -f hcur
 
+
+
 function for-all-other-branches() {
     test -z "${1:-}" && return 1
 
@@ -651,12 +659,6 @@ function for-all-other-branches() {
     if [ "$cur" == "" ]; then
         echo -e "${ERROR}: this is not the HEAD of a branch." >&2
         return 1
-    fi
-
-    declare -i nbr=$(lsbr | wc -l)
-    if [ $nbr -le 1 ]; then
-        echo -e "${DONE}: there is only one branch '$cur' as current." >&2
-        return 0
     fi
 
     if echo "x$@" | grep -q "fpush"; then
@@ -700,19 +702,32 @@ function for-all-other-branches() {
         fi
     fi
 
-    if ! cdtop; then
-        echo -e "${ERROR}: cannot change folder to the top level, abort." >&2
-        return 1
+#   if ! cdtop; then
+#       echo -e "${ERROR}: cannot change folder to the top level, abort." >&2
+#       return 1
+#   fi
+
+    declare -i nbr=$(lsbr | wc -l)
+    if [ -z "${BRANCHES:-}" ]; then
+        BRANCHES=${BRANCHES:-$(lsbr | grep -vwe "$cur")}
+        if [ -n "$fetch" ] && ! frmt; then
+            echo -e "${ERROR}: cannot fetch all remotes, abort." >&2
+            return 1
+        else
+            nbr=$(lsbr -r | wc -l)
+            BRANCHES=${BRANCHES:-$(lsbr -r | cut -d/ -f2 | grep -vwe "$cur")}
+        fi
+    else
+        nbr=$(echo "${BRANCHES}" | wc -w)
     fi
-    if [ -n "$fetch" ] && ! frmt; then
-        echo -e "${ERROR}: cannot fetch all remotes, abort." >&2
-        return 1
+    if [ $nbr -le 1 ]; then
+        echo -e "${DONE}: there is only one branch '$cur' as current." >&2
+        return 0
     fi
 
     test $stashpop -ne 0 && stash
 
     declare -i ret=0
-    BRANCHES=${BRANCHES:-$(lsbr | grep -vwe "$cur")}
 	for branch in ${BRANCHES}; do
         if ! bsw $branch; then
             echo
