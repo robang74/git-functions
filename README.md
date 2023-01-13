@@ -55,7 +55,7 @@ Example of `redef_git` and `reset_git` usage:
 * `abrt`: short for `git --abort`, arg: c,m,r,ce or current operation
 * `skip`: short for `git --skip`, arg: c,m,r or current operation
 
-#### Pure git functions which alter also the remote repository
+#### Functions which alter also the remote repository
 
 * `push`: short for `git pull`
 * `fpush`: short for `git push --force`
@@ -65,7 +65,7 @@ Example of `redef_git` and `reset_git` usage:
 * `tagdel`: del a tag (as arg) and push the change
 * `rmt`: short for `git remote`
 
-#### Pure git functions which alter the local repository, only
+#### Functions which alter the local repository, only
 
 * `forig`: short for `git fetch origin`
 * `frmt`: short for `git fetch`, default the first in `lsrmt` or args with opt -a:--all
@@ -90,8 +90,9 @@ Example of `redef_git` and `reset_git` usage:
 * `sres()`: short for `git restore i--staged`
 * `tres()`: total restore res -S and res, both
 
-#### Pure git functions which do NOT alter the repositories
+#### Functions which do NOT alter the repositories
  
+* `hconv`: convert the hash reference into a standard 7-chars hash
 * `lg`: show the log in a compact and fancy way, SHAs or files as args
 * `lgnc`: the same of `lg` but without colors, for scripting
 * `lgrpnc`: the same of `lgrp` but without colors, for scriptings

@@ -43,7 +43,7 @@ function _op_action() {
 }
 export -f _op_action
 
-function git_core_editor_export() {
+function _git_core_editor_export() {
     unset -f vi vim
     export git_core_editor="$(git config --default vi --get core.editor)"
     return $?
@@ -55,7 +55,15 @@ function git_core_editor_export() {
 #       $git_core_editor="$git_core_editor -c '"$gitcols"'"
     fi
 }
-export -f git_core_editor_export
+export -f _git_core_editor_export
+
+function _is_sha_in_line() {
+    test -z "${1:-}" && return 1
+    command git log --abbrev-commit --no-color --format=format:'%h' | egnc "$(hconv $1)"
+}
+export -f _is_sha_in_line
+
+###############################################################################
 
 source "${gfrefdir_path}/colors.shell"
 
@@ -141,7 +149,7 @@ function ce() {
         ret=$?
         quit=1
     else
-        git_core_editor_export
+        _git_core_editor_export
         export gitshell_prefix="ce"
         export commit_edit_note="use 'ce --abort/cont' while 'cm' has '--amend' by default here, enjoy."
         export commit_edit_opts="--amend"
@@ -243,16 +251,15 @@ function irebase() {
 export -f irebase
 
 function cr() {
-    test -z "${1:-}" && return 1
-    export irebase_sha_to_reword=$(lgrp -s "${1:0:7}")
-    test -n "${irebase_sha_to_reword}" || return 1
-    lgrp "${irebase_sha_to_reword}" || return 1
+    local sha=$(_is_sha_in_line $1)
+    test -n "$sha" || return 1
 
-    local edcr="${gfrefdir_path}/bin/cr-editor.sh"
-    git_core_editor_export
     declare -i ret=0
-    GIT_EDITOR="${edcr}" GIT_SEQUENCE_EDITOR="${edcr}" irebase "$1" || ret=1
-    unset irebase_sha_to_reword git_core_editor_export
+    _git_core_editor_export
+    export irebase_sha_to_reword=$sha
+    local edcr="${gfrefdir_path}/bin/cr-editor.sh"
+    GIT_EDITOR="${edcr}" GIT_SEQUENCE_EDITOR="${edcr}" irebase "$sha" || ret=1
+    unset irebase_sha_to_reword git_core_editor
     test $ret -ne 0 && abrt
     return $ret
 }
@@ -607,8 +614,13 @@ function cdtop() {
 }
 export -f cdtop
 
+function hconv() {
+    _git rev-parse --short $1 | egnc .
+}
+export -f hconv
+
 function hcur() {
-    _git rev-parse --short HEAD | egnc .
+    hconv HEAD
 }
 export -f hcur
 
