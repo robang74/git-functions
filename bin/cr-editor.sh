@@ -37,6 +37,11 @@ if test -n "${irebase_sha_to_reword:-}"; then
         rm -f ${tmpf}
         ret=0
     fi
-    rm -f ${tmpf}
+    if [ -n "${CRDEBUG}" ]; then
+        echo "shaedit: ${irebase_sha_to_reword}"
+        echo "tmpfile: ${tmpf}"
+    else
+        rm -f ${tmpf}
+    fi
 fi
-exit 1
+exit $ret
