@@ -279,6 +279,27 @@ function rmt() {
 }
 export -f rmt
 
+function rmtadd() {
+    test -z "${2:-}" && return 1
+    if [ "x$1" == "x-r" ]; then
+        shift
+        if lsrmt | grep -qw "$1"; then
+            _git remote remove "$1"
+        fi
+    fi
+    if ! lsrmt | grep -qw "$1"; then
+        _git remote add "$1" "${2:-}"
+    fi
+    frmt "$1"
+}
+export -f rmtadd
+
+function rmtdel() {
+    test -z "${1:-}" && return 1
+    _git remote remove "$1"
+}
+export -f rmtdel
+
 function lg() {
 	_git log --abbrev-commit --format=format:'* %C(bold cyan)%h%C(reset) - %C(white)%s%C(reset) %C(bold green)%d%C(reset)' "$@"
 }
