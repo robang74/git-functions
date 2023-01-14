@@ -15,6 +15,31 @@ command unless a functions-set wrap layer is used. This is the point in which
 than their minds. Have fun <3
 
 
+Usage
+-----
+
+Just to give it a try, source the `git.functions` in your environment and call
+them in your git local repository
+
+    source git.functions
+
+this file also source the `colors.shell` in order to produce a color full
+output  
+
+
+Installation
+------------
+
+To install in your system in a way they will be loaded by `~/.bashrc` use this
+script without any argument
+
+    ./install.sh [ uninstall | update | reinstall | help ]
+
+then follow the instructions, in particular source the `git.fuctions` in your
+current bash environment. To install the development version switch the branch
+with `git switch devel` and the run the installer from that branch.
+
+
 List of the functions
 ---------------------
 
@@ -151,31 +176,6 @@ then decide to proceed further with `exit` or definitely stop with `exit 1`.
     or enter 'exit 1' to abort completely
 
     +git:devel> exit 1
-
-
-Usage
------
-
-Just to give it a try, source the `git.functions` in your environment and call
-them in your git local repository
-
-    source git.functions
-
-this file also source the `colors.shell` in order to produce a color full
-output  
-
-
-Installation
-------------
-
-To install in your system in a way they will be loaded by `~/.bashrc` use this
-script without any argument
-
-    ./install.sh [ uninstall | update | reinstall | help ]
-
-then follow the instructions, in particular source the `git.fuctions` in your
-current bash environment. To install the development version switch the branch
-with `git switch devel` and the run the installer from that branch.
 
 
 Password cache
