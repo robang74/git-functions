@@ -23,7 +23,7 @@ source "${TOPDIR}/git.functions"
 cd ${TOPDIR}
 
 DESTDIR=".git-functions"
-SRCNAME=$(readlink -fem "$HOME/${DESTDIR}/git.functions")
+SRCNAME=$(readlink -fem "$HOME/${DESTDIR}/git.shell")
 GITREPO="https://github.com/robang74/git-functions.git"
 SRCCMD="test -r ${SRCNAME} && source ${SRCNAME}"
 BRANCH="$(bcur)"
@@ -33,6 +33,21 @@ if [ -z "${BRANCH}" ]; then
     exit 1
 fi
 
+function bashrc_clean() {
+    local va vb
+    va='source.*git.functions'
+    vb='source.*git.shell'
+    bashrc=$(grep -ve "$va" -e "$vb" .bashrc ||:)
+    test -n "${bashrc}" || return 0
+    echo "${bashrc}" >.bashrc
+}
+
+function bashrc_setup() {
+    if ! grep -q -- "${SRCCMD}" .bashrc 2>&3; then
+        echo "${SRCCMD}" >> .bashrc
+    fi
+}
+
 cd
 set -- "${1:-}"
 if [ "$1" == "install" -o -z "$1" ]; then
@@ -41,15 +56,15 @@ if [ "$1" == "install" -o -z "$1" ]; then
         exit 1
     fi
 elif [ "$1" == "uninstall" ]; then
+    bashrc_clean
     test ! -d "${DESTDIR}" && exit 0
     rm -rf "${DESTDIR}" && echo "\n${DONE}: uninstall\n"
-    bashrc=$(grep -ve "source.*git.functions" .bashrc ||:)
-    test -n "${bashrc}" || exit 0
-    echo "${bashrc}" >.bashrc
     exit $?
 elif [ "$1" == "update" -a -d "${DESTDIR}" ]; then
     ret=0
     op="${ERROR}"
+    bashrc_clean
+    bashrc_setup
     cd "${DESTDIR}" && bsw ${BRANCH} && rpull && op="${DONE}" || ret=1
     echo -e "\n$op: install path ${PWD}\n"
     eval ${SRCCMD} || ret=1
@@ -74,10 +89,6 @@ elif [ -n "$1" ]; then
 fi
 
 git clone ${GITREPO} "${DESTDIR}"
-if ! grep -- "${SRCCMD}" .bashrc 2>&3; then
-    echo "${SRCCMD}" >> .bashrc
-fi
-
 cd "${DESTDIR}"
 bsw "${BRANCH}"
 
@@ -96,6 +107,7 @@ else
     echo -e "\n${NOTICE}: using the pre-compiled x86_64 isatty_override.so"
 fi
 
+bashrc_setup
 echo "\n${DONE}: git-functions installed in ${HOME}/${DESTDIR}\n"
 echo "The git-function will be loaded by defaul via ~/.bashrc enviroment"
 echo "For this bash, load functions via source ~/${DESTDIR}/git.functions"

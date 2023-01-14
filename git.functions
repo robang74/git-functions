@@ -7,8 +7,11 @@
 #
 # SPDX-License-Identifier: GPLv3
 #
-#set -x # RAF: source, paired with set +x at the end of file
-set -u # RAF: only for devel, comment in main
+#set -x && resetx="set +x" # RAF: source, paired with set +x at the end of file
+set -u                     # RAF: only for devel, comment in main
+
+if ! type _op_action 2>&1 | grep -q "is a function"; then #####################
+###############################################################################
 
 # RAF: restricted shell cannot redirect to file but it is fine
 #      to redirect to a open file descriptor towards /dev/null
@@ -18,9 +21,12 @@ exec 3>/dev/null
 SRC_FILE=$(readlink -f ${BASH_SOURCE[0]})
 export gfrefdir_path="$(dirname ${SRC_FILE})"
 export gfreload_pathname="${SRC_FILE}"
+export gfcolors_pathname="${gfrefdir_path}/colors.shell"
+export gitshell_pathname="${gfrefdir_path}/git.shell"
+export gfunctions_pathname="${gfreload_pathname}"
 
 if ! echo "${PATH}" | egrep -q $gfrefdir_path; then
-    export PATH="$gfrefdir_path/bin:${PATH}"
+    export PATH="${gfrefdir_path}/bin:${PATH}"
 fi
 
 export BRNC_SWTC_PREV_BRNC=${BRNC_SWTC_PREV_BRNC:-}
@@ -67,13 +73,22 @@ export -f _is_sha_in_line
 
 ###############################################################################
 
-source "${gfrefdir_path}/colors.shell"
+source "${gfcolors_pathname}"
 
 test ${gflistshow:-0} -ne 0 && set -x #########################################
 
 #if [ -r "${gfrefdir_path}/isatty_override.so" ]; then
 #   this could be useful for the future
 #fi
+
+source "${gitshell_pathname}"
+export -f gitshell
+export -f gfreload
+export -f gfupdate
+export -f gflist
+export -f gfhelp
+
+###############################################################################
 
 function no-opts() {
     local i
@@ -112,30 +127,6 @@ function egnc() {
     command egrep --color=never "$@"
 }
 export -f egnc
-
-function ps1p() {
-    echo 'export PS1="\[${nlcyn}\]${gitshell_prefix:-+}\[${crst}\]:\[${nlgrn}\]'\
-'git-\$(opst||echo shell)\[${crst}\]:\[${nlylw}\]\$(bcur||hcur)\[${crst}\]> "'
-}
-export -f ps1p
-
-function gitshell() {
-    declare -i ret=0
-    local gitrc=$(mktemp -p "${TMPDIR:-}")
-    gitshell_prefix=${gitshell_prefix:-+}
-    if true; then
-        egnc -v "source.*colors.shell"  "${gfreload_pathname}"
-        cat "${gfrefdir_path}/colors.shell"
-        echo "export term=XTERM"
-        ps1p
-        echo "$@"
-    fi >> "${gitrc}"
-    chmod a-w "$gitrc"
-    bash --rcfile "${gitrc}" -ri 3>/dev/null || ret=$?
-    unset gitshell_prefix
-    rm -f "${gitrc}"
-    return $ret
-}
 
 function ce() {
     test -z "${1:-}" && return 1
@@ -208,34 +199,6 @@ function ugit() {
     echo; return $ret
 }
 export -f ugit
-
-function gfreload() {
-    test -z "${1:-}" && p="${gfreload_pathname}" || p="$1"
-    if source "$p"; then
-        gfreload_pathname="$p"
-        gfrefdir_path=$(dirname "$p")
-        echo -e "\n${DONE}: install path ${gfrefdir_path}\n"
-    fi
-}
-export -f gfreload
-
-function gfupdate() {
-    ${gfreload_pathname/git.functions/install.sh} update
-}
-export -f gfupdate
-
-function gflist() {
-    gflistshow=1
-    gfreload 2>&1 | sed -ne "s,.*export -f ,,p"
-    gflistshow=0
-}
-export -f gflist
-
-function gfhelp() {
-    echo -e "\n${USAGE}: $(gflist | tr '\n' ' ')\n"
-    echo -e "${NOTICE}: install path ${gfrefdir_path}\n"
-}
-export -f gfhelp
 
 function irb() {
     if opst; then st; return 1; fi
@@ -895,6 +858,7 @@ function rcur() {
 export -f rcur
 
 test ${gflistshow:-0} -ne 0 && set +x #########################################
-
-#set +x
+fi ############################################################################
+${resetx:-}
 true
+

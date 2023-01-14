@@ -1,0 +1,116 @@
+#!/bin/bash
+#
+# Copyright (c) Roberto A. Foglietta, 2022-2023
+#
+# Authors:
+#  Roberto A. Foglietta <roberto.foglietta@gmail.com>
+#
+# SPDX-License-Identifier: GPLv3
+#
+#set -x && resetx="set +x" # RAF: source, paired with set +x at the end of file
+set -u                     # RAF: only for devel, comment in main
+
+if ! type gitshell 2>&1 | grep -q "is a function"; then #######################
+###############################################################################
+
+# RAF: restricted shell cannot redirect to file but it is fine
+#      to redirect to a open file descriptor towards /dev/null
+#      So, also exec could fail but in gitshell &3 is just open
+exec 3>/dev/null
+
+SRC_FILE=$(readlink -f ${BASH_SOURCE[0]})
+export gfrefdir_path="$(dirname ${SRC_FILE})"
+export gfcolors_pathname="${gfrefdir_path}/colors.shell"
+export gfunctions_pathname="${gfrefdir_path}/git.functions"
+export gitshell_pathname="${gfrefdir_path}/git.shell"
+export gfreload_pathname="${gitshell_pathname=}"
+
+if ! echo "${PATH}" | egrep -q $gfrefdir_path; then
+    export PATH="$gfrefdir_path/bin:${PATH}"
+fi
+
+source "${gfcolors_pathname}"
+
+function egnc() {
+    command egrep --color=never "$@"
+}
+export -f egnc
+
+function ps1p() {
+    echo 'export PS1="\[${nlcyn}\]${gitshell_prefix:-+}\[${crst}\]:\[${nlgrn}\]'\
+'git-\$(opst||echo shell)\[${crst}\]:\[${nlylw}\]\$(bcur||hcur)\[${crst}\]> "'
+}
+export -f ps1p
+
+function ps1s() {
+    eval "$(ps1p)"
+}
+export -f ps1s
+
+function gitshell() {
+    declare -i ret=0
+    local gitrc=$(mktemp -p "${TMPDIR:-}")
+    function stripsource() {
+        local va="source.*gfcolors_pathname"
+        local vb="source.*gfunctions_pathname"
+        local vc="source.*gitshell_pathname"
+        egnc -ve "$va" -ve "$vb" -ve "$vc" "$1"
+    }
+    gitshell_prefix=${gitshell_prefix:-+}
+    if true; then
+        stripsource ${gfcolors_pathname}
+        stripsource ${gitshell_pathname}
+        stripsource ${gfunctions_pathname}
+        echo "unset gfcolors_pathname gitshell_pathname"
+        echo "export gfunctions_pathname='"${gitrc}"'"
+        echo "export gfreload_pathname=='"${gitrc}"'"
+        echo "gflist() { echo -e '"$(gflist)"'; }"
+        echo "gitshell() { env bash -ri; }"
+        echo "gfreload() { :; }"
+        echo "gfupdate() { :; }"
+        echo "export term=XTERM"
+        echo "echo gitrc: ${gitrc}"
+        ps1p
+        echo "$@"
+    fi >> "${gitrc}"
+    chmod a-w "$gitrc"
+    env -i bash --rcfile "${gitrc}" -ri 3>/dev/null || ret=$?
+    unset gitshell_prefix
+    rm -f "${gitrc}"
+    return $ret
+}
+
+function gfreload() {
+    test -z "${1:-}" && p="${gfreload_pathname}" || p="$1"
+    unset -f colors_codes_generation _op_action gitshell
+    if source "$p"; then
+        gfreload_pathname="$p"
+        gfrefdir_path=$(dirname "$p")
+        echo -e "\n${DONE}: install path ${gfrefdir_path}\n"
+    fi
+}
+export -f gfreload
+
+function gfupdate() {
+    ${gfreload_pathname/git.functions/install.sh} update
+}
+export -f gfupdate
+
+function gflist() {
+    test -r ${gfunctions_pathname} || return 1
+    sed -ne "s,^export -f \([^_][^ ]*\).*,\\1,p" ${gfunctions_pathname} | egnc .
+}
+export -f gflist
+
+function gfhelp() {
+    echo -e "\n${USAGE}: $(gflist | tr '\n' ' ')\n"
+    echo -e "${NOTICE}: install path ${gfrefdir_path}\n"
+}
+export -f gfhelp
+
+###############################################################################
+else echo "git.shell not reloaded: ${SRC_FILE}"
+fi ############################################################################
+${resetx:-}
+true
+

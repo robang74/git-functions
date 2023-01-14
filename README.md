@@ -15,29 +15,35 @@ command unless a functions-set wrap layer is used. This is the point in which
 than their minds. Have fun <3
 
 
-Usage
------
-
-Just to give it a try, source the `git.functions` in your environment and call
-them in your git local repository
-
-    source git.functions
-
-this file also source the `colors.shell` in order to produce a color full
-output  
-
-
 Installation
 ------------
 
 To install in your system in a way they will be loaded by `~/.bashrc` use this
 script without any argument
 
+    git clone https://github.com/robang74/git-functions.git
+    cd git-functions
     ./install.sh [ uninstall | update | reinstall | help ]
 
-then follow the instructions, in particular source the `git.fuctions` in your
+then follow the instructions, in particular source the `git.shell` in your
 current bash environment. To install the development version switch the branch
 with `git switch devel` and the run the installer from that branch.
+
+
+Usage
+-----
+
+After installation your .bashrc will be modified in such a way the `gitshell`
+will be defined as funtion. Calling it - in your git repository - will give
+you the access to the wrap layer:
+
+    cd my-repo.git
+    gitshell
+    gfhelp
+
+this command will display the functions available which are reported and
+briefly described here below. If you need more functions, feel free to add to
+the source code and share the change with the author. Or ask for an addition.
 
 
 List of the functions
@@ -52,7 +58,7 @@ The following list is divided for class of usage and roles
 * `gfhelp`: like `gflist` but in a fancier way
 * `no-opts`: print every arg that does not start with minus
 * `gfupdate`: update the installation and reload the functions
-* `gitshell`: spawns a restricted shell with the git-funtions enviroment
+* `gitshell`: spawns a restricted shell with the git-funtcions enviroment
 * `cdtop`: change directory to the top level of the repository and prints the full path
 * `redef_git`: redefine the function `_git()` which is used internally
 * `reset_git`: reset `_git()` to the default command `git`
@@ -155,7 +161,7 @@ This is a special function used to execute commands (cmds) on multiple branches:
   * -s: `git stash` before go and `git stash pop` when returns
   * -f: fetch all the remotes before starting otherwise run only on locals
 
-A custom branches selction could be specified in this way:
+A custom branches selection could be specified in this way:
 
     BRANCHES="uno due tre" for-all-other-branches 'cmds ${branch}'
 
