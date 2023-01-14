@@ -49,3 +49,22 @@ bsw - should keep in considerration the change of repository
 install.sh should relies on commit hash not branch
 
 lsbr() should be revisited and getops is necessary
+
+--------------------------------------------------------------------------------
+
+commit-move.sh
+
+input hash dsha # no pending modification is required
+export hash # use a better name to avoid collisions
+sw $hash >$hash.diff; add $hash.diff
+for i in $(sf $hash); do
+    cp -arf $i $i.1
+    add $i.1
+done
+cm -m $hash.diff
+irebase $dsha # move the hash commit at the point in which new commit should be inserted)
+ce $(lgrp -s $hash.diff)
+    patch -p1 < $hash.diff 
+        OR
+    xxdiff $file.1 $file
+    
