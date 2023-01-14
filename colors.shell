@@ -188,5 +188,6 @@ fi 2>&3
 
 trap - EXIT ERR
 ###############################################################################
+else echo "$(basename ${BASH_SOURCE[0]}) not reloaded, try again after 'unset -f colors_codes_generation'"
 fi ############################################################################
 true

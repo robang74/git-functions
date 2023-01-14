@@ -104,11 +104,11 @@ Example of `redef_git` and `reset_git` usage:
 * `frmt`: short for `git fetch`, default the first in `lsrmt` or args with opt -a:--all
 * `search`: search for a string in all the commits and report the first found, arg string
 * `irb`, `irebase`: rebase starting from the hash passed or ~n, -n for `HEAD~n`
+* `add`: short for `git add` but opt:-a add all the changes under revision
 * `pa`: format patch apply and create signed commit
 * `ce`: commit edit within a restricted shell
 * `cr`: commit reword, a single SHA as arg
 * `amd`, amend`: shorts for `git amend`
-* `add`: short for `git add`
 * `cm`: short for `git commit`
 * `co`: short for `git checkout`
 * `pull`: short for `git pull`

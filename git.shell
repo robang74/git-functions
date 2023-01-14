@@ -33,7 +33,7 @@ if ! echo "${PATH}" | egrep -q $gfrefdir_path; then
     export PATH="$gfrefdir_path/bin:${PATH}"
 fi
 
-source "${gfcolors_pathname}"
+source "${gfcolors_pathname}" >&3
 
 function egnc() {
     command egrep --color=never "$@"
@@ -148,7 +148,7 @@ function gfhelp() {
 export -f gfhelp
 
 ###############################################################################
-else echo "git.shell not reloaded: ${SRC_FILE}"
+else echo "$(basename ${BASH_SOURCE[0]}) not reloaded, try again after 'unset -f gitshell'"
 fi ############################################################################
 ${resetx:-}
 true

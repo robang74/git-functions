@@ -19,18 +19,29 @@ if ! type _op_action 2>&1 | grep -q "is a function"; then #####################
 exec 3>/dev/null
 
 SRC_FILE=$(readlink -f ${BASH_SOURCE[0]})
+
 export gfrefdir_path="$(dirname ${SRC_FILE})"
 export gfreload_pathname="${SRC_FILE}"
 export gfcolors_pathname="${gfrefdir_path}/colors.shell"
 export gitshell_pathname="${gfrefdir_path}/git.shell"
 export gfunctions_pathname="${gfreload_pathname}"
 
+export BRNC_SWTC_PREV_BRNC=${BRNC_SWTC_PREV_BRNC:-}
+export BRNC_SWTC_PREV_HASH=${BRNC_SWTC_PREV_HASH:-}
+
 if ! echo "${PATH}" | egrep -q $gfrefdir_path; then
     export PATH="${gfrefdir_path}/bin:${PATH}"
 fi
 
-export BRNC_SWTC_PREV_BRNC=${BRNC_SWTC_PREV_BRNC:-}
-export BRNC_SWTC_PREV_HASH=${BRNC_SWTC_PREV_HASH:-}
+#if [ -r "${gfrefdir_path}/isatty_override.so" ]; then
+#   this could be useful for the future
+#fi
+
+source "${gfcolors_pathname}" >&3
+
+source "${gitshell_pathname}" >&3
+
+###############################################################################
 
 function _op_action() {
     local op=""
@@ -72,23 +83,13 @@ function _is_sha_in_line() {
 export -f _is_sha_in_line
 
 ###############################################################################
-
-source "${gfcolors_pathname}"
-
 test ${gflistshow:-0} -ne 0 && set -x #########################################
 
-#if [ -r "${gfrefdir_path}/isatty_override.so" ]; then
-#   this could be useful for the future
-#fi
-
-source "${gitshell_pathname}"
 export -f gitshell
 export -f gfreload
 export -f gfupdate
 export -f gflist
 export -f gfhelp
-
-###############################################################################
 
 function no-opts() {
     local i
@@ -317,7 +318,11 @@ function reflog() {
 export -f reflog
 
 function add() {
-	_git add "$@"
+    if [ "x$1" == "x-a" ]; then
+        _git add $(git status -s | awk '{ /^M/; print $2 }')
+    else
+        _git add "$@"
+    fi
 }
 export -f add
 
@@ -611,8 +616,11 @@ export -f bsw
 function bcur() {
     if [ "x${1:-}" == "x-e" ]; then
         local opts="--current --topo-order --no-color"
-        bcur || command git show-branch $opts | head -n1 |\
-            awk '{ gsub(/[][]/,"",$2); print $2 }' | egnc .
+        bcur || command git show-branch $opts |\
+            sed -ne "s/ *\* *\[\([^ ]*\)] .*/\\1/p" |\
+                head -n1 | egnc .
+#           command git show-branch $opts | head -n1 |\
+#           awk '{ gsub(/[][]/,"",$2); print $2 }' | egnc .
         return $?
     elif [ "x${1:-}" == "x-c" ]; then
         command git branch --show-current --no-color | egnc .
@@ -858,6 +866,7 @@ function rcur() {
 export -f rcur
 
 test ${gflistshow:-0} -ne 0 && set +x #########################################
+else echo "$(basename ${SRC_FILE}) would not reload, try again after 'unset -f _op_action'"
 fi ############################################################################
 ${resetx:-}
 true
