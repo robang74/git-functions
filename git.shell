@@ -26,7 +26,7 @@ export gfrefdir_path="$(dirname ${SRC_FILE})"
 export gfcolors_pathname="${gfrefdir_path}/colors.shell"
 export gfunctions_pathname="${gfrefdir_path}/git.functions"
 export gitshell_pathname="${gfrefdir_path}/git.shell"
-export gfreload_pathname="${gitshell_pathname=}"
+export gfreload_pathname="${gitshell_pathname}"
 export gf_gitshell_rcinit=".gitshrc"
 
 if ! echo "${PATH}" | egrep -q $gfrefdir_path; then
@@ -88,7 +88,7 @@ function gitshell() {
             stripsource ${gfunctions_pathname}
             echo "unset gfcolors_pathname gitshell_pathname"
             echo "export gfunctions_pathname='${gitshrc}'"
-            echo "export gfreload_pathname=='${gitshrc}'"
+            echo "export gfreload_pathname='${gitshrc}'"
             echo "gflist() { echo -e '"$(gflist)"'; }"
             echo "gfreload() { :; }"
             echo "gfupdate() { :; }"
