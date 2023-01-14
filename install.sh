@@ -37,15 +37,18 @@ function bashrc_clean() {
     local va vb
     va='source.*git.functions'
     vb='source.*git.shell'
-    bashrc=$(grep -ve "$va" -e "$vb" .bashrc ||:)
+    bashrc=$(grep -ve "$va" -e "$vb" ~/.bashrc ||:)
     test -n "${bashrc}" || return 0
-    echo "${bashrc}" >.bashrc
+    echo "${bashrc}" >~/.bashrc
 }
 
 function bashrc_setup() {
-    if ! grep -q -- "${SRCCMD}" .bashrc 2>&3; then
-        echo "${SRCCMD}" >> .bashrc
+    if ! grep -qe "source.*${SRCNAME}" ~/.bashrc 2>&3; then
+        echo "${SRCCMD}" >> ~/.bashrc
+        tail -n1 ~/.bashrc | grep -qe "source.*${SRCNAME}"
+        return $?
     fi
+    return 0
 }
 
 cd
@@ -110,5 +113,5 @@ fi
 bashrc_setup
 echo "\n${DONE}: git-functions installed in ${HOME}/${DESTDIR}\n"
 echo "The git-function will be loaded by defaul via ~/.bashrc enviroment"
-echo "For this bash, load functions via source ~/${DESTDIR}/git.functions"
+echo "For this bash, load functions via source ~/${DESTDIR}/$(basename ${SRCNAME})"
 echo
