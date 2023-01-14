@@ -48,35 +48,56 @@ function ps1s() {
 export -f ps1s
 
 function gitshell() {
-    declare -i ret=0
-    local gitrc=$(mktemp -p "${TMPDIR:-}")
     function stripsource() {
         local va="source.*gfcolors_pathname"
         local vb="source.*gfunctions_pathname"
         local vc="source.*gitshell_pathname"
         egnc -ve "$va" -ve "$vb" -ve "$vc" "$1"
     }
-    gitshell_prefix=${gitshell_prefix:-+}
-    if true; then
-        stripsource ${gfcolors_pathname}
-        stripsource ${gitshell_pathname}
-        stripsource ${gfunctions_pathname}
-        echo "unset gfcolors_pathname gitshell_pathname"
-        echo "export gfunctions_pathname='"${gitrc}"'"
-        echo "export gfreload_pathname=='"${gitrc}"'"
-        echo "gflist() { echo -e '"$(gflist)"'; }"
-        echo "gitshell() { env bash -ri; }"
-        echo "gfreload() { :; }"
-        echo "gfupdate() { :; }"
-        echo "export term=XTERM"
-        echo "echo gitrc: ${gitrc}"
-        ps1p
-        echo "$@"
-    fi >> "${gitrc}"
-    chmod a-w "$gitrc"
-    env -i bash --rcfile "${gitrc}" -ri 3>/dev/null || ret=$?
-    unset gitshell_prefix
-    rm -f "${gitrc}"
+
+    local gitrc="./.gitshrc"
+    declare -i gitshellenv=${gitshellenv:-0} ret=0
+    export gitshell_prefix=${gitshell_prefix:-}
+    if [ "x${gitshell_prefix:0:1}" == "x+" -o -z "${gitshell_prefix}" ]; then
+        gitshell_prefix="+${gitshell_prefix}" 
+    fi
+
+    if [ ! -e "${gitrc}" ]; then
+        if true; then
+            echo "#!/bin/env bash"
+            stripsource ${gfcolors_pathname}
+            stripsource ${gitshell_pathname}
+            stripsource ${gfunctions_pathname}
+            echo "unset gfcolors_pathname gitshell_pathname"
+            echo "export gfunctions_pathname='"${gitrc}"'"
+            echo "export gfreload_pathname=='"${gitrc}"'"
+            echo "gflist() { echo -e '"$(gflist)"'; }"
+            echo "gfreload() { :; }"
+            echo "gfupdate() { :; }"
+            echo "export gitc='"${gitrc}"'"
+            echo "echo gitrc: ${gitrc}"
+            ps1p
+            echo "$@"
+        fi | tee "${gitrc}" >&3
+        chmod a-w "$gitrc"
+    fi
+
+    let gitshellenv++
+    export gitshellenv
+    local gitbash="gitshellenv=${gitshellenv} bash --rcfile '${gitrc}' -ri"
+    if [ $gitshellenv -eq 1 ]; then
+        eval $gitbash 3>/dev/null || ret=$?
+    else
+        eval $gitbash || ret=$?
+    fi
+    let gitshellenv--
+    if [ $gitshellenv -le 0 ]; then
+        rm -f "$gitrc" 
+        unset gitshell_prefix gitshellenv
+    else
+        gitshell_prefix="$(eval printf '+%.0s' {1..$gitshellenv})"
+    fi
+
     return $ret
 }
 
