@@ -646,7 +646,22 @@ function bsw() {
 export -f bsw
 
 function bcur() {
-    _git branch --show-current | egnc .
+    if [ "x${1:-}" == "x-e" ]; then
+        local opts="--current --topo-order --no-color"
+        bcur || command git show-branch $opts | head -n1 |\
+            awk '{ gsub(/[][]/,"",$2); print $2 }' | egnc .
+        return $?
+    elif [ "x${1:-}" == "x-c" ]; then
+        command git branch --show-current --no-color | egnc .
+        return $?
+    else
+        local bn=$(lsbr -c);
+        if [ "$(hconv $bn)" == "$(hcur)" ]; then
+            echo $bn
+        else
+            return 1
+        fi
+    fi
 }
 export -f bcur
 
@@ -868,12 +883,16 @@ function search() {
 export -f search
 
 function rbcur() {
-    command git status -sb | head -n1 | cut -d '.' -f4 | awk '{ print $1 }'
+    local i cb=$(bcur)
+    test -z "$cb" && return 1
+    for i in $(rmt); do
+        echo $i/$cb
+    done | egnc .
 }
 export -f rbcur
 
 function rcur() {
-    rbcur | cut -d/ -f1
+    rbcur | cut -d/ -f1 | egnc .
 }
 export -f rcur
 
