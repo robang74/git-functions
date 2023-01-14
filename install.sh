@@ -97,6 +97,6 @@ else
 fi
 
 echo "\n${DONE}: git-functions installed in ${HOME}/${DESTDIR}\n"
-echo "The git-function will be loaded by defaul vi ~/.bashrc enviroment"
+echo "The git-function will be loaded by defaul via ~/.bashrc enviroment"
 echo "For this bash, load functions via source ~/${DESTDIR}/git.functions"
 echo
