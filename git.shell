@@ -18,12 +18,16 @@ if ! type gitshell 2>&1 | grep -q "is a function"; then #######################
 #      So, also exec could fail but in gitshell &3 is just open
 exec 3>/dev/null
 
+#echo "loading git.shell..."
+#echo "cmdline: ${BASH_SOURCE[@]}"
+
 SRC_FILE=$(readlink -f ${BASH_SOURCE[0]})
 export gfrefdir_path="$(dirname ${SRC_FILE})"
 export gfcolors_pathname="${gfrefdir_path}/colors.shell"
 export gfunctions_pathname="${gfrefdir_path}/git.functions"
 export gitshell_pathname="${gfrefdir_path}/git.shell"
 export gfreload_pathname="${gitshell_pathname=}"
+export gf_gitshell_rcinit=".gitshrc"
 
 if ! echo "${PATH}" | egrep -q $gfrefdir_path; then
     export PATH="$gfrefdir_path/bin:${PATH}"
@@ -35,6 +39,20 @@ function egnc() {
     command egrep --color=never "$@"
 }
 export -f egnc
+
+gitglobign=$(command git config --global --get core.excludesfile)
+if [ -z "${gitglobign}" ]; then
+    git config --global core.excludesfile "$HOME/.gitignore"
+    gitglobign=$(command git config --global --get core.excludesfile)
+fi
+if [ -n "${gitglobign}" ]; then
+    touch "${gitglobign}"
+    egnc -qw "${gf_gitshell_rcinit}" "${gitglobign}" ||\
+        echo "${gf_gitshell_rcinit}" | tee -a "${gitglobign}" >&3
+fi
+unset gitglobign
+
+###############################################################################
 
 function ps1p() {
     echo 'export PS1="\[${nlcyn}\]${gitshell_prefix:-+}\[${crst}\]:\[${nlgrn}\]'\
@@ -55,36 +73,36 @@ function gitshell() {
         egnc -ve "$va" -ve "$vb" -ve "$vc" "$1"
     }
 
-    local gitrc="./.gitshrc"
+    local gitshrc="./${gf_gitshell_rcinit}"
     declare -i gitshellenv=${gitshellenv:-0} ret=0
     export gitshell_prefix=${gitshell_prefix:-}
     if [ "x${gitshell_prefix:0:1}" == "x+" -o -z "${gitshell_prefix}" ]; then
         gitshell_prefix="+${gitshell_prefix}" 
     fi
 
-    if [ ! -e "${gitrc}" ]; then
+    if [ ! -e "${gitshrc}" ]; then
         if true; then
             echo "#!/bin/env bash"
             stripsource ${gfcolors_pathname}
             stripsource ${gitshell_pathname}
             stripsource ${gfunctions_pathname}
             echo "unset gfcolors_pathname gitshell_pathname"
-            echo "export gfunctions_pathname='"${gitrc}"'"
-            echo "export gfreload_pathname=='"${gitrc}"'"
+            echo "export gfunctions_pathname='${gitshrc}'"
+            echo "export gfreload_pathname=='${gitshrc}'"
             echo "gflist() { echo -e '"$(gflist)"'; }"
             echo "gfreload() { :; }"
             echo "gfupdate() { :; }"
-            echo "export gitc='"${gitrc}"'"
-            echo "echo gitrc: ${gitrc}"
+            echo "export gitc='"${gitshrc}"'"
+#           echo "echo gitshrc: ${gitshrc}"
             ps1p
             echo "$@"
-        fi | tee "${gitrc}" >&3
-        chmod a-w "$gitrc"
+        fi | tee "${gitshrc}" >&3
+        chmod a-w "$gitshrc"
     fi
 
     let gitshellenv++
     export gitshellenv
-    local gitbash="gitshellenv=${gitshellenv} bash --rcfile '${gitrc}' -ri"
+    local gitbash="gitshellenv=${gitshellenv} bash --rcfile '${gitshrc}' -ri"
     if [ $gitshellenv -eq 1 ]; then
         eval $gitbash 3>/dev/null || ret=$?
     else
@@ -92,7 +110,7 @@ function gitshell() {
     fi
     let gitshellenv--
     if [ $gitshellenv -le 0 ]; then
-        rm -f "$gitrc" 
+        rm -f "$gitshrc"
         unset gitshell_prefix gitshellenv
     else
         gitshell_prefix="$(eval printf '+%.0s' {1..$gitshellenv})"
