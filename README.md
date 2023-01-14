@@ -15,6 +15,17 @@ command unless a functions-set wrap layer is used. This is the point in which
 than their minds. Have fun <3
 
 
+Usage
+-----
+
+Just to give it a try, source the `git.functions` in your environment and call
+them in your git local repository
+
+    source git.functions
+
+this file also source the `colors.shell` in order to produce a color full output
+
+
 Installation
 ------------
 
@@ -267,6 +278,7 @@ header, here summarised:
 * `git.functions`: GPLv3
 * `cr-editor.sh`: GPLv3
 * `install.sh`: GPLv3
+* 'git.shell': GPLv3
 
 
 Author

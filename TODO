@@ -1,3 +1,15 @@
+#################### TODO ####################
+
+vi deve presentare la sintassi colorata anche in gitshell meglio se di crea un file di configurazione per l'utente da esportare
+
+    autocmd BufNewFile,BufRead *.meals set syntax=json
+
+lsrmt and rmt are equivalent but they should not so change lsrmt also in the code
+
+gitshell should not start if source files are missing
+
+change install.sh in such a way can be used in this way: wget https://raw.githubusercontent.com/robang74/git-functions/main/install.sh -O - | bash -
+
 git config --global alias.amend-to '!f() { SHA=`git rev-parse "$1"`; git stash -k && git commit --fixup "$SHA" && GIT_SEQUENCE_EDITOR=true git rebase --interactive --autosquash "$SHA^" && git stash pop; }; f'
 
 The name amend-to seems appropriate IMHO. Compare the flow with --amend:
@@ -27,11 +39,15 @@ ce $(lgrp -s $hash.diff)
     
 --------------------------------------------------------------------------------
 
+pcache usare config value user.password
+
 gfreload & Co.should do nothing in girshell
 
 gitshell as separate file for users
 
 in cr-editor do not set vi as default but read the config before
+
+gitshell quando muore lascia in giro .gitshrc* che vanno eliminati ma solo dopo aver verficato che non siano aperti da un qualche processo
 
 forig: rinominare frmt? 
 ok - should fetch the only source present even if not "origin"
@@ -49,6 +65,26 @@ bsw - should keep in considerration the change of repository
 install.sh should relies on commit hash not branch
 
 lsbr() should be revisited and getops is necessary
+
+ff va utilizzato getopts
+
+upstream a branch with git branch -u private/npriv4
+
+
+#tagdel -a:
+#    for dst in $(lsrmt); do
+#       _git push --delete $dst $tag
+#    done
+
+tagdel -a:
+    sha=$(command git rev-parse $tag)
+    bra=$(lsbr -c $sha)
+    for i in $bra; do
+        lst=$(lsbr -r | egnc "/$i$" | cut -d/ -f1)
+        for dst in $lst; do
+            _git push --delete $dst $tag
+        done
+    done
 
 --------------------------------------------------------------------------------
 
