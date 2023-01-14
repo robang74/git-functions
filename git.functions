@@ -586,17 +586,26 @@ export -f chpk
 
 function lsbr() {
     local opt="-l"
+    if [ "x${1:-}" == "x-c" ]; then
+        bcur -c && return 0
+        opt="--no-color --contains"
+        command git branch $opt |\
+            sed -e 's,^* ,,' -e "s,.* detached .*,," |\
+                egnc .
+        return $?
+    fi
     if [ "x${1:-}" == "x-a" -o "x${1:-}" == "x-r" ]; then
         opt="$1"; shift
     fi
+    opt="$opt --no-color"
     if test -z "${1:-}"; then
-        command git branch ${opt} --no-color | sed -e "s,..,," -e "s,remotes/,," |\
+        command git branch ${opt} | sed -e "s,..,," -e "s,remotes/,," |\
             awk '{ print $1 }' | egnc -ve "/HEAD$" -ve "\(HEAD$" | sort
         return 0
     fi
     declare -i ret=0
     while test -n "${1:-}"; do
-        command git branch ${opt} --no-color --list "$1" |\
+        command git branch ${opt} --list "$1" |\
            sed -e "s,..,," -e "s,remotes/,," | egnc . || ret=1
         shift
     done
@@ -807,22 +816,27 @@ function tagl() {
 export -f tagl
 
 function rst() {
-    local opt=""
-    if [ "x${1:-}" == "x-h" ]; then
-        opt="--hard"
+    test -z "${1:-}" && return 1
+    local i rm="" bn="" opts="" hd=""
+    for i in "$@"; do
+        if [ "x$1" == "x-h" ]; then
+            hd="--hard"
+        elif [ "x$1" == "x-r" ]; then
+            rm="$(rcur | head -n1)"
+            rm="${rm:+$rm/}"
+        elif [ "x$1" == "x--branch-head" ]; then
+            bn="$(bcur -e)"
+        else
+            opts="$opts $1"
+        fi
         shift
-    fi
-    _git reset $opt "$@"
+    done
+    _git reset $hd ${rm}${bn} $opts
 }
 export -f rst
 
 function hrst() {
-    test -z "${1:-}" && return 1
-    if [ "$1" == "x-r" ]; then
-       rst -h $(rbcur) "$@"
-    else
-       rst -h "$@"
-    fi
+    rst -h "$@"
 }
 export -f hrst
 
