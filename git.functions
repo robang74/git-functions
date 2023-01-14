@@ -546,7 +546,7 @@ export -f pop
 
 function tagdel() {
     test -z "${1:-}" && return 1
-    _git push --delete origin "$1"
+    _git push --delete $(rcur | head -n1) "$1"
     _git tag -d "$@"
 }
 export -f tagdel
@@ -555,7 +555,7 @@ function tagadd() {
     test -z "${1:-}" && return 1
     local tag="$1"; shift
     _git tag -a "$tag" "$@" -m "$tag" && \
-        _git push origin --tags
+        _git push $(rcur | head -n1) --follow-tags
 }
 export -f tagadd
 
@@ -684,8 +684,6 @@ function hcur() {
     hconv HEAD
 }
 export -f hcur
-
-
 
 function for-all-other-branches() {
     test -z "${1:-}" && return 1
