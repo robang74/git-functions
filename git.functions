@@ -453,7 +453,7 @@ function pcache() {
             history -d -2 || history -c
         fi >&3 2>&1
 		shift 2
-	elif [ "x${1:-}" == "x--stop" ]; then
+	elif [ "x${1:-}" == "x--stop" -o "x${1:-}" == "xstop" ]; then
 		t=0
 	elif [ "x${1:-}" == "x--time" -a -n "${2:-}" ]; then
 		t=$2; [ $t -lt 600 ] && t=600
@@ -482,9 +482,19 @@ function pcache() {
         local gitpasswd=$(getgit_passwd "$d/.gitpasswd")
 		local ch="!f() { echo password='$gitpasswd'; }; f"
 
+        if [ -z "$gitpasswd" ]; then
+            ch="manager"
+        elif [ -n "${1:-}" ]; then
+            for i in $(lsrmt); do
+                rmturl=$(git remote get-url "$i" | sed -ne "s,\(http[s:]*//\)[^@]*@*,\\1${1}@,p")
+                git remote set-url "$1" $rmturl
+                git remote get-url "$1"
+            done
+        fi
+
 		command git config credential.helper "$ch"
-        command git config credential.credentialstore "$pc"
         command git config user.password "$gitpasswd"
+        command git config credential.credentialstore "store"
 #       command git -c credential.helper="$ch" push --force --dry-run 2>&3
 
 		echo -e "\n${DONE}: git password cache enable for ${t}s eq. to $[t/3600]h $[(t%3600)/60]m $[t%60]s"
