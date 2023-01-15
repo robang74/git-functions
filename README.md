@@ -205,6 +205,16 @@ So, no one of these functions will be able to interfere with your security
 policy but you will need to use `install.sh update` to update your
 git-functions installation.
 
+The alternative is to store the password in your home git global config or in
+the current git local config and pcache will retrieve your password from there.
+
+The first time that `pcache` runs, it would be better setting the git username:
+
+    pcache --user $git_my_user_name
+
+Otherwise the username will be asked by the cache manager but will be lost when
+the cache will expire. Setting the user works on https remote repositories.
+
 
 isatty() override
 -----------------

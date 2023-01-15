@@ -443,7 +443,7 @@ function pcache() {
         fi | awk '{ print $3 }' | egnc . | tail -n1
     }
 	local -i t=3600
-    local gitpasswd_filename=".gitpasswd"
+    local gituser="" gitpasswd_filename=".gitpasswd"
 	local d=$(command git rev-parse --show-toplevel)
     local gitpasswd_filepath="$d/$gitpasswd_filename"
 	if [ "x${1:-}" == "x--save" -a -n "${2:-}" ]; then
@@ -455,6 +455,9 @@ function pcache() {
 		shift 2
 	elif [ "x${1:-}" == "x--stop" -o "x${1:-}" == "xstop" ]; then
 		t=0
+	elif [ "x${1:-}" == "x--user" -a -n "${2:-}" ]; then
+        gituser=$2
+        shift 2
 	elif [ "x${1:-}" == "x--time" -a -n "${2:-}" ]; then
 		t=$2; [ $t -lt 600 ] && t=600
 		echo -e "\n${NOTICE}: timeout '$2' has been set to $t seconds\n"
@@ -482,13 +485,13 @@ function pcache() {
         local gitpasswd=$(getgit_passwd "$d/.gitpasswd")
 		local ch="!f() { echo password='$gitpasswd'; }; f"
 
-        if [ -z "$gitpasswd" ]; then
-            ch="manager"
-        elif [ -n "${1:-}" ]; then
+        test -z "$gitpasswd" && ch="manager"
+        if [ -n "$gituser" ]; then
             for i in $(lsrmt); do
-                rmturl=$(git remote get-url "$i" | sed -ne "s,\(http[s:]*//\)[^@]*@*,\\1${1}@,p")
-                git remote set-url "$1" $rmturl
-                git remote get-url "$1"
+                rmturl=$(command git remote get-url $i |\
+                    sed -ne "s,\(http[s:]*//\)[^@]*@*,\\1${gituser}@,p")
+                command git remote set-url $i $rmturl
+                command git remote get-url $i
             done
         fi
 
@@ -496,12 +499,13 @@ function pcache() {
         command git config user.password "$gitpasswd"
         command git config credential.credentialstore "store"
 #       command git -c credential.helper="$ch" push --force --dry-run 2>&3
-
 		echo -e "\n${DONE}: git password cache enable for ${t}s eq. to $[t/3600]h $[(t%3600)/60]m $[t%60]s"
 	fi
 #   command git config -l | egnc credential
-    echo -e "\nActual git config configurationi about credential and password:\n"
+    echo -e "\nActual git configuration about credential, password and remote urls:\n"
     command git config -l --show-origin --show-scope | egnc -e credential -e user.password
+    echo
+    for i in $(lsrmt); do echo -e "$i:\t$(command git remote get-url $i)"; done
     echo
 }
 export -f pcache
