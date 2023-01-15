@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/env bash
 #
 # Copyright (c) Roberto A. Foglietta, 2022-2023
 #
@@ -10,8 +10,12 @@
 #set -x && resetx="set +x" # RAF: source, paired with set +x at the end of file
 set -u                     # RAF: only for devel, comment in main
 
-if ! type gitshell 2>&1 | grep -q "is a function"; then #######################
+THIS_FILE_NAME="$(basename ${BASH_SOURCE[0]})"
+
+if [ ${GFRELOAD:-0} -ne 0 ]; then #############################################
 ###############################################################################
+
+echo "Loading ${THIS_FILE_NAME} into current bash enviroment"
 
 # RAF: restricted shell cannot redirect to file but it is fine
 #      to redirect to a open file descriptor towards /dev/null
@@ -33,7 +37,10 @@ if ! echo "${PATH}" | egrep -q $gfrefdir_path; then
     export PATH="$gfrefdir_path/bin:${PATH}"
 fi
 
-source "${gfcolors_pathname}" >&3
+if ! type colors_codes_generation 2>&3; then
+    GFRELOAD=1 source "${gfcolors_pathname}"
+    : #RAF: the line above will be stripped
+fi >&3
 
 function egnc() {
     command egrep --color=never "$@"
@@ -70,7 +77,9 @@ function _gitshell() {
         local va="source.*gfcolors_pathname"
         local vb="source.*gfunctions_pathname"
         local vc="source.*gitshell_pathname"
+        echo "GFRELOAD=1; if true; then"
         egnc -ve "$va" -ve "$vb" -ve "$vc" "$1"
+        echo "fi >&3; GFRELOAD=0"
     }
 
     local gitshrc="./${gf_gitshell_rcinit}"
@@ -150,7 +159,7 @@ export -f gitshell
 function gfreload() {
     test -z "${1:-}" && p="${gfreload_pathname}" || p="$(readlink -fem $1)"
     unset -f colors_codes_generation _op_action gitshell
-    if source "$p"; then
+    if GFRELOAD=1 source "$p" >&3; then
         gfreload_pathname="$p"
         gfrefdir_path=$(dirname "$p")
         echo -e "\n${DONE}: reload path ${gfrefdir_path}\n"
@@ -176,7 +185,7 @@ function gfhelp() {
 export -f gfhelp
 
 ###############################################################################
-else echo "$(basename ${BASH_SOURCE[0]}) not reloaded, try again after 'unset -f gitshell'"
+else echo "${THIS_FILE_NAME} not reloaded, try again with 'GFRELOAD=1 source'"
 fi ############################################################################
 ${resetx:-}
 true

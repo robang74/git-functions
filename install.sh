@@ -19,13 +19,13 @@ trap 'echo -e "\n'${ERROR:-ERROR}' in '${THISCMD}' at line ${LINENO} occured, tr
 set -eE
 
 TOPDIR=$(dirname $(readlink -f $0))
-source "${TOPDIR}/git.functions"
+GFRELOAD=1 source "${TOPDIR}/git.functions" >&3
 cd ${TOPDIR}
 
 DESTDIR=".git-functions"
 SRCNAME=$(readlink -fem "$HOME/${DESTDIR}/git.shell")
 GITREPO="https://github.com/robang74/git-functions.git"
-SRCCMD="test -r ${SRCNAME} && source ${SRCNAME}"
+SRCCMD="test -r ${SRCNAME} && GFRELOAD=1 source ${SRCNAME} >/dev/null"
 BRANCH="$(bcur)"
 
 if [ -z "${BRANCH}" ]; then

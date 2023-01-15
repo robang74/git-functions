@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/env bash
 #
 # Copyright (c) Roberto A. Foglietta, 2022-2023
 #
@@ -10,8 +10,12 @@
 #set -x && resetx="set +x" # RAF: source, paired with set +x at the end of file
 set -u                     # RAF: only for devel, comment in main
 
-if ! type _op_action 2>&1 | grep -q "is a function"; then #####################
+THIS_FILE_NAME="$(basename ${BASH_SOURCE[0]})"
+
+if [ ${GFRELOAD:-0} -ne 0 ]; then #############################################
 ###############################################################################
+
+echo "Loading ${THIS_FILE_NAME} into current bash enviroment"
 
 # RAF: restricted shell cannot redirect to file but it is fine
 #      to redirect to a open file descriptor towards /dev/null
@@ -37,9 +41,14 @@ fi
 #   this could be useful for the future
 #fi
 
-source "${gfcolors_pathname}" >&3
-
-source "${gitshell_pathname}" >&3
+if ! type colors_codes_generation 2>&3; then
+    GFRELOAD=1 source "${gfcolors_pathname}"
+    : #RAF: the line above will be stripped
+fi >&3
+if ! type gitshell 2>&3; then
+    GFRELOAD=1 source "${gitshell_pathname}"
+    : #RAF: the line above will be stripped
+fi >&3
 
 ###############################################################################
 
@@ -886,7 +895,7 @@ function rcur() {
 export -f rcur
 
 test ${gflistshow:-0} -ne 0 && set +x #########################################
-else echo "$(basename ${SRC_FILE}) would not reload, try again after 'unset -f _op_action'"
+else echo "${THIS_FILE_NAME} not reloaded, try again with 'GFRELOAD=1 soure'"
 fi ############################################################################
 ${resetx:-}
 true
