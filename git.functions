@@ -162,6 +162,7 @@ function ce() {
         export commit_edit_brch="$(bcur)"
         export commit_edit_head="$(hcur)"
         export commit_edit_hash="${1:-$commit_edit_head}"
+               commit_edit_hash="$(hconv $commit_edit_hash)"
         function exit() {
             local op=$(opst)
             if [ -n "$op" ]; then
@@ -688,9 +689,17 @@ function bsw() {
 export -f bsw
 
 function bcur() {
-    local opts="--current --topo-order --no-color"
-    command git show-branch $opts "$@" | sed -ne "s,[ +]*\[HEAD\].*,," \
-        -e "s/[ +]*\* *\[\([^ ]*\)] .*/\\1/p" | head -n1 | egnc .
+    local text risp opts="--current --topo-order --no-color"
+#   command git show-branch $opts "$@" | sed -ne "s,[ +]*\[HEAD.*\].*,," \
+#       -e "s/[ +]*\* *\[\([^ ]*\)] .*/\\1/p" | head -n1 | egnc .
+    text=$(command git show-branch $opts "$@")
+    declare -i n=$(echo "$text" | egnc -n "^-" | head -n1 | cut -d: -f1)
+    risp=$(echo "$text" | head -n$n | sed -ne "s,[ +]*\[HEAD.*\].*,," \
+        -e "s/[ +]*\* *\[\([^ ]*\)] .*/\\1/p" | head -n1)
+    test -n "$risp" && echo "$risp" && return 0
+    echo "$text" | head -n$[n+1] | tail -n1 | sed -n \
+        -e "s,[ +*\!]\[HEAD.*\].*,," -e "s/[ +*\!]*\[\([^ ]*\)] .*/\\1/p" |\
+            egnc .
     return $?
 
 # ###### RAF, TODO: code to keep for a while, just in case ############
@@ -946,7 +955,7 @@ function rcur() {
 export -f rcur
 
 test ${gflistshow:-0} -ne 0 && set +x #########################################
-else echo "${THIS_FILE_NAME} not reloaded, try again with 'GFRELOAD=1 soure'"
+else echo "${THIS_FILE_NAME} not reloaded, try again with 'GFRELOAD=1 source'"
 fi ############################################################################
 ${resetx:-}
 true
