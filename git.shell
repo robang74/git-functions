@@ -54,8 +54,9 @@ if [ -z "${gitglobign}" ]; then
 fi
 if [ -n "${gitglobign}" ]; then
     touch "${gitglobign}"
-    egnc -qw "${gf_gitshell_rcinit}" "${gitglobign}" ||\
-        echo "${gf_gitshell_rcinit}" | tee -a "${gitglobign}" >&3
+    if ! egnc -q "^${gf_gitshell_rcinit}\*$" "${gitglobign}"; then
+        echo "${gf_gitshell_rcinit}"'*' | tee -a "${gitglobign}" >&3
+    fi
 fi
 unset gitglobign
 
@@ -77,9 +78,7 @@ function _gitshell() {
         local va="source.*gfcolors_pathname"
         local vb="source.*gfunctions_pathname"
         local vc="source.*gitshell_pathname"
-        echo "GFRELOAD=1; if true; then"
         egnc -ve "$va" -ve "$vb" -ve "$vc" "$1"
-        echo "fi >&3; GFRELOAD=0"
     }
 
     local gitshrc="./${gf_gitshell_rcinit}"
@@ -100,34 +99,44 @@ function _gitshell() {
             echo "export gfunctions_pathname='${gitshrc}'"
             echo "export gfreload_pathname='${gitshrc}'"
             echo "gflist() { echo -e '$(gflist)'; }"
-            echo 'gfreload() { echo -e "\n'$WARNING': reload is not permitted is gitshell\n"; }'
-            echo 'gfupdate() { echo -e "\n'$WARNING': update is not permitted is gitshell\n"; }'
+            echo 'gfreload() { echo -e "\n'$WARNING': reload is not allowed is this gitshell\n"; }'
+            echo 'gfupdate() { echo -e "\n'$WARNING': update is not allowed is gitshell\n"; }'
             echo 'exit() { command exit ${1:-} 2>&3; }'
             echo 'gfexit() { exit 123; }'
             echo "export gitc='${gitshrc}'"
 #           echo "echo gitshrc: ${gitshrc}"
-            if [ ${STANDALONE:-0} -ne 0 ]; then
-                echo 'gfreload() { exit; }'
-                echo "declare -r STANDALONE"
-                echo 'echo -e "${blcyn}WELCOME${crst}: enter ${blwht}gfexit${crst} to leave\n"'
-            fi
-            echo "$@"
-            echo "set +x"
         fi | tee "${gitshrc}" >&3
-        chmod a-w "$gitshrc"
+        chmod a-w "${gitshrc}"
     fi
 
     let gitshellenv++
     export gitshellenv
-    local gitbash="gitshellenv=${gitshellenv} bash --rcfile '${gitshrc}' -ri"
+
+    local tmpf="${gitshrc}"
+    tmpf=$(mktemp ${gitshrc}.XXXX)
+    if true; then
+        echo "#!/bin/env bash"
+        echo "GFRELOAD=1 source ${gitshrc} >&3"
+        if [ ${STANDALONE:-0} -ne 0 ]; then
+            echo 'gfreload() { command exit 2>&3; }'
+            echo 'gitshell() { _gitshell "$@"; }'
+            echo 'echo -e "${blcyn}WELCOME${crst}: enter ${blwht}gfexit${crst} to leave\n"'
+            echo "declare -r STANDALONE=0"
+        fi
+        echo "$@"
+        echo "set +x"
+    fi | tee ${tmpf} >&3
+    local gitbash="gitshellenv=${gitshellenv} bash --rcfile '${tmpf}' -ri"
     if [ $gitshellenv -eq 1 ]; then
         eval $gitbash 3>/dev/null || ret=$?
     else
         eval $gitbash || ret=$?
     fi
+    rm -f ${tmpf}
+
     let gitshellenv--
-    if [ $gitshellenv -le 0 ]; then
-        rm -f "$gitshrc"
+    if [ ${gitshellenv} -le 0 ]; then
+        rm -f "${gitshrc}"
         unset gitshell_prefix gitshellenv
     else
         gitshell_prefix="$(eval printf '+%.0s' {1..$gitshellenv})"
