@@ -174,7 +174,7 @@ function ce() {
         }
         export -f exit
         _gitshell "$(declare -pf exit; declare -p git_core_editor);"\
-            "git commit-edit ""$@"' || exit $?' || ret=$?
+            "git commit-edit ${commit_edit_hash}"' || exit $?' || ret=$?
         unset -f exit
     fi
     unset commit_edit_opts commit_edit_brch \
@@ -568,10 +568,21 @@ function tagdel() {
 export -f tagdel
 
 function tagadd() {
+    declare ret=1
     test -z "${1:-}" && return 1
     local tag="$1"; shift
-    _git tag -a "$tag" "$@" -m "$tag" && \
-        _git push $(rcur | head -n1) --follow-tags
+    if _git tag -a "$tag" "${1:-HEAD}" -m "$tag"; then
+        if _git push $(rcur | head -n1) --follow-tags; then
+            local shasrc=$(hconv ${1:-HEAD}) shadst=$(hconv $tag)
+            if [ "$shasrc" == "$shadst" ]; then
+                echo "${OK}: tag '$tag' added on sha $shadst == $shasrc"
+                ret=0
+            else
+                echo "${KO}: tag '$tag' added on sha $shadst != $shasrc"
+            fi
+        fi
+   fi
+   return $ret
 }
 export -f tagadd
 
@@ -734,7 +745,9 @@ function cdtop() {
 export -f cdtop
 
 function hconv() {
-    _git rev-parse --short $1 | egnc .
+    test -z "${1:-}" && return 1
+    local sha=$(command git rev-list -n1 $1)
+    echo ${sha:0:7} | egnc "......."
 }
 export -f hconv
 
