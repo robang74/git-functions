@@ -431,7 +431,6 @@ function forig() {
 }
 export -f forig
 
-
 function pcache() {
     function getgit_passwd() {
         if true; then
@@ -442,10 +441,12 @@ function pcache() {
             fi
         fi | awk '{ print $3 }' | egnc . | tail -n1
     }
+
 	local -i t=3600
     local gituser="" gitpasswd_filename=".gitpasswd"
 	local d=$(command git rev-parse --show-toplevel)
     local gitpasswd_filepath="$d/$gitpasswd_filename"
+
 	if [ "x${1:-}" == "x--save" -a -n "${2:-}" ]; then
 		echo "$2" > "$gitpasswd_filepath"
 		echo -e "\n${NOTICE}: password saved in $gitpasswd_filepath\n"
@@ -453,7 +454,7 @@ function pcache() {
             history -d -2 || history -c
         fi >&3 2>&1
 		shift 2
-	elif [ "x${1:-}" == "x--stop" -o "x${1:-}" == "xstop" ]; then
+	elif [ "x${1:-}" == "x--stop" ]; then
 		t=0
 	elif [ "x${1:-}" == "x--user" -a -n "${2:-}" ]; then
         gituser=$2
@@ -466,6 +467,7 @@ function pcache() {
 		echo -e "\n${USAGE}: cchace [ --time 14400 | --save '${gitpasswd_filename}' | --stop | --help ]\n"
 		return
 	fi
+
 	if [ "$t" == "0" ]; then
         command git config --unset user.password
 		command git config --unset credential.helper
@@ -483,25 +485,27 @@ function pcache() {
 
 	    local pc="cache --timeout=$t"
         local gitpasswd=$(getgit_passwd "$d/.gitpasswd")
-		local ch="!f() { echo password='$gitpasswd'; }; f"
-
+        local ch="!f() { echo password='$gitpasswd'; }; f"
         test -z "$gitpasswd" && ch="manager"
+
         if [ -n "$gituser" ]; then
             for i in $(lsrmt); do
                 rmturl=$(command git remote get-url $i |\
-                    sed -ne "s,\(http[s:]*//\)[^@]*@*,\\1${gituser}@,p")
+                    sed -ne "s,\(http[s:]*//\).*\@,\\1${gituser}@,p" \
+                         -e "s,\(http[s:]*//\),\\1${gituser}@,p" | head -n1)
                 command git remote set-url $i $rmturl
                 command git remote get-url $i
             done
         fi
 
-		command git config credential.helper "$ch"
+		command git config credential.helper "$pc"
         command git config user.password "$gitpasswd"
         command git config credential.credentialstore "store"
-#       command git -c credential.helper="$ch" push --force --dry-run 2>&3
+        command git -c credential.helper="$ch" push --force --dry-run 2>&3
+
 		echo -e "\n${DONE}: git password cache enable for ${t}s eq. to $[t/3600]h $[(t%3600)/60]m $[t%60]s"
 	fi
-#   command git config -l | egnc credential
+
     echo -e "\nActual git configuration about credential, password and remote urls:\n"
     command git config -l --show-origin --show-scope | egnc -e credential -e user.password
     echo
