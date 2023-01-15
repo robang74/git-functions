@@ -92,6 +92,7 @@ function _gitshell() {
     if [ ! -e "${gitshrc}" ]; then
         if true; then
             echo "#!/bin/env bash"
+            ps1p
             stripsource ${gfcolors_pathname}
             stripsource ${gitshell_pathname}
             stripsource ${gfunctions_pathname}
@@ -110,7 +111,6 @@ function _gitshell() {
                 echo "declare -r STANDALONE"
                 echo 'echo -e "${blcyn}WELCOME${crst}: enter ${blwht}gfexit${crst} to leave\n"'
             fi
-            ps1p
             echo "$@"
             echo "set +x"
         fi | tee "${gitshrc}" >&3
