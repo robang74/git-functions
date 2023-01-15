@@ -65,7 +65,7 @@ function ps1s() {
 }
 export -f ps1s
 
-function gitshell() {
+function _gitshell() {
     function stripsource() {
         local va="source.*gfcolors_pathname"
         local vb="source.*gfunctions_pathname"
@@ -89,11 +89,18 @@ function gitshell() {
             echo "unset gfcolors_pathname gitshell_pathname"
             echo "export gfunctions_pathname='${gitshrc}'"
             echo "export gfreload_pathname='${gitshrc}'"
-            echo "gflist() { echo -e '"$(gflist)"'; }"
+            echo "gflist() { echo -e '$(gflist)'; }"
             echo 'gfreload() { echo -e "\n'$WARNING': reload is not permitted is gitshell\n"; }'
             echo 'gfupdate() { echo -e "\n'$WARNING': update is not permitted is gitshell\n"; }'
-            echo "export gitc='"${gitshrc}"'"
+            echo 'exit() { command exit ${1:-} 2>&3; }'
+            echo 'gfexit() { exit 123; }'
+            echo "export gitc='${gitshrc}'"
 #           echo "echo gitshrc: ${gitshrc}"
+            if [ ${STANDALONE:-0} -ne 0 ]; then
+                echo 'gfreload() { exit; }'
+                echo "declare -r STANDALONE"
+                echo 'echo -e "${blcyn}WELCOME${crst}: enter ${blwht}gfexit${crst} to leave\n"'
+            fi
             ps1p
             echo "$@"
             echo "set +x"
@@ -119,6 +126,26 @@ function gitshell() {
 
     return $ret
 }
+export -f _gitshell
+
+function gitshell() {
+    declare -i ret=1
+    if [ "x${1:-}" == "x-r" ]; then
+        shift
+        ret=0
+    fi
+    while [ $ret -ne 123 ]; do
+        if [ $ret -eq 0 ]; then
+            gfreload
+        else
+            echo
+        fi
+        STANDALONE=1 _gitshell "$@"
+        ret=$?
+    done
+    echo
+}
+export -f gitshell
 
 function gfreload() {
     test -z "${1:-}" && p="${gfreload_pathname}" || p="$(readlink -fem $1)"

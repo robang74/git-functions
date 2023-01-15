@@ -163,7 +163,7 @@ function ce() {
             command exit ${1:-}
         }
         export -f exit
-        gitshell "$(declare -pf exit; declare -p git_core_editor);"\
+        _gitshell "$(declare -pf exit; declare -p git_core_editor);"\
             "git commit-edit ""$@"' || exit $?' || ret=$?
         unset -f exit
     fi
@@ -344,7 +344,7 @@ export -f amend
 function ampatch() {
     for i in "$@"; do
         if ! _git am --keep-cr < "$i"; then
-            gitshell "git am --show-current-patch=diff" || return $?
+            _gitshell "git am --show-current-patch=diff" || return $?
         fi
     done
 }
@@ -768,7 +768,7 @@ function for-all-other-branches() {
             echo "fix the problem and then enter 'exit'"
             echo "or enter 'exit 1' to abort completely"
             echo
-            gitshell || ret=$?
+            _gitshell || ret=$?
             test $ret -ne 0 && break
         fi
 	done
