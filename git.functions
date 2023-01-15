@@ -600,27 +600,54 @@ function chpk() {
 export -f chpk
 
 function lsbr() {
-    local opt="-l"
+    local opts=""
+
+if false; then # RAF,TODO: code to keep, just in case ######################
     if [ "x${1:-}" == "x-c" ]; then
         bcur -c && return 0
         opt="--no-color --contains"
         command git branch $opt |\
             sed -e 's,^* ,,' -e "s,.* detached .*,," |\
-                egnc .
+                tr -d ' ' | egnc .
         return $?
     fi
+fi #########################################################################
+
+    # RAF, TODO: rewrite with getopts
     if [ "x${1:-}" == "x-a" -o "x${1:-}" == "x-r" ]; then
-        opt="$1"; shift
+        opts="$1"; shift
     fi
-    opt="$opt --no-color"
+    if [ "x${1:-}" == "x-c" -a -n "${2:-}" ]; then
+        opts="--contains $2"
+        shift 2
+    elif [ "x${1:-}" == "x-c" -a "${2:-}" == "x-r" ]; then
+        opts="--contains $(hcur)"
+        shift
+    elif [ "x${1:-}" == "x-c" -a "${2:-}" == "x-a" ]; then
+        opts="--contains $(hcur)"
+        shift
+    elif [ "x${1:-}" == "x-c" ]; then
+        opts="--contains $(hcur)"
+        shift
+    fi
+    if [ "x${1:-}" == "x-a" -o "x${1:-}" == "x-r" ]; then
+        opts="$1"; shift
+    fi
+    opts="--no-color --list $opts"
+    command git branch $opts "$@" | sed -e "s,..,," -e "s,remotes/,," |\
+        awk '{ print $1 }' | egnc -ve "/HEAD$" -ve "\(HEAD$" | sort
+    return ${PIPESTATUS[0]}
+
+# ############## RAF,TODO: code to keep, just in case ######################
+
     if test -z "${1:-}"; then
-        command git branch ${opt} | sed -e "s,..,," -e "s,remotes/,," |\
+        command git branch $opts | sed -e "s,..,," -e "s,remotes/,," |\
             awk '{ print $1 }' | egnc -ve "/HEAD$" -ve "\(HEAD$" | sort
         return 0
     fi
     declare -i ret=0
     while test -n "${1:-}"; do
-        command git branch ${opt} --list "$1" |\
+        command git branch $opts "$1" |\
            sed -e "s,..,," -e "s,remotes/,," | egnc . || ret=1
         shift
     done
@@ -661,13 +688,17 @@ function bsw() {
 export -f bsw
 
 function bcur() {
+    local opts="--current --topo-order --no-color"
+    command git show-branch $opts "$@" | sed -ne "s,[ +]*\[HEAD\].*,," \
+        -e "s/[ +]*\* *\[\([^ ]*\)] .*/\\1/p" | head -n1 | egnc .
+    return $?
+
+# ###### RAF, TODO: code to keep for a while, just in case ############
+
     if [ "x${1:-}" == "x-e" ]; then
         local opts="--current --topo-order --no-color"
-        bcur || command git show-branch $opts |\
-            sed -ne "s/ *\* *\[\([^ ]*\)] .*/\\1/p" |\
-                head -n1 | egnc .
-#           command git show-branch $opts | head -n1 |\
-#           awk '{ gsub(/[][]/,"",$2); print $2 }' | egnc .
+        command git show-branch $opts | sed -ne "s,[ +]*\[HEAD\].*,," \
+            -e "s/[ +]*\* *\[\([^ ]*\)] .*/\\1/p" | head -n1 | egnc .
         return $?
     elif [ "x${1:-}" == "x-c" ]; then
         command git branch --show-current --no-color | egnc .
@@ -856,7 +887,7 @@ function rst() {
             rm="$(rcur | head -n1)"
             rm="${rm:+$rm/}"
         elif [ "x$1" == "x--branch-head" ]; then
-            bn="$(bcur -e)"
+            bn=$(bcur) #"$(bcur -e)"
         else
             opts="$opts $1"
         fi
@@ -899,11 +930,13 @@ function search() {
 export -f search
 
 function rbcur() {
-    local i cb=$(bcur)
+    local i cb=$(bcur) rcb=""
     test -z "$cb" && return 1
-    for i in $(rmt); do
-        echo $i/$cb
-    done | egnc .
+    rcb=$(lsbr -r | egnc "/${cb}$")
+    if echo "$rcb" | egnc "^origin/"; then
+        return 0
+    fi
+    echo "$rcb" | tail -n 1 | egnc .
 }
 export -f rbcur
 
