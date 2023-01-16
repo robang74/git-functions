@@ -562,7 +562,7 @@ export -f pop
 
 function tagdel() {
     test -z "${1:-}" && return 1
-    _git push --delete $(rcur | head -n1) "$1"
+    _git push --delete $(rcur) "$1"
     _git tag -d "$@"
 }
 export -f tagdel
@@ -958,7 +958,7 @@ function rbcur() {
     if echo "$rcb" | egnc "^origin/"; then
         return 0
     fi
-    echo "$rcb" | tail -n 1 | egnc .
+    echo "$rcb" | tail -n1 | egnc .
 }
 export -f rbcur
 
