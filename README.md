@@ -49,23 +49,33 @@ the source code and share the change with the author. Or ask for an addition.
 List of the functions
 ---------------------
 
-The following list is divided for class of usage and roles
+The following list is divided for class of usage and roles. Only the main
+functions are loaded by `~/.bashrc` in the user bash enviroment while all the
+others are available inside the `gitshell` enviroment.
+
+#### Main functions
+
+* `gitshell`: spawns a restricted shell with the git-funtcions enviroment
+* `gfupdate`: update the installation and reload the git-functions
+* `gfhelp`: like `gflist` but in a fancier way
+* `gflist`: list the functions available
+* `gfreload`: reload the functions
 
 #### Service functions
 
-* `gfreload`: reload the functions
-* `gflist`: list the functions available
-* `gfhelp`: like `gflist` but in a fancier way
-* `no-opts`: print every arg that does not start with minus
-* `gfupdate`: update the installation and reload the functions
-* `gitshell`: spawns a restricted shell with the git-funtcions enviroment
 * `cdtop`: change directory to the top level of the repository and prints the full path
 * `redef_git`: redefine the function `_git()` which is used internally
 * `reset_git`: reset `_git()` to the default command `git`
+* `no-opts`: print every arg that does not start with minus
+
+* `ps1p`: print a custom PS1 for git users
+* `ps1s`: set the custom PS1 for git users
+
 * `egnc`: function alias for `egrep --color=never`
 * `less`: function alias for `command less -Fr`
-* `ps1p`: print a custom PS1 for git users
 * `ugit`: unbuffered version of `git -P`
+* `ll`: short for 'ls -al' with colors
+* `eg`: short for 'egrep` with colors
 
 Example of `redef_git` and `reset_git` usage:
 

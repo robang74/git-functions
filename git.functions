@@ -94,6 +94,28 @@ export -f _is_sha_in_line
 ###############################################################################
 test ${gflistshow:-0} -ne 0 && set -x #########################################
 
+function less() {
+    command less -Fr "$@"
+}
+export -f less
+
+function egnc() {
+    command egrep --color=never "$@"
+}
+export -f egnc
+
+function ll() {
+    command ls -al --color=always "$@"
+}
+export -f ll
+
+function eg() {
+    command egrep --color=always "$@"
+}
+export -f eg
+
+###############################################################################
+
 export -f gitshell
 export -f gfreload
 export -f gfupdate
@@ -127,16 +149,6 @@ function reset_git() {
 export -f reset_git
 
 reset_git #####################################################################
-
-function less() {
-    command less -Fr "$@"
-}
-export -f less
-
-function egnc() {
-    command egrep --color=never "$@"
-}
-export -f egnc
 
 function ce() {
     test -z "${1:-}" && return 1
