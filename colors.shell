@@ -183,6 +183,9 @@ declare -r${optx} ERROR="${BLRED}ERROR${CRST}"      || :
 declare -r${optx} DONE="${BLGRN}DONE${CRST}"        || :
 declare -r${optx} OK="${BLGRN}OK${CRST}"            || :
 declare -r${optx} KO="${BLRED}KO${CRST}"            || :
+declare -r${optx} ON="${BLGRN}ON${CRST}"            || :
+declare -r${optx} OFF="${BLRED}OFF${CRST}"          || :
+declare -r${optx} ENTER="${BLWHT}ENTER${CRST}"      || :
 declare -r${optx} USAGE="${BLPRL}USAGE${CRST}"      || :
 declare -r${optx} NOTICE="${BLCYN}NOTICE${CRST}"    || :
 
