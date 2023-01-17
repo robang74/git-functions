@@ -170,14 +170,14 @@ function gfreload() {
     unset -f colors_codes_generation _op_action gitshell
     if GFRELOAD=1 source "$p" >&3; then
         gfreload_pathname="$p"
-        gfrefdir_path=$(dirname "$p")
+        gfrefdir_path="${p%/*}"
         echo -e "\n${DONE}: reload path ${gfrefdir_path}\n"
     fi
 }
 export -f gfreload
 
 function gfupdate() {
-    ${gfreload_pathname/git-functions/install.sh} update
+    ${gfrefdir_path}/install.sh update
 }
 export -f gfupdate
 
