@@ -188,6 +188,9 @@ declare -r${optx} OFF="${BLRED}OFF${CRST}"          || :
 declare -r${optx} ENTER="${BLWHT}ENTER${CRST}"      || :
 declare -r${optx} USAGE="${BLPRL}USAGE${CRST}"      || :
 declare -r${optx} NOTICE="${BLCYN}NOTICE${CRST}"    || :
+declare -r${optx} PLAY="${BLGRN}PLAY${CRST}"        || :
+declare -r${optx} PAUSE="${BLYLW}PAUSE${CRST}"      || :
+declare -r${optx} STOP="${BLRED}STOP${CRST}"        || :
 
 fi 2>&3
 
