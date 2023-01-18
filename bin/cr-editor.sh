@@ -11,11 +11,6 @@
 #
 #set -x
 
-# RAF: restricted shell cannot redirect to file but it is fine
-#      to redirect to a open file descriptor towards /dev/null
-#      So, also exec could fail but in gitshell &3 is just open
-exec 3>/dev/null
-
 declare ret=1
 echo "\ncr in progress... " >&2 
 if test -n "${irebase_sha_to_reword:-}"; then
@@ -32,11 +27,11 @@ if test -n "${irebase_sha_to_reword:-}"; then
         cp -af "$1" ${tmpf}
         ${git_core_editor:-vi} ${tmpf}
     fi
-    if ! diff "$1" ${tmpf} >&3; then
+    if ! diff "$1" ${tmpf}; then
         cp -af ${tmpf} "$1"
         rm -f ${tmpf}
         ret=0
-    fi
+    fi | tail -n0
     if [ -n "${CRDEBUG}" ]; then
         echo "shaedit: ${irebase_sha_to_reword}"
         echo "tmpfile: ${tmpf}"

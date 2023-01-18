@@ -15,12 +15,12 @@ THIS_FILE_NAME="$(basename ${BASH_SOURCE[0]})"
 if [ ${GFRELOAD:-0} -ne 0 ]; then #############################################
 ###############################################################################
 
-echo "Loading ${THIS_FILE_NAME} into current bash enviroment"
-
 # RAF: restricted shell cannot redirect to file but it is fine
 #      to redirect to a open file descriptor towards /dev/null
 #      So, also exec could fail but in gitshell &3 is just open
-( exec 3>/dev/null ) 2>&3
+exec 3>/dev/null || return $?
+
+echo "Loading ${THIS_FILE_NAME} into current bash enviroment"
 
 #echo "loading git.shell..."
 #echo "cmdline: ${BASH_SOURCE[@]}"

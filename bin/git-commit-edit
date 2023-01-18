@@ -6,12 +6,12 @@
 #
 # Adaptation by Roberto A. Foglietta <roberto.foglietta@gmail.com>
 #
+# set -euo pipefail
 
-set -euo pipefail
+exec 3>/dev/null || exit $?                                         # RAF
+source ${0%/*}/../colors.shell >&3                                  # RAF
 
-script_name=${0##*/}
-source $(dirname $0)/../colors.shell # RAF
-
+export script_name=${0##*/}
 warn () { echo -e "$script_name: $*" >&2; }
 die () { warn "$@"; exit 1; }
 
@@ -19,9 +19,9 @@ die () { warn "$@"; exit 1; }
 
 # Default to editing the parent of the most recent commit
 # The most recent commit can be edited with `git commit --amend`
-#commit=$(git rev-parse --short "${1:-HEAD~}")       # RAF
-commit=$(git rev-parse --short "${1:-HEAD}")         # RAF
-message=$(git log -1 --format='%h %s' "$commit")
+#commit=$(git rev-parse --short "${1:-HEAD~}")                      # RAF
+commit=$(git rev-parse --short "${1:-HEAD}")                        # RAF
+message=$(git log -1 --format="${BLWHT}%h${CRST}: %s" "$commit")    # RAF
 
 # RAF: this allows git-function:cm to behave properly
 test -n "${commit}" -a -n "${message}"
@@ -45,6 +45,8 @@ git reset --quiet @~ "$(git rev-parse --show-toplevel)"  # Reset the cache of th
 git commit --quiet --amend --no-edit --allow-empty  #  Commit an empty commit so that that cache diffs are un-reversed
 
 echo -e "\n${NOTICE}: ${commit_edit_note}\n" # RAF
-echo -e "${blprl}Editing commit${crst}: ${message}\n" >&2
-set +e
+echo -e "Editing commit ${message}\n" >&2
+#echo -e "Editing commit ${BLWHT}$commit_edit_hash${CRST}, file status:"
+st -s $(sf $commit_edit_hash)
+echo
 true
