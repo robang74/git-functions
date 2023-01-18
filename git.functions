@@ -574,8 +574,15 @@ export -f pop
 
 function tagdel() {
     test -z "${1:-}" && return 1
-    _git push --delete $(rcur) "$1"
-    _git tag -d "$@"
+    if [ ${#} -eq 2 ]; then
+        _git push --delete "$1" "$2"
+        shift
+    elif [ ${#} -eq 1 ]; then
+        _git push --delete $(rcur) "$1"
+    else
+        return 1
+    fi
+    _git tag -d "$1"
 }
 export -f tagdel
 
