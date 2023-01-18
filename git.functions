@@ -372,6 +372,11 @@ function ampatch() {
 }
 export -f ampatch
 
+function amff() {
+    git am --show-current-patch=diff "$@"
+}
+export -f amff
+
 function editorset() {
     test -z "${1:-}" && return 1
     _git config --global core.editor "$1"

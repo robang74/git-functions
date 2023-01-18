@@ -151,6 +151,7 @@ Example of `redef_git` and `reset_git` usage:
 * `sres()`: short for `git restore i--staged`
 * `tres()`: total restore res -S and res, both
 * `ampatch()`: short for `git amend` a patch/set
+* `amff()`: short for `git am --show-current-patch=diff`
 
 #### Functions which do NOT alter the repositories
  
