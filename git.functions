@@ -22,20 +22,20 @@ echo "Loading ${THIS_FILE_NAME} into current bash enviroment"
 #      So, also exec could fail but in gitshell &3 is just open
 exec 3>/dev/null
 
-SRC_FILE=$(readlink -f ${BASH_SOURCE[0]})
-
-export gfrefdir_path="$(dirname ${SRC_FILE})"
-export gfreload_pathname="${SRC_FILE}"
-export gfcolors_pathname="${gfrefdir_path}/colors.shell"
-export gitshell_pathname="${gfrefdir_path}/git.shell"
-export gfunctions_pathname="${gfreload_pathname}"
+if [ ${GITSHELL:-0} -ne 1 ]; then
+    SRC_FILE=$(readlink -f ${BASH_SOURCE[0]})
+    export gfrefdir_path="$(dirname ${SRC_FILE})"
+    export gfreload_pathname="${SRC_FILE}"
+    export gfcolors_pathname="${gfrefdir_path}/colors.shell"
+    export gitshell_pathname="${gfrefdir_path}/git.shell"
+    export gfunctions_pathname="${gfreload_pathname}"
+    if ! echo "${PATH}" | egrep -q $gfrefdir_path; then
+        export PATH="${gfrefdir_path}/bin:${PATH}"
+    fi
+fi
 
 export BRNC_SWTC_PREV_BRNC=${BRNC_SWTC_PREV_BRNC:-}
 export BRNC_SWTC_PREV_HASH=${BRNC_SWTC_PREV_HASH:-}
-
-if ! echo "${PATH}" | egrep -q $gfrefdir_path; then
-    export PATH="${gfrefdir_path}/bin:${PATH}"
-fi
 
 #if [ -r "${gfrefdir_path}/isatty_override.so" ]; then
 #   this could be useful for the future
