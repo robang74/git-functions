@@ -20,7 +20,7 @@ echo "Loading ${THIS_FILE_NAME} into current bash enviroment"
 # RAF: restricted shell cannot redirect to file but it is fine
 #      to redirect to a open file descriptor towards /dev/null
 #      So, also exec could fail but in gitshell &3 is just open
-exec 3>/dev/null
+( exec 3>/dev/null ) 2>&3
 
 #echo "loading git.shell..."
 #echo "cmdline: ${BASH_SOURCE[@]}"
