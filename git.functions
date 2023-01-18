@@ -340,8 +340,8 @@ function reflog() {
 export -f reflog
 
 function add() {
-    if [ "x$1" == "x-a" ]; then
-        _git add $(git status -s | awk '{ /^M/; print $2 }')
+    if [ "x$1" == "x-m" ]; then
+        _git add $(command git status -s | sed -ne "s,^ M \(.*\),\\1,p")
     else
         _git add "$@"
     fi
