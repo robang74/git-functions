@@ -84,8 +84,8 @@ function _gitshell() {
     }
 
     local gitshrc="./${gf_gitshell_rcinit}"
-    declare -i gitshellenv=${gitshellenv:-0} ret=0
     export gitshell_prefix=${gitshell_prefix:-}
+    declare -i gitshellplus=${gitshellplus:-0} ret=0
     if [ "x${gitshell_prefix:0:1}" == "x+" -o -z "${gitshell_prefix}" ]; then
         gitshell_prefix="+${gitshell_prefix}" 
     fi
@@ -112,8 +112,8 @@ function _gitshell() {
         chmod a-w "${gitshrc}"
     fi
 
-    let gitshellenv++
-    export gitshellenv
+    let gitshellplus++
+    export gitshellplus
 
     local tmpf="${gitshrc}"
     tmpf=$(mktemp ${gitshrc}.XXXX)
@@ -131,20 +131,20 @@ function _gitshell() {
         echo "declare -rxf gfreload gitshell gfupdate gfexit exit"
         echo "echo local gitshrc: ${tmpf}; echo"
     fi | tee ${tmpf} >&3
-    local gitbash="gitshellenv=${gitshellenv} bash --rcfile '${tmpf}' -ri"
-    if [ $gitshellenv -eq 1 ]; then
+    local gitbash="gitshellplus=${gitshellplus} bash --rcfile '${tmpf}' -ri"
+    if [ $gitshellplus -eq 1 ]; then
         eval $gitbash 3>/dev/null || ret=$?
     else
         eval $gitbash || ret=$?
     fi
     rm -f ${tmpf}
 
-    let gitshellenv--
-    if [ ${gitshellenv} -le 0 ]; then
+    let gitshellplus--
+    if [ ${gitshellplus} -le 0 ]; then
         rm -f "${gitshrc}"
-        unset gitshell_prefix gitshellenv
+        unset gitshell_prefix gitshellplus
     else
-        gitshell_prefix="$(eval printf '+%.0s' {1..$gitshellenv})"
+        gitshell_prefix="$(eval printf '+%.0s' {1..$gitshellplus})"
     fi
 
     return $ret
