@@ -551,9 +551,10 @@ export -f cont
 function abrt() {
     if [ "${1:-}" == "ce" ]; then
         ce --abort
-    else
-        _op_action "${1:-}" --abort
+        return $?
     fi
+    _op_action "${1:-}" --abort || return $?
+    test ${GITSHLVL:-0} -gt 1 && exit
 }
 export -f abrt
 
