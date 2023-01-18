@@ -354,6 +354,13 @@ function cm() {
 export -f cm
 
 function amd() {
+    local i
+    for i in "$@"; do
+        if [ "x$i" == "x-a" ]; then
+            add -m
+            break
+        fi
+    done
 	_git commit --amend "$@"
 }
 export -f amd
