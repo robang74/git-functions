@@ -121,11 +121,14 @@ function _gitshell() {
     if true; then
         echo "#!/bin/env bash"
         echo "GFRELOAD=1 source ${gitshrc} >&3"
-        if [ ${STANDALONE:-0} -ne 0 ]; then
+        GITSHLVL=$(set +u; declare -i i=${GITSHLVL:-0}; echo $i) # RAF: sanitize the integer
+        if [ $GITSHLVL -le 0 ]; then
             echo 'gfreload() { command exit 2>&3; }'
             echo 'gitshell() { _gitshell "$@"; }'
             echo 'echo -e "${blcyn}WELCOME${crst}: enter ${blwht}gfexit${crst} to leave\n"'
-            echo "declare -r STANDALONE=0"
+            echo "export GITSHLVL=1"
+        else
+            echo "export GITSHLVL=$[GITSHLVL+1]"
         fi
         echo "$@"
         echo "set +x"
@@ -166,7 +169,7 @@ function gitshell() {
         else
             echo
         fi
-        STANDALONE=1 _gitshell "$@"
+        GITSHLVL=0 _gitshell "$@"
         ret=$?
     done
     echo
