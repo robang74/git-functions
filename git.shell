@@ -100,14 +100,14 @@ function _gitshell() {
             stripsource ${gfunctions_pathname}
             echo "unset gfcolors_pathname gitshell_pathname"
             echo "export gfunctions_pathname='${gitshrc}'"
-            echo "export gfreload_pathname='${gitshrc}'"
-            echo "gflist() { echo -e '$(gflist)'; }"
+#           echo "export gfreload_pathname='${gitshrc}'"
+#           echo "gflist() { echo -e '$(gflist)'; }"
             echo 'gfreload() { echo -e "\n'$WARNING': reload is not allowed is this gitshell\n"; }'
             echo 'gfupdate() { echo -e "\n'$WARNING': update is not allowed is gitshell\n"; }'
             echo 'exit() { command exit ${1:-} 2>&3; }'
             echo 'gfexit() { exit 123; }'
             echo "export gitc='${gitshrc}'"
-#           echo "echo gitshrc: ${gitshrc}"
+#           echo "echo gitshrc: ${gitshrc}; echo"
         fi | tee "${gitshrc}" >&3
         chmod a-w "${gitshrc}"
     fi
@@ -128,6 +128,8 @@ function _gitshell() {
         fi
         echo "$@"
         echo "set +x"
+        echo "declare -rxf gfreload gitshell gfupdate gfexit exit"
+        echo "echo local gitshrc: ${tmpf}; echo"
     fi | tee ${tmpf} >&3
     local gitbash="gitshellenv=${gitshellenv} bash --rcfile '${tmpf}' -ri"
     if [ $gitshellenv -eq 1 ]; then
