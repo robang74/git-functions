@@ -4,7 +4,7 @@ vi deve presentare la sintassi colorata anche in gitshell meglio se di crea un f
 
     autocmd BufNewFile,BufRead *.meals set syntax=json
 
-lsrmt and rmt are equivalent but they should not so change lsrmt also in the code
+DONE - lsrmt and rmt are equivalent but they should not so change lsrmt also in the code
 
 gitshell should not start if source files are missing
 
@@ -72,7 +72,7 @@ upstream a branch with git branch -u private/npriv4
 
 
 #tagdel -a:
-#    for dst in $(lsrmt); do
+#    for dst in $(rmt); do
 #       _git push --delete $dst $tag
 #    done
 

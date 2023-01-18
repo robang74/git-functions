@@ -57,6 +57,13 @@ briefly described here below. If you need more functions, feel free to add to
 the source code and share the change with the author. Or ask for an addition.
 
 
+API changes
+
+Since the last commit in 'main' branch these are the functions that changed:
+
+* 'lsrmt': was a replica of `rmt` now is a short for `rmt -v`
+
+
 List of the functions
 ---------------------
 
@@ -122,7 +129,7 @@ Example of `redef_git` and `reset_git` usage:
 #### Functions which alter the local repository, only
 
 * `forig`: short for `git fetch origin`
-* `frmt`: short for `git fetch`, default the first in `lsrmt` or args with opt -a:--all
+* `frmt`: short for `git fetch`, default the first in `rmt` or args with opt -a:--all
 * `search`: search for a string in all the commits and report the first found, arg string
 * `irb`, `irebase`: rebase starting from the hash passed or ~n, -n for `HEAD~n`
 * `add`: short for `git add` but opt:-m add all the modified items
@@ -161,11 +168,11 @@ Example of `redef_git` and `reset_git` usage:
 * `bsw`: short for `git switch`, the branch name as arg or `-` for the last
 * `lgrp`: find a string into the `lg` output, opts -s:SHAs-only -1:first only
 * `lsbr`: show the list of branches, arg branch name, opt: -r:remotes, -a:all
+* `lsrmt`: short for `rmt -v`, it shows the verbose list of remotes sources
 * `rbcur`: remote branch which the current brach is tracking
 * `rcur`: remote origin which the current branch is tracking
 * `hcur`: short for `git rev-parse --short HEAD`
 * `bcur`: short for `git branch --show-current`
-* `lsrmt`: shoe the list of remotes sources
 * `lstag`, `tagl`: shorts for `git tag -l`
 * `st`: short for `git status`
 

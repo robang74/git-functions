@@ -274,11 +274,11 @@ function rmtadd() {
     test -z "${2:-}" && return 1
     if [ "x$1" == "x-r" ]; then
         shift
-        if lsrmt | grep -qw "$1"; then
+        if rmt | grep -qw "$1"; then
             _git remote remove "$1"
         fi
     fi
-    if ! lsrmt | grep -qw "$1"; then
+    if ! rmt | grep -qw "$1"; then
         _git remote add "$1" "${2:-}"
     fi
     frmt "$1"
@@ -416,7 +416,7 @@ function sw() {
 export -f sw
 
 function lsrmt() {
-    rmt -v | awk '{ print $1 }' | uniq
+    rmt -v
 }
 
 function sf() {
@@ -427,11 +427,11 @@ export -f sf
 function frmt() {
    local rmt=""
    if [ -z "${1:-}" ]; then
-       rmt=$(lsrmt | head -n1)
+       rmt=$(rmt | head -n1)
        test -n "${rmt}" || return 1
    elif [ "x$1" == "x-a" ]; then
        rmt="--all"
-   elif lsrmt | egnc -qw -- "$1"; then
+   elif rmt | egnc -qw -- "$1"; then
         rmt="$1"; shift
    fi
    echo "Fetching ${rmt}"
@@ -502,7 +502,7 @@ function pcache() {
         test -z "$gitpasswd" && ch="manager"
 
         if [ -n "$gituser" ]; then
-            for i in $(lsrmt); do
+            for i in $(rmt); do
                 rmturl=$(command git remote get-url $i |\
                     sed -ne "s,\(http[s:]*//\).*\@,\\1${gituser}@,p" \
                          -e "s,\(http[s:]*//\),\\1${gituser}@,p" | head -n1)
@@ -522,7 +522,7 @@ function pcache() {
     echo -e "\nActual git configuration about credential, password and remote urls:\n"
     command git config -l --show-origin --show-scope | egnc -e credential -e user.password
     echo
-    for i in $(lsrmt); do echo -e "$i:\t$(command git remote get-url $i)"; done
+    for i in $(rmt); do echo -e "$i:\t$(command git remote get-url $i)"; done
     echo
 }
 export -f pcache
