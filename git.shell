@@ -128,7 +128,9 @@ function _gitshell() {
         fi
         echo "$@"
         echo "set +x"
-        echo "declare -rxf gfreload gitshell gfupdate gfexit exit"
+        echo "trap 'rm -f $tmpf' EXIT"
+        echo "trap 'rm -f $tmpf; exit' QUIT KILL"
+        echo "declare -rxf gfreload gitshell gfupdate gfexit"
         echo "echo local gitshrc: ${tmpf}; echo"
     fi | tee ${tmpf} >&3
     local gitbash="gitshellplus=${gitshellplus} bash --rcfile '${tmpf}' -ri"
