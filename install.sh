@@ -83,12 +83,12 @@ elif [ "$1" == "reinstall" -a ! -d "${DESTDIR}" ]; then
 elif [ "$1" == "help" -o "x$1" == "x-h" ]; then
     echo -e "\n${USAGE}: ${THISCMD} [ uninstall | update | reinstall | help ]\n"
     exit 0
-elif [ -d "${DESTDIR}" ]; then
-    echo -e "\n${ERROR}: folder ${TOPDIR}/${DESTDIR} exists, try with update or reinstall\n"
-    exit 1
 elif [ -n "$1" ]; then
     echo "\n${ERROR}: unrecognised '$1' option, try with help (-h)\n"
     trap - ERR
+    exit 1
+elif [ -d "${DESTDIR}" ]; then
+    echo -e "\n${ERROR}: folder ${TOPDIR}/${DESTDIR} exists, try with update or reinstall\n"
     exit 1
 fi
 
