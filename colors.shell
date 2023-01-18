@@ -113,7 +113,6 @@ declare -r${optx} LWHT=";97m"      || :   # ligth_white
 # Color Reset
 
 declare -r${optx} CRST="\033[0;0m" || :   # reset
-declare -r${optx} crst="\033[0;0m" || :   # reset but in lower case
 
 fi 2>&3
 
@@ -124,7 +123,20 @@ fi 2>&3
 COLORS="BLK RED GRN YLW BLU PRL CYN WHT"
 DMODES="NRM BLD DRK ITL UDL FLS RVS STR"
 
-# This declare the variable as read-onnly and export it with optx = x
+# This declares the basic variables in lower case and exports them optx=x
+
+if true; then
+    for i in $COLORS $DMODES CRST; do
+        eval declare -r${optx} '${i,,}'=\"\$$i\" || :
+    done
+    for i in L O; do
+        for j in $COLORS; do
+            eval declare -r${optx} '${i,,}${j,,}'=\"\${$i$j}\" ||:
+        done
+    done
+fi 2>&3
+
+# This declares the basic variables as read-onnly and exports them if optx=x
 
 if false; then
     declare -r${optx} ${COLORS} ${DMODES} CRST crst || :
