@@ -59,7 +59,7 @@ if [ "$1" == "install" -o -z "$1" ]; then
         echo "\n${NOTICE}: folder ${DESTDIR} is present, use update\n"
         exit 1
     fi
-elif [ "$1" == "uninstall" ]; then
+elif [ "$1" == "uninstall" -o "$1" == "remove" ]; then
     bashrc_clean
     test ! -d "${DESTDIR}" && exit 0
     rm -rf "${DESTDIR}" && echo "\n${DONE}: uninstall\n"
