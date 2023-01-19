@@ -341,7 +341,7 @@ export -f reflog
 
 function add() {
     if [ "x$1" == "x-m" ]; then
-        _git add $(command git status -s | sed -ne 's,^[^ A?]\+ *\(.*\),\1,p')
+        _git add $(command git status -s | sed -ne 's,^ *[^ A?]\+ *\(.*\),\1,p')
     else
         _git add "$@"
     fi
