@@ -105,11 +105,14 @@ export -f eg
 
 ###############################################################################
 
+# RAF: these are just for gflist()
+if false; then
 export -f gitshell
 export -f gfreload
 export -f gfupdate
 export -f gflist
 export -f gfhelp
+fi
 
 function no-opts() {
     local i

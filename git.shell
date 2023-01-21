@@ -180,7 +180,9 @@ function gfreload() {
     if [ -z "${1:-}" ]; then
         p="${gfreload_pathname}"
     elif [ -r "$1" ]; then
-        p="$(readlink -fem $1)"
+        p="$(readlink -e $1)"
+        test -n "$p" || return 1
+        gfreload_pathname="$p"
     else
         return 1
     fi
