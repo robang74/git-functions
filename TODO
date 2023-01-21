@@ -4,11 +4,7 @@ vi deve presentare la sintassi colorata anche in gitshell meglio se di crea un f
 
     autocmd BufNewFile,BufRead *.meals set syntax=json
 
-DONE - lsrmt and rmt are equivalent but they should not so change lsrmt also in the code
-
 gitshell should not start if source files are missing
-
-change install.sh in such a way can be used in this way: wget https://raw.githubusercontent.com/robang74/git-functions/main/install.sh -O - | bash -
 
 git config --global alias.amend-to '!f() { SHA=`git rev-parse "$1"`; git stash -k && git commit --fixup "$SHA" && GIT_SEQUENCE_EDITOR=true git rebase --interactive --autosquash "$SHA^" && git stash pop; }; f'
 

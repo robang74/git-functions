@@ -68,10 +68,13 @@ the source code and share the change with the author. Or ask for an addition.
 
 
 API changes
+-----------
 
 Since the last commit in 'main' branch these are the functions that changed:
 
-* 'lsrmt': was a replica of `rmt` now is a short for `rmt -v`
+* `lsrmt`: was a replica of `rmt` now is a short for `rmt -v`
+* `ff`, `sw`: in git use -w (ignore blank spaces) as default
+* `gfreload`: opt:-f added to reload a single function
 
 
 List of the functions
@@ -87,7 +90,8 @@ others are available inside the `gitshell` enviroment.
 * `gfupdate`: update the installation and reload the git-functions
 * `gfhelp`: like `gflist` but in a fancier way
 * `gflist`: list the functions available
-* `gfreload`: reload the functions
+* `gfreloadafunc`: reload a single function
+* `gfreload`: reload the functions, opt:-f reload a singe function
 
 #### Service functions
 
@@ -296,7 +300,7 @@ header, here summarised:
 * `git.functions`: GPLv3
 * `cr-editor.sh`: GPLv3
 * `install.sh`: GPLv3
-* 'git.shell': GPLv3
+* `git.shell`: GPLv3
 
 
 Author
@@ -304,4 +308,3 @@ Author
 
 * Roberto A. Foglietta <roberto.foglietta@gmail.com>
 
-#ciao
