@@ -185,6 +185,9 @@ function gfreload() {
         return 1
     fi
 
+    # RAF: a function that has been removed should not remain
+    unset -f $(gflist | grep -vw $FUNCNAME)
+
     # RAF: needed to grants that every script will be reloaded
     unset -f colors_codes_generation _op_action gitshell
     GFRELOAD=1 source "$p" >&3 || return $?
