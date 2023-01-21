@@ -8,7 +8,7 @@
 # SPDX-License-Identifier: GPLv3
 #
 #set -x # RAF: source, paired with set +x at the end of file
-set -u # RAF: only for devel, comment in main
+#set -u # RAF: only for devel, comment in main
 
 # RAF: restricted shell cannot redirect to file but it is fine
 #      to redirect to a open file descriptor towards /dev/null
