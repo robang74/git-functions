@@ -724,7 +724,10 @@ function bsw() {
 export -f bsw
 
 function bcur() {
-    command git branch --show-current && return 0
+    local ret=0
+    command git branch --show-current | egnc . || ret=$?
+    test "x${1:-}" == "x-c" && return $ret
+    test $ret -eq 0 && return $ret
 
     local text risp opts="--current --topo-order --no-color"
     text=$(command git show-branch $opts "$@")

@@ -61,7 +61,7 @@ unset gitglobign
 
 function ps1p() {
     echo 'export PS1="\[${nlcyn}\]${gitshell_prefix:-+}\[${crst}\]:\[${nlgrn}\]git-'\
-'\$( (opst||echo shell) 2>&3)\[${crst}\]:\[${nlylw}\]\$( (bcur||hcur) 2>&3)\[${crst}\]'\
+'\$( (opst||echo shell) 2>&3)\[${crst}\]:\[${nlylw}\]\$( (bcur -c||hcur) 2>&3)\[${crst}\]'\
 ':\[${nlred}\]${PWD##*/}\[${crst}\]> "'
 }
 export -f ps1p
