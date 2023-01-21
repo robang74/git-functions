@@ -30,7 +30,7 @@
 # set -Eeuo pipefail # RAF: this is only for test with every restriction possible
                      #      bash -c "source colors.shell && source colors.shell"
 
-THIS_FILE_NAME="$(basename ${BASH_SOURCE[0]})"
+trap 'echo -e "\n'${ERROR:-ERROR}': in '${BASH_SOURCE[0]##*/}' at line ${LINENO} occured, try again with set -x\n" >&2' ERR
 
 if [ ${GFRELOAD:-0} -ne 0 ]; then #############################################
 ###############################################################################
@@ -42,9 +42,7 @@ if [ ${GITSHLVL:-0} -lt 1 ]; then
     exec 3>/dev/null || return $?
 fi
 
-echo "Loading ${THIS_FILE_NAME} into current bash enviroment"
-
-trap 'echo -e "\n'${ERROR:-ERROR}': in '${THIS_FILE_NAME}' at line ${LINENO} occured, try again with set -x\n"' ERR
+echo "Loading ${BASH_SOURCE[0]##*/} into current bash enviroment"
 
 ###############################################################################
 
@@ -208,8 +206,8 @@ declare -r${optx} STOP="${BLRED}STOP${CRST}"        || :
 
 fi 2>&3
 
-trap - ERR
 ###############################################################################
-else echo "${THIS_FILE_NAME} not reloaded, try again with 'GFRELOAD=1 source'"
+else echo "${BASH_SOURCE[0]##*/} not reloaded, try again with 'GFRELOAD=1 source'"
 fi ############################################################################
+trap - ERR
 true

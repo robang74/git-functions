@@ -10,8 +10,6 @@
 #set -x && resetx="set +x" # RAF: source, paired with set +x at the end of file
 set -u                     # RAF: only for devel, comment in main
 
-THIS_FILE_NAME="$(basename ${BASH_SOURCE[0]})"
-
 if [ ${GFRELOAD:-0} -ne 0 ]; then #############################################
 ###############################################################################
 
@@ -21,7 +19,7 @@ if [ ${GITSHLVL:-0} -lt 1 ]; then
     #      So, also exec could fail but in gitshell &3 is just open
     exec 3>/dev/null || return $?
 
-    echo "Loading ${THIS_FILE_NAME} into current bash enviroment"
+    echo "Loading ${BASH_SOURCE[0]##*/} into current bash enviroment"
 
     SRC_FILE=${SRC_FILE:-$(readlink -f ${BASH_SOURCE[0]})}
     export gfreload_pathname="${gfreload_pathname:-${SRC_FILE}}"
@@ -41,7 +39,7 @@ if ! type colors_codes_generation >&3 2>&3; then
 fi #>&3
 
 ###############################################################################
-else echo "${THIS_FILE_NAME} not reloaded, try again with 'GFRELOAD=1 source'"
+else echo "${BASH_SOURCE[0]##*/} not reloaded, try again with 'GFRELOAD=1 source'"
 fi ############################################################################
 ${resetx:-}
 true
