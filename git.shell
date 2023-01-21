@@ -10,24 +10,28 @@
 #set -x && resetx="set +x" # RAF: source, paired with set +x at the end of file
 set -u                     # RAF: only for devel, comment in main
 
+trap 'echo -e "\n'${ERROR:-ERROR}': in '${BASH_SOURCE[0]##*/}' at line ${LINENO} occured, try again with set -x\n" >&2' ERR
 
 if [ ${GFRELOAD:-0} -ne 0 ]; then #############################################
 ###############################################################################
 
+function gitshell() { false; }; export -f gitshell
+
 SRC_FILE=$(readlink -fem ${BASH_SOURCE[0]})
-export gfbasicenv_filepath="${SRC_FILE%/*}/git.basicenv"
+export gfbasicenv_pathname="${SRC_FILE%/*}/git.basicenv"
 
 if [ ${GITSHLVL:-0} -lt 1 ]; then
     # RAF: restricted shell cannot redirect to file but it is fine
     #      to redirect to a open file descriptor towards /dev/null
     #      So, also exec could fail but in gitshell &3 is just open
     exec 3>/dev/null || return $?
-    GFRELOAD=1 source "${gfbasicenv_filepath}" || return $?
+    GFRELOAD=1 source "${gfbasicenv_pathname}" || return $?
     : #RAF: the line above will be stripped
 fi #>&3
 
-if [ ${GITSHELL:-0} -eq 0 ]; then
-    GFRELOAD=1 source "${gfbasicenv_filepath}" || return $?
+if ! type _op_action 2>&3 >&3; then
+    echo "gitshell p2: $gfunctions_pathname"
+    GFRELOAD=1 source "${gfunctions_pathname}" || return $?
     : #RAF: the line above will be stripped
 fi #>&3
 
@@ -210,5 +214,6 @@ export -f gfhelp
 else echo "${BASH_SOURCE[0]##*/} not reloaded, try again with 'GFRELOAD=1 source'"
 fi ############################################################################
 ${resetx:-}
+trap - ERR
 true
 

@@ -24,9 +24,9 @@ if [ ${GITSHLVL:-0} -lt 1 ]; then
     SRC_FILE=${SRC_FILE:-$(readlink -f ${BASH_SOURCE[0]})}
     export gfreload_pathname="${gfreload_pathname:-${SRC_FILE}}"
     export gfrefdir_path="$(dirname ${gfreload_pathname})"
+    export gfunctions_pathname="${gfrefdir_path}/git.functions"
     export gfcolors_pathname="${gfrefdir_path}/colors.shell"
     export gitshell_pathname="${gfrefdir_path}/git.shell"
-    export gfunctions_pathname="${SRC_FILE}"
     if ! echo "${PATH}" | egrep -q ${gfrefdir_path}; then
         export PATH="${gfrefdir_path}/bin:${PATH}"
     fi
