@@ -182,6 +182,7 @@ function gfreload() {
     elif [ -r "$1" ]; then
         p="$(readlink -e $1)"
         test -n "$p" || return 1
+        egnc -q "export -f _gitshell" "$p" || return 1
         gfreload_pathname="$p"
     else
         return 1
