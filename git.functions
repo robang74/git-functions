@@ -24,12 +24,12 @@ echo "Loading ${THIS_FILE_NAME} into current bash enviroment"
 
 if [ ${GITSHELL:-0} -eq 0 ]; then
     SRC_FILE=$(readlink -f ${BASH_SOURCE[0]})
-    export gfrefdir_path="$(dirname ${SRC_FILE})"
-    export gfreload_pathname="${SRC_FILE}"
+    export gfreload_pathname="${gfreload_pathname:-$SRC_FILE}"
+    export gfrefdir_path="$(dirname ${gfreload_pathname})"
     export gfcolors_pathname="${gfrefdir_path}/colors.shell"
     export gitshell_pathname="${gfrefdir_path}/git.shell"
-    export gfunctions_pathname="${gfreload_pathname}"
-    if ! echo "${PATH}" | egrep -q $gfrefdir_path; then
+    export gfunctions_pathname="${SRC_FILE}"
+    if ! echo "${PATH}" | egrep -q ${gfrefdir_path}; then
         export PATH="${gfrefdir_path}/bin:${PATH}"
     fi
 fi

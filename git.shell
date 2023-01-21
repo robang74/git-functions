@@ -86,7 +86,6 @@ function _gitshell() {
 
     local gitshrc="./${gf_gitshell_rcinit}"
     export gitshell_prefix=${gitshell_prefix:-}
-    declare -i gitshellplus=${gitshellplus:-0} ret=0
     if [ "x${gitshell_prefix:0:1}" == "x+" -o -z "${gitshell_prefix}" ]; then
         gitshell_prefix="+${gitshell_prefix}" 
     fi
@@ -96,28 +95,21 @@ function _gitshell() {
             echo "#!/bin/env bash"
             ps1p
             echo "declare -rx GITSHELL=1 2>&1 | head -n0"
+            echo "export gfreload_pathname='${gfreload_pathname}'"
             stripsource ${gfcolors_pathname}
             stripsource ${gitshell_pathname}
             stripsource ${gfunctions_pathname}
             echo "unset gfcolors_pathname gitshell_pathname"
             echo "export gfunctions_pathname='${gitshrc}'"
-#           echo "export gfreload_pathname='${gitshrc}'"
-#           echo "gflist() { echo -e '$(gflist)'; }"
             echo 'gfreload() { echo -e "\n'$WARNING': reload is not allowed is this gitshell\n"; }'
             echo 'gfupdate() { echo -e "\n'$WARNING': update is not allowed is gitshell\n"; }'
             echo 'exit() { command exit ${1:-} 2>&3; }'
             echo 'gfexit() { exit 123; }'
-            echo "export gitc='${gitshrc}'"
-#           echo "echo gitshrc: ${gitshrc}; echo"
         fi | tee "${gitshrc}" >&3
         chmod a-w "${gitshrc}"
     fi
 
-    let gitshellplus++
-    export gitshellplus
-
-    local tmpf="${gitshrc}"
-    tmpf=$(mktemp ${gitshrc}.XXXX)
+    local tmpf=$(mktemp ${gitshrc}.XXXX)
     if true; then
         echo "#!/bin/env bash"
         echo "GFRELOAD=1 source ${gitshrc} >&3"
@@ -137,6 +129,16 @@ function _gitshell() {
         echo "declare -rxf gfreload gitshell gfupdate gfexit"
         echo "echo local gitshrc: ${tmpf}; echo"
     fi | tee ${tmpf} >&3
+
+    if [ ! -e "${gitshrc}" -o ! -e "${tmpf}" ]; then
+        rm -f "${gitshrc}" "${tmpf}"
+        return 1
+    fi
+
+    declare -i gitshellplus=${gitshellplus:-0} ret=0
+    export gitshellplus
+    let gitshellplus++
+
     local gitbash="gitshellplus=${gitshellplus} bash --rcfile '${tmpf}' -ri"
     if [ $gitshellplus -eq 1 ]; then
         eval $gitbash 3>/dev/null || ret=$?
@@ -177,12 +179,20 @@ function gitshell() {
 export -f gitshell
 
 function gfreload() {
-    test -z "${1:-}" && p="${gfreload_pathname}" || p="$(readlink -fem $1)"
+    local p
+    if [ -z "${1:-}" ]; then
+        p="${gfreload_pathname}"
+    elif [ -r "$1" ]; then
+        p="$(readlink -fem $1)"
+    else
+        return 1
+    fi
+
+    # RAF, TODO: support for old versios but to drop soon
     unset -f colors_codes_generation _op_action gitshell
+
     if GFRELOAD=1 source "$p" >&3; then
-        gfreload_pathname="$p"
-        gfrefdir_path="${p%/*}"
-        echo -e "\n${DONE}: reload path ${gfrefdir_path}\n"
+        echo -e "\n${DONE}, reload path: ${gfreload_pathname%/*}\n"
     fi
 }
 export -f gfreload
