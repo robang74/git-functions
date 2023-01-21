@@ -721,9 +721,9 @@ function bsw() {
 export -f bsw
 
 function bcur() {
+    command git branch --show-current && return 0
+
     local text risp opts="--current --topo-order --no-color"
-#   command git show-branch $opts "$@" | sed -ne "s,[ +]*\[HEAD.*\].*,," \
-#       -e "s/[ +]*\* *\[\([^ ]*\)] .*/\\1/p" | head -n1 | egnc .
     text=$(command git show-branch $opts "$@")
     declare -i n=$(echo "$text" | egnc -n "^-" | head -n1 | cut -d: -f1)
     risp=$(echo "$text" | head -n$n | sed -ne "s,[ +]*\[HEAD.*\].*,," \
@@ -733,25 +733,6 @@ function bcur() {
         -e "s,[ +*\!]\[HEAD.*\].*,," -e "s/[ +*\!]*\[\([^ ]*\)] .*/\\1/p" |\
            head -n1 | egnc .
     return $?
-
-# ###### RAF, TODO: code to keep for a while, just in case ############
-
-    if [ "x${1:-}" == "x-e" ]; then
-        local opts="--current --topo-order --no-color"
-        command git show-branch $opts | sed -ne "s,[ +]*\[HEAD\].*,," \
-            -e "s/[ +]*\* *\[\([^ ]*\)] .*/\\1/p" | head -n1 | egnc .
-        return $?
-    elif [ "x${1:-}" == "x-c" ]; then
-        command git branch --show-current --no-color | egnc .
-        return $?
-    else
-        local bn=$(lsbr -c);
-        if [ "$(hconv $bn)" == "$(hcur)" ]; then
-            echo $bn
-        else
-            return 1
-        fi
-    fi
 }
 export -f bcur
 
