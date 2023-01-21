@@ -40,6 +40,16 @@ then follow the instructions, in particular source the `git.shell` in your
 current bash environment. To install the development version switch the branch
 with `git switch devel` and the run the installer from that branch.
 
+Alternatively, you can do a remote installation with these comands
+
+    branch=main
+    repo=https://raw.githubusercontent.com/robang74/git-functions
+    wget $repo/$branch/install.sh -O - | bash
+
+You might want to change the branch in `devel` but that branch, time to time,
+could be totally broken. Others brnach migh exist could have the same problem.
+However, also for the `main` branch, it is not assured the lacks of bugs.
+
 
 Usage
 -----
