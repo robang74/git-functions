@@ -203,7 +203,7 @@ export -f gfupdate
 
 function gflist() {
     test -r ${gfunctions_pathname} || return 1
-    sed -ne "s,^export -f \([^_][^ ]*\).*,\\1,p" ${gfunctions_pathname} | egnc .
+    sed -ne "s,^export -f \([^_][^ ]*\).*,\\1,p" ${gfunctions_pathname} | sort | uniq | egnc .
 }
 export -f gflist
 
