@@ -12,25 +12,25 @@
 # RAF: restricted shell cannot redirect to file but it is fine
 #      to redirect to a open file descriptor towards /dev/null
 #      So, also exec could fail but in gitshell &3 is just open
-exec 3>/dev/null
+if [ ${GITSHLVL:-0} -lt 1 ]; then
+    exec 3>/dev/null
+fi
 
 THISCMD="$(basename $0)"
 trap 'echo -e "\n'${ERROR:-ERROR}' in '${THISCMD}' at line ${LINENO} occured, try again with set -x\n"' ERR
-set -eE
+set -e
 
 TOPDIR=$(dirname $(readlink -f $0))
-GFRELOAD=1 source "${TOPDIR}/git.functions" >&3
 cd ${TOPDIR}
 
 DESTDIR=".git-functions"
 SRCNAME=$(readlink -fem "$HOME/${DESTDIR}/git.shell")
-SRCOLRS=${SRCNAME/%git.shell/colors.shell}
 GITREPO="https://github.com/robang74/git-functions.git"
 SRCCMD="test -r ${SRCNAME} && GFRELOAD=1 source ${SRCNAME} ${SRCOLRS} >/dev/null"
-BRANCH="$(bcur)"
+BRANCH="$(git branch --show-current 2>&3 || echo main)"
 
 if [ -z "${BRANCH}" ]; then
-    echo "\n${ERROR}: branch not defined, abort.\n"
+    echo -e "\n${ERROR:-ERROR}: branch not defined, abort.\n"
     exit 1
 fi
 
@@ -56,45 +56,48 @@ cd
 set -- "${1:-}"
 if [ "$1" == "install" -o -z "$1" ]; then
     if [ -d "${DESTDIR}" ]; then
-        echo "\n${NOTICE}: folder ${DESTDIR} is present, use update\n"
+        echo -e "\n${NOTICE:-NOTICE}: folder ${DESTDIR} is present, use update\n"
         exit 1
     fi
 elif [ "$1" == "uninstall" -o "$1" == "remove" ]; then
     bashrc_clean
     test ! -d "${DESTDIR}" && exit 0
-    rm -rf "${DESTDIR}" && echo "\n${DONE}: uninstall\n"
+    rm -rf "${DESTDIR}" && echo -e "\n${DONE:-DONE}: uninstall\n"
     exit $?
 elif [ "$1" == "update" -a -d "${DESTDIR}" ]; then
-    ret=0
-    op="${ERROR}"
+    trap "echo -e '\n${ERROR:-ERROR}: install path ${PWD}\n'" EXIT
+    set -e
     bashrc_clean
     bashrc_setup
-    cd "${DESTDIR}" && bsw ${BRANCH} && rpull && op="${DONE}" || ret=1
-    echo -e "\n$op: install path ${PWD}\n"
-    eval ${SRCCMD} || ret=1
-    exit $ret
+    cd "${DESTDIR}"
+    git switch ${BRANCH}
+    git pull --rebase 
+    eval "${SRCCMD}"
+    echo -e "\n${DONE:-DONE}: install path ${PWD}\n"
+    trap -- EXIT
+    exit 0
 elif [ "$1" == "update" -a ! -d "${DESTDIR}" ]; then
-    echo "\n${NOTICE}: folder ${DESTDIR} is not present, use install\n"
+    echo -e "\n${NOTICE:-NOTICE}: folder ${DESTDIR} is not present, use install\n"
     exit 1
 elif [ "$1" == "reinstall" -a -d "${DESTDIR}" ]; then
     eval "${TOPDIR}/${THISCMD} uninstall"
 elif [ "$1" == "reinstall" -a ! -d "${DESTDIR}" ]; then
-    echo "\n${NOTICE}: folder ${DESTDIR} is not present, installing...\n"
+    echo -e "\n${NOTICE:-NOTICE}: folder ${DESTDIR} is not present, installing...\n"
 elif [ "$1" == "help" -o "x$1" == "x-h" ]; then
-    echo -e "\n${USAGE}: ${THISCMD} [ uninstall | update | reinstall | help ]\n"
+    echo -e "\n${USAGE:-USAGE}: ${THISCMD} [ uninstall | update | reinstall | help ]\n"
     exit 0
 elif [ -n "$1" ]; then
-    echo "\n${ERROR}: unrecognised '$1' option, try with help (-h)\n"
+    echo -e "\n${ERROR:-ERROR}: unrecognised '$1' option, try with help (-h)\n"
     trap - ERR
     exit 1
 elif [ -d "${DESTDIR}" ]; then
-    echo -e "\n${ERROR}: folder ${TOPDIR}/${DESTDIR} exists, try with update or reinstall\n"
+    echo -e "\n${ERROR:-ERROR}: folder ${TOPDIR}/${DESTDIR} exists, try with update or reinstall\n"
     exit 1
 fi
 
 git clone ${GITREPO} "${DESTDIR}"
 cd "${DESTDIR}"
-bsw "${BRANCH}"
+git switch "${BRANCH}"
 
 if which cc >&3; then
     cc -c -fPIC isatty_override.c -o isatty_override.o
@@ -108,11 +111,11 @@ elif [ "$(uname -m)" != "x86_64" ]; then
     echo -e "\n${WARNING}: need to install the compiler for isatty_override.so"
     rm -f isatty_override.so
 else
-    echo -e "\n${NOTICE}: using the pre-compiled x86_64 isatty_override.so"
+    echo -e "\n${NOTICE:-NOTICE}: using the pre-compiled x86_64 isatty_override.so"
 fi
 
 bashrc_setup
-echo "\n${DONE}: git-functions installed in ${HOME}/${DESTDIR}\n"
-echo "The git-function will be loaded by defaul via ~/.bashrc enviroment"
-echo "For this bash, load functions via source ~/${DESTDIR}/$(basename ${SRCNAME})"
+echo -e "\n${DONE:-DONE}: git-functions installed in ${HOME}/${DESTDIR}\n"
+echo -e "The git-function will be loaded by defaul via ~/.bashrc enviroment"
+echo -e "For this bash, load functions via source ~/${DESTDIR}/$(basename ${SRCNAME})"
 echo
