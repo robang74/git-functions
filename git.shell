@@ -15,34 +15,26 @@ THIS_FILE_NAME="$(basename ${BASH_SOURCE[0]})"
 if [ ${GFRELOAD:-0} -ne 0 ]; then #############################################
 ###############################################################################
 
-# RAF: restricted shell cannot redirect to file but it is fine
-#      to redirect to a open file descriptor towards /dev/null
-#      So, also exec could fail but in gitshell &3 is just open
-exec 3>/dev/null || return $?
+SRC_FILE=$(readlink -fem ${BASH_SOURCE[0]})
+export gfbasicenv_filepath="${SRC_FILE%/*}/git.basicenv"
+
+if [ ${GITSHLVL:-0} -lt 1 ]; then
+    # RAF: restricted shell cannot redirect to file but it is fine
+    #      to redirect to a open file descriptor towards /dev/null
+    #      So, also exec could fail but in gitshell &3 is just open
+    exec 3>/dev/null || return $?
+    GFRELOAD=1 source "${gfbasicenv_filepath}" || return $?
+    : #RAF: the line above will be stripped
+fi #>&3
+
+if [ ${GITSHELL:-0} -eq 0 ]; then
+    GFRELOAD=1 source "${gfbasicenv_filepath}" || return $?
+    : #RAF: the line above will be stripped
+fi #>&3
 
 echo "Loading ${THIS_FILE_NAME} into current bash enviroment"
 
-#echo "loading git.shell..."
-#echo "cmdline: ${BASH_SOURCE[@]}"
-
-if [ ${GITSHELL:-0} -ne 1 ]; then
-    SRC_FILE=$(readlink -f ${BASH_SOURCE[0]})
-    export gfrefdir_path="$(dirname ${SRC_FILE})"
-    export gfcolors_pathname="${gfrefdir_path}/colors.shell"
-    export gfunctions_pathname="${gfrefdir_path}/git.functions"
-    export gitshell_pathname="${gfrefdir_path}/git.shell"
-    export gfreload_pathname="${gitshell_pathname}"
-    if ! echo "${PATH}" | egrep -q $gfrefdir_path; then
-        export PATH="$gfrefdir_path/bin:${PATH}"
-    fi
-fi
-
-export gf_gitshell_rcinit=".gitshrc"
-
-if ! type colors_codes_generation 2>&3; then
-    GFRELOAD=1 source "${gfcolors_pathname}"
-    : #RAF: the line above will be stripped
-fi >&3
+###############################################################################
 
 function egnc() {
     command egrep --color=never "$@"
@@ -81,7 +73,8 @@ function _gitshell() {
         local va="source.*gfcolors_pathname"
         local vb="source.*gfunctions_pathname"
         local vc="source.*gitshell_pathname"
-        egnc -ve "$va" -ve "$vb" -ve "$vc" "$1"
+        local vd="source.*gfbasicenv_filepath"
+        egnc -ve "$va" -ve "$vb" -ve "$vc" -ve "$vd" "$1"
     }
 
     local gitshrc="./${gf_gitshell_rcinit}"
@@ -99,6 +92,7 @@ function _gitshell() {
             stripsource ${gfcolors_pathname}
             stripsource ${gitshell_pathname}
             stripsource ${gfunctions_pathname}
+            stripsource ${gfbasicenv_filepath}
             echo "unset gfcolors_pathname gitshell_pathname"
             echo "export gfunctions_pathname='${gitshrc}'"
             echo 'gfreload() { echo -e "\n'$WARNING': reload is not allowed is this gitshell\n"; }'
@@ -188,12 +182,11 @@ function gfreload() {
         return 1
     fi
 
-    # RAF, TODO: support for old versios but to drop soon
+    # RAF: needed to grants that every script will be reloaded
     unset -f colors_codes_generation _op_action gitshell
+    GFRELOAD=1 source "$p" >&3 || return $?
 
-    if GFRELOAD=1 source "$p" >&3; then
-        echo -e "\n${DONE}, reload path: ${gfreload_pathname%/*}\n"
-    fi
+    echo -e "\n${DONE}: reload path ${gfreload_pathname%/*}\n"
 }
 export -f gfreload
 

@@ -15,42 +15,29 @@ THIS_FILE_NAME="$(basename ${BASH_SOURCE[0]})"
 if [ ${GFRELOAD:-0} -ne 0 ]; then #############################################
 ###############################################################################
 
-# RAF: restricted shell cannot redirect to file but it is fine
-#      to redirect to a open file descriptor towards /dev/null
-#      So, also exec could fail but in gitshell &3 is just open
-exec 3>/dev/null || retrun $?
+SRC_FILE=$(readlink -fem ${BASH_SOURCE[0]})
+export gfbasicenv_filepath="${SRC_FILE%/*}/git.basicenv"
+
+if [ ${GITSHLVL:-0} -lt 1 ]; then
+    # RAF: restricted shell cannot redirect to file but it is fine
+    #      to redirect to a open file descriptor towards /dev/null
+    #      So, also exec could fail but in gitshell &3 is just open
+    exec 3>/dev/null || return $?
+    GFRELOAD=1 source "${gfbasicenv_filepath}" || return $?
+    : #RAF: the line above will be stripped
+fi #>&3
+
+if ! type gitshell >&3 2>&3; then
+    GFRELOAD=1 source "${gitshell_pathname}" || return $?
+    : #RAF: the line above will be stripped
+fi #>&3
 
 echo "Loading ${THIS_FILE_NAME} into current bash enviroment"
 
-if [ ${GITSHELL:-0} -eq 0 ]; then
-    SRC_FILE=$(readlink -f ${BASH_SOURCE[0]})
-    export gfreload_pathname="${gfreload_pathname:-$SRC_FILE}"
-    export gfrefdir_path="$(dirname ${gfreload_pathname})"
-    export gfcolors_pathname="${gfrefdir_path}/colors.shell"
-    export gitshell_pathname="${gfrefdir_path}/git.shell"
-    export gfunctions_pathname="${SRC_FILE}"
-    if ! echo "${PATH}" | egrep -q ${gfrefdir_path}; then
-        export PATH="${gfrefdir_path}/bin:${PATH}"
-    fi
-fi
+###############################################################################
 
 export BRNC_SWTC_PREV_BRNC=${BRNC_SWTC_PREV_BRNC:-}
 export BRNC_SWTC_PREV_HASH=${BRNC_SWTC_PREV_HASH:-}
-
-#if [ -r "${gfrefdir_path}/isatty_override.so" ]; then
-#   this could be useful for the future
-#fi
-
-if ! type colors_codes_generation 2>&3; then
-    GFRELOAD=1 source "${gfcolors_pathname}"
-    : #RAF: the line above will be stripped
-fi >&3
-if ! type gitshell 2>&3; then
-    GFRELOAD=1 source "${gitshell_pathname}"
-    : #RAF: the line above will be stripped
-fi >&3
-
-###############################################################################
 
 function _op_action() {
     local op=""

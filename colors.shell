@@ -27,6 +27,8 @@
 # echo -ne "${dgrnowht} Ciao in dark green over white. ${crst}\n"
 #
 ###############################################################################
+# set -Eeuo pipefail # RAF: this is only for test with every restriction possible
+                     #      bash -c "source colors.shell && source colors.shell"
 
 THIS_FILE_NAME="$(basename ${BASH_SOURCE[0]})"
 
@@ -36,17 +38,17 @@ if [ ${GFRELOAD:-0} -ne 0 ]; then #############################################
 # RAF: restricted shell cannot redirect to file but it is fine
 #      to redirect to a open file descriptor towards /dev/null
 #      So, also exec could fail but in gitshell &3 is just open
-exec 3>/dev/null || return $?
+if [ ${GITSHLVL:-0} -lt 1 ]; then
+    exec 3>/dev/null || return $?
+fi
 
 echo "Loading ${THIS_FILE_NAME} into current bash enviroment"
 
-# set -Eeuo pipefail # RAF: this is only for test with every restriction possible
-                     #      bash -c "source colors.shell && source colors.shell"
+trap 'echo -e "\n'${ERROR:-ERROR}': in '${THIS_FILE_NAME}' at line ${LINENO} occured, try again with set -x\n"' ERR
 
-trap 'echo -e "\nERROR: in colors.shell at line ${LINENO} occured, try again with set -x\n"' ERR
+###############################################################################
 
 # The echo needs -e to print colored output
-
 function echo() {
     command echo -e "$@"
 }
@@ -205,8 +207,6 @@ declare -r${optx} PAUSE="${BLYLW}PAUSE${CRST}"      || :
 declare -r${optx} STOP="${BLRED}STOP${CRST}"        || :
 
 fi 2>&3
-
-###############################################################################
 
 trap - ERR
 ###############################################################################

@@ -1,0 +1,47 @@
+#!/bin/env bash
+#
+# Copyright (c) Roberto A. Foglietta, 2023
+#
+# Authors:
+#  Roberto A. Foglietta <roberto.foglietta@gmail.com>
+#
+# SPDX-License-Identifier: GPLv3
+#
+#set -x && resetx="set +x" # RAF: source, paired with set +x at the end of file
+set -u                     # RAF: only for devel, comment in main
+
+THIS_FILE_NAME="$(basename ${BASH_SOURCE[0]})"
+
+if [ ${GFRELOAD:-0} -ne 0 ]; then #############################################
+###############################################################################
+
+if [ ${GITSHLVL:-0} -lt 1 ]; then
+    # RAF: restricted shell cannot redirect to file but it is fine
+    #      to redirect to a open file descriptor towards /dev/null
+    #      So, also exec could fail but in gitshell &3 is just open
+    exec 3>/dev/null || return $?
+
+    echo "Loading ${THIS_FILE_NAME} into current bash enviroment"
+
+    SRC_FILE=${SRC_FILE:-$(readlink -f ${BASH_SOURCE[0]})}
+    export gfreload_pathname="${gfreload_pathname:-${SRC_FILE}}"
+    export gfrefdir_path="$(dirname ${gfreload_pathname})"
+    export gfcolors_pathname="${gfrefdir_path}/colors.shell"
+    export gitshell_pathname="${gfrefdir_path}/git.shell"
+    export gfunctions_pathname="${SRC_FILE}"
+    if ! echo "${PATH}" | egrep -q ${gfrefdir_path}; then
+        export PATH="${gfrefdir_path}/bin:${PATH}"
+    fi
+    export gf_gitshell_rcinit=".gitshrc"
+fi
+
+if ! type colors_codes_generation >&3 2>&3; then
+    GFRELOAD=1 source "${gfcolors_pathname}" || return $?
+    : #RAF: the line above will be stripped
+fi #>&3
+
+###############################################################################
+else echo "${THIS_FILE_NAME} not reloaded, try again with 'GFRELOAD=1 source'"
+fi ############################################################################
+${resetx:-}
+true
