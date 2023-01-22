@@ -18,31 +18,42 @@ if [ ${GITSHLVL:-0} -lt 1 ]; then
     exec 3>/dev/null || return $?
 fi
 
+if [ -z "${irebase_sha_to_reword}" -a -n "$1" ]; then
+    irebase_sha_to_reword=$1
+    shift
+fi
+if [ -z "${irebase_sha_to_reword}" -o -z "$1" ]; then
+    exit 1
+fi
+
 declare ret=1
-echo "\ncr in progress... " >&2 
-if test -n "${irebase_sha_to_reword:-}"; then
-    tmpf="$(mktemp -d -p "$TMPDIR")/${1##*/}"
-    echo "tmpfile: $tmpf"
-    echo -n " editor: ${git_core_editor:-vi} "
-    echo "and $(type ${git_core_editor:-vi})"
-    if [ "${1##*/}" == "git-rebase-todo" ]; then
-        echo "\ncr sedding in progress... " >&2 
-        cp -af "$1" ${tmpf}
-        sed -i "s,pick \(${irebase_sha_to_reword:0:7} .*\),r \\1," ${tmpf}
-    elif [ "${1##*/}" == "COMMIT_EDITMSG" ]; then
-        echo "\ncr editing in progress... " >&2 
-        cp -af "$1" ${tmpf}
-        ${git_core_editor:-vi} ${tmpf}
-    fi
-    if ! diff "$1" ${tmpf} >&3; then
-        cp -af ${tmpf} "$1"
-        ret=0
-    fi
-    if [ -n "${CRDEBUG}" ]; then
-        echo "shaedit: ${irebase_sha_to_reword}"
-        echo "tmpfile: ${tmpf}"
-    else
-        rm -f ${tmpf}
-    fi
+echo -e "\ncr in progress... " >&2
+tmpd="$(mktemp -d -p "$TMPDIR")"
+tmpf="${tmpd}/${1##*/}"
+echo "tmpfile: $tmpf"
+echo -n "editor : ${git_core_editor:-vi} "
+echo "and $(type ${git_core_editor:-vi})"
+if [ "${1##*/}" == "git-rebase-todo" ]; then
+    echo -e "\ncr sedding in progress... " >&2
+    cp -af "$1" ${tmpf}
+    sed -i "s,pick \(${irebase_sha_to_reword:0:7} .*\),r \\1," ${tmpf}
+elif [ "${1##*/}" == "COMMIT_EDITMSG" ]; then
+    echo -e "\ncr editing in progress... " >&2
+    cp -af "$1" ${tmpf}
+    ${git_core_editor:-vi} ${tmpf}
+else
+    echo -e "cr operation not supported, abort\n" >&2
+    rm -rf ${tmpd}
+    exit 1
+fi
+if ! diff "$1" ${tmpf} >&3; then
+    cp -af ${tmpf} "$1"
+    ret=0
+fi
+if [ -n "${CRDEBUG}" ]; then
+    echo "shaedit: ${irebase_sha_to_reword}"
+    echo "tmpfile: ${tmpf}"
+else
+    rm -rf ${tmpd}
 fi
 exit $ret
