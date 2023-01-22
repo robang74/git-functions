@@ -10,12 +10,13 @@
 #set -x && resetx="set +x" # RAF: source, paired with set +x at the end of file
 set -u                     # RAF: only for devel, comment in main
 
-trap 'echo -e "\n'${ERROR:-ERROR}': in '${BASH_SOURCE[0]##*/}' at line ${LINENO} occured, try again with set -x\n" >&2' ERR
-
 if [ ${GFRELOAD:-0} -eq 0 ]; then
     echo "${BASH_SOURCE[0]##*/} not reloaded, try again with 'GFRELOAD=1 source'"
     return 1
 fi
+
+trap 'echo -e "\n'${ERROR:-ERROR}': in '${BASH_SOURCE[0]##*/}\
+     ' at line ${LINENO} occured, try again with set -x\n" >&2' ERR
 
 ###############################################################################
 
