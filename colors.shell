@@ -10,7 +10,7 @@
 #set -x && resetx="set +x" # RAF: source, paired with set +x at the end of file
 #set -Eeuo pipefail  # RAF: this is only for test with every restriction possible
                      #      bash -c "source colors.shell && source colors.shell"
-set -u               # RAF: only for devel, comment in main
+#set -u              # RAF: only for devel, comment in main
 
 ###############################################################################
 #
