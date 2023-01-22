@@ -18,7 +18,7 @@ if [ ${GFRELOAD:-0} -eq 0 ]; then
 fi
 type _op_action 2>&1 | grep -q "is a function" && return 0
 
-###############################################################################
+################################################################################
 
 function _op_action() { false; }; export -f _op_action
 
@@ -41,7 +41,7 @@ fi #>&3
 
 echo "Loading ${BASH_SOURCE[0]##*/} into current bash enviroment"
 
-###############################################################################
+################################################################################
 
 export BRNC_SWTC_PREV_BRNC=${BRNC_SWTC_PREV_BRNC:-}
 export BRNC_SWTC_PREV_HASH=${BRNC_SWTC_PREV_HASH:-}
@@ -85,8 +85,8 @@ function _is_sha_in_line() {
 }
 export -f _is_sha_in_line
 
-###############################################################################
-test ${gflistshow:-0} -ne 0 && set -x && resetx="set +x" ######################
+################################################################################
+test ${gflistshow:-0} -ne 0 && set -x && resetx="set +x" #######################
 
 function less() {
     command less -Fr "$@"
@@ -108,8 +108,6 @@ function eg() {
 }
 export -f eg
 
-###############################################################################
-
 # RAF: these are just for gflist()
 if false; then
 export -f gitshell
@@ -118,6 +116,8 @@ export -f gfupdate
 export -f gflist
 export -f gfhelp
 fi
+
+################################################################################
 
 function no-opts() {
     local i
@@ -145,7 +145,7 @@ function reset_git() {
 }
 export -f reset_git
 
-reset_git #####################################################################
+reset_git ######################################################################
 
 function ce() {
     test -z "${1:-}" && return 1
@@ -648,17 +648,6 @@ export -f chpk
 function lsbr() {
     local opts=""
 
-if false; then # RAF,TODO: code to keep, just in case ######################
-    if [ "x${1:-}" == "x-c" ]; then
-        bcur -c && return 0
-        opt="--no-color --contains"
-        command git branch $opt |\
-            sed -e 's,^* ,,' -e "s,.* detached .*,," |\
-                tr -d ' ' | egnc .
-        return $?
-    fi
-fi #########################################################################
-
     # RAF, TODO: rewrite with getopts
     if [ "x${1:-}" == "x-a" -o "x${1:-}" == "x-r" ]; then
         opts="$1"; shift
@@ -683,21 +672,6 @@ fi #########################################################################
     command git branch $opts "$@" | sed -e "s,..,," -e "s,remotes/,," |\
         awk '{ print $1 }' | egnc -ve "/HEAD$" -ve "\(HEAD$" | sort
     return ${PIPESTATUS[0]}
-
-# ############## RAF,TODO: code to keep, just in case ######################
-
-    if test -z "${1:-}"; then
-        command git branch $opts | sed -e "s,..,," -e "s,remotes/,," |\
-            awk '{ print $1 }' | egnc -ve "/HEAD$" -ve "\(HEAD$" | sort
-        return 0
-    fi
-    declare -i ret=0
-    while test -n "${1:-}"; do
-        command git branch $opts "$1" |\
-           sed -e "s,..,," -e "s,remotes/,," | egnc . || ret=1
-        shift
-    done
-    return $ret
 }
 export -f lsbr
 
@@ -823,11 +797,6 @@ function for-all-other-branches() {
             return 1
         fi
     fi
-
-#   if ! cdtop; then
-#       echo -e "${ERROR}: cannot change folder to the top level, abort." >&2
-#       return 1
-#   fi
 
     declare -i nbr=$(lsbr | wc -l)
     if [ -z "${BRANCHES:-}" ]; then
@@ -985,7 +954,7 @@ function rcur() {
 }
 export -f rcur
 
-###############################################################################
+################################################################################
 ${resetx:-}
 trap - ERR
 true
