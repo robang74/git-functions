@@ -86,6 +86,15 @@ function _is_sha_in_line() {
 }
 export -f _is_sha_in_line
 
+function _opst_msg() {
+    local op=$(opst)
+    test -z "$op" && return 1
+    echo -e "\n${WARNING}: operation '$op' in progress, abort\n"
+    st -s
+    echo
+}
+export -f _opst_msg
+
 ################################################################################
 test ${gflistshow:-0} -ne 0 && set -x && resetx="set +x" #######################
 
@@ -149,6 +158,7 @@ export -f reset_git
 reset_git ######################################################################
 
 function ce() {
+    _opst_msg && return $?
     test -z "${1:-}" && return 1
     declare -i ret=0 quit=0
     if [ "x$1" == "x--abort" -a -n "${commit_edit_head:-}" ]; then
@@ -222,7 +232,7 @@ function ugit() {
 export -f ugit
 
 function irb() {
-    if opst; then st; return 1; fi
+    _opst_msg && return $?
     if [ -z "${1:-}" ]; then irebase HEAD; return $?; fi
     if [ "x${1:0:1}" == "x~" -o "x${1:0:1}" == "x-" ]; then
         test -z "${1:1}" || \
@@ -242,11 +252,7 @@ export -f irebase
 function cr() {
     local sha=$(_is_sha_in_line $1)
     test -n "$sha" || return 1
-    local op=$(opst)
-    if [ -n "$op" ]; then
-        echo -e "\n${ERROR}: operation '$op' in progress, abort\n"
-        return 1
-    fi
+    _opst_msg && return $?
 
     declare -i ret=0
     _git_core_editor_export
