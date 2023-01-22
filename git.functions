@@ -12,7 +12,12 @@ set -u                     # RAF: only for devel, comment in main
 
 trap 'echo -e "\n'${ERROR:-ERROR}': in '${BASH_SOURCE[0]##*/}' at line ${LINENO} occured, try again with set -x\n" >&2' ERR
 
-if [ ${GFRELOAD:-0} -ne 0 ]; then #############################################
+if [ ${GFRELOAD:-0} -eq 0 ]; then
+    echo "${BASH_SOURCE[0]##*/} not reloaded, try again with 'GFRELOAD=1 source'"
+    return 1
+fi
+type _op_action 2>&1 | grep -q "is a function" && return 0
+
 ###############################################################################
 
 function _op_action() { false; }; export -f _op_action
@@ -81,7 +86,7 @@ function _is_sha_in_line() {
 export -f _is_sha_in_line
 
 ###############################################################################
-test ${gflistshow:-0} -ne 0 && set -x #########################################
+test ${gflistshow:-0} -ne 0 && set -x && resetx="set +x" ######################
 
 function less() {
     command less -Fr "$@"
@@ -980,10 +985,7 @@ function rcur() {
 }
 export -f rcur
 
-test ${gflistshow:-0} -ne 0 && set +x #########################################
-else echo "${BASH_SOURCE[0]##*/} not reloaded, try again with 'GFRELOAD=1 source'"
-fi ############################################################################
+###############################################################################
 ${resetx:-}
 trap - ERR
 true
-

@@ -10,7 +10,13 @@
 #set -x && resetx="set +x" # RAF: source, paired with set +x at the end of file
 set -u                     # RAF: only for devel, comment in main
 
-if [ ${GFRELOAD:-0} -ne 0 ]; then #############################################
+trap 'echo -e "\n'${ERROR:-ERROR}': in '${BASH_SOURCE[0]##*/}' at line ${LINENO} occured, try again with set -x\n" >&2' ERR
+
+if [ ${GFRELOAD:-0} -eq 0 ]; then
+    echo "${BASH_SOURCE[0]##*/} not reloaded, try again with 'GFRELOAD=1 source'"
+    return 1
+fi
+
 ###############################################################################
 
 if [ ${GITSHLVL:-0} -lt 1 ]; then
@@ -39,7 +45,5 @@ if ! type colors_codes_generation >&3 2>&3; then
 fi #>&3
 
 ###############################################################################
-else echo "${BASH_SOURCE[0]##*/} not reloaded, try again with 'GFRELOAD=1 source'"
-fi ############################################################################
 ${resetx:-}
 true

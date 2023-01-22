@@ -12,7 +12,12 @@ set -u                     # RAF: only for devel, comment in main
 
 trap 'echo -e "\n'${ERROR:-ERROR}': in '${BASH_SOURCE[0]##*/}' at line ${LINENO} occured, try again with set -x\n" >&2' ERR
 
-if [ ${GFRELOAD:-0} -ne 0 ]; then #############################################
+if [ ${GFRELOAD:-0} -eq 0 ]; then
+    echo "${BASH_SOURCE[0]##*/} not reloaded, try again with 'GFRELOAD=1 source'"
+    return 1
+fi
+type gitshell 2>&1 | grep -q "is a function" && return 0
+
 ###############################################################################
 
 function gitshell() { false; }; export -f gitshell
@@ -199,7 +204,7 @@ function gfreload() {
     elif [ -r "$1" ]; then
         p="$(readlink -e $1)"
         test -n "$p" || return 1
-        egnc -q "export -f _gitshell" "$p" || return 1
+        grep -q "export -f _gitshell" "$p" || return 1
         gfreload_pathname="$p"
     elif [ "x$1" == "x-f" ]; then
         shift
@@ -210,7 +215,7 @@ function gfreload() {
     fi
 
     # RAF: a function that has been removed should not remain
-    unset -f $(gflist | grep -vw $FUNCNAME)
+    unset -f $(gflist 2>&3 | grep -vw $FUNCNAME)
 
     # RAF: needed to grants that every script will be reloaded
     unset -f colors_codes_generation _op_action gitshell
@@ -238,9 +243,6 @@ function gfhelp() {
 export -f gfhelp
 
 ###############################################################################
-else echo "${BASH_SOURCE[0]##*/} not reloaded, try again with 'GFRELOAD=1 source'"
-fi ############################################################################
 ${resetx:-}
 trap - ERR
 true
-

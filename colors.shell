@@ -7,6 +7,10 @@
 #
 # SPDX-License-Identifier: MIT
 #
+#set -x && resetx="set +x" # RAF: source, paired with set +x at the end of file
+#set -Eeuo pipefail  # RAF: this is only for test with every restriction possible
+                     #      bash -c "source colors.shell && source colors.shell"
+set -u               # RAF: only for devel, comment in main
 
 ###############################################################################
 #
@@ -27,12 +31,15 @@
 # echo -ne "${dgrnowht} Ciao in dark green over white. ${crst}\n"
 #
 ###############################################################################
-# set -Eeuo pipefail # RAF: this is only for test with every restriction possible
-                     #      bash -c "source colors.shell && source colors.shell"
 
 trap 'echo -e "\n'${ERROR:-ERROR}': in '${BASH_SOURCE[0]##*/}' at line ${LINENO} occured, try again with set -x\n" >&2' ERR
 
-if [ ${GFRELOAD:-0} -ne 0 ]; then #############################################
+if [ ${GFRELOAD:-0} -eq 0 ]; then
+    echo "${BASH_SOURCE[0]##*/} not reloaded, try again with 'GFRELOAD=1 source'"
+    return 1
+fi
+type colors_codes_generation 2>&1 | grep -q "is a function" && return 0
+
 ###############################################################################
 
 # RAF: restricted shell cannot redirect to file but it is fine
@@ -207,7 +214,6 @@ declare -r${optx} STOP="${BLRED}STOP${CRST}"        || :
 fi 2>&3
 
 ###############################################################################
-else echo "${BASH_SOURCE[0]##*/} not reloaded, try again with 'GFRELOAD=1 source'"
-fi ############################################################################
+${resetx:-}
 trap - ERR
 true
