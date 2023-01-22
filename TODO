@@ -1,5 +1,9 @@
 #################### TODO ####################
 
+quando siamo in stato operativo 'am' usare 'ff' come git am --show-current-patch=diff
+
+bash: /usr/lib/command-not-found: restricted: cannot specify `/' in command names
+
 vi deve presentare la sintassi colorata anche in gitshell meglio se di crea un file di configurazione per l'utente da esportare
 
     autocmd BufNewFile,BufRead *.meals set syntax=json
