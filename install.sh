@@ -16,8 +16,13 @@ if [ ${GITSHLVL:-0} -lt 1 ]; then
     exec 3>/dev/null
 fi
 
+function exit() {
+    trap -- ERR
+    command exit ${1:-}
+}
+
 THISCMD="$(basename $0)"
-trap 'echo -e "\n'${ERROR:-ERROR}' in '${THISCMD}' at line ${LINENO} occured, try again with set -x\n"' ERR
+trap 'echo -e "\n${ERROR:-ERROR} in '${THISCMD}' at line ${LINENO} occured, try again with set -x\n" >&2' ERR
 set -e
 
 TOPDIR=$(dirname $(readlink -f $0))
