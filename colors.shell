@@ -32,13 +32,14 @@
 #
 ###############################################################################
 
-trap 'echo -e "\n'${ERROR:-ERROR}': in '${BASH_SOURCE[0]##*/}' at line ${LINENO} occured, try again with set -x\n" >&2' ERR
-
 if [ ${GFRELOAD:-0} -eq 0 ]; then
     echo "${BASH_SOURCE[0]##*/} not reloaded, try again with 'GFRELOAD=1 source'"
     return 1
 fi
 type colors_codes_generation 2>&1 | grep -q "is a function" && return 0
+
+trap 'echo -e "\n'${ERROR:-ERROR}': in '${BASH_SOURCE[0]##*/}\
+     ' at line ${LINENO} occured, try again with set -x\n" >&2' ERR
 
 ###############################################################################
 
