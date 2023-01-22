@@ -193,12 +193,12 @@ function gfreloadafunc() {
     n=$(grep -n "^function $1(" "$fn" 2>&3 | cut -d: -f1 | tail -n1)
     m=$(grep -n "^export -f $1" "$fn" 2>&3 | cut -d: -f1 | tail -n1)
     test $n -le 0 -o $m -le 0 ||\
-        f=$(head -n$m "$fn" 2>&3 | tail -n$[m-n])
-    if [ -z "$f" -a -z "${2:-}" ]; then
+        f=$(head -n$[m-1] "$fn" 2>&3 | tail -n$[m-n])
+    if [ -z "${f:0:1}" -a -z "${2:-}" ]; then
         gfreloadafunc "$1" git.shell
         return $?
     fi
-    test -z "$f" && return 1
+    test -z "${f:0:1}" && return 1
     eval "$f" && echo -e "\n${DONE}: function '$1' reloaded\n"
 }
 export -f gfreloadafunc
