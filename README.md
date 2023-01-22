@@ -172,8 +172,8 @@ Example of `redef_git` and `reset_git` usage:
 * `lt`: like `lg` but with all branches shown, files as args
 * `lg1`: like `lg` but just the first line
 * `rl`, `reflog`: shorts for `git reflog`
-* `ff`: short for `git diff`, opts -s:staged -o:origin
 * `sf`: show the file involved in a commit, SHAs as args
+* `ff`: short for `git diff -w`, opts -s:staged -o:origin
 * `sw`: short for `git show` with `sf` after, opt:-P for no pager
 * `fpatch`: do a `git format-patch` for the commit, SHA and opts in arg
 * `bsw`: short for `git switch`, the branch name as arg or `-` for the last

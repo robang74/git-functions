@@ -236,6 +236,11 @@ export -f irebase
 function cr() {
     local sha=$(_is_sha_in_line $1)
     test -n "$sha" || return 1
+    local op=$(opst)
+    if [ -n "$op" ]; then
+        echo -e "\n${ERROR}: operation '$op' in progress, abort\n"
+        return 1
+    fi
 
     declare -i ret=0
     _git_core_editor_export
@@ -317,7 +322,7 @@ function ff() {
         opt="origin/${2:-$(bcur)}"
 		shift
 	fi
-	_git diff $opt "$@"
+	_git diff -w $opt "$@"
 }
 export -f ff
 
@@ -406,9 +411,9 @@ export -f co
 function sw() {
     if [ "x${1:-}" == "x-P" ]; then
         shift
-        ugit show "$@"
+        ugit show -w "$@"
     else
-	    _git show "$@"
+	    _git show -w "$@"
     fi
     if ! echo "$@" | egnc -q -- "--oneline"; then
         printf -- '_%.0s' {1..72}
