@@ -112,8 +112,8 @@ function _gitshell() {
         echo "GFRELOAD=1 source ${gitshrc} >&3"
         GITSHLVL=$(set +u; declare -i i=${GITSHLVL:-0}; echo $i) # RAF: sanitize the integer
         if [ $GITSHLVL -le 0 ]; then
-            echo 'gfreload() { command exit 2>&3; }'
             echo 'gitshell() { _gitshell "$@"; }'
+            echo 'gfreload() { if [ "x${1:-}" == "x-f" ]; then shift; gfreloadafunc "$@"; return $?; fi; command exit 2>&3; }'
             echo 'echo -e "${blcyn}WELCOME${crst}: enter ${blwht}gfexit${crst} to leave\n"'
             echo "export GITSHLVL=1"
         else
@@ -175,6 +175,23 @@ function gitshell() {
 }
 export -f gitshell
 
+function gfreloadafunc() {
+    test -z "${1:-}" && return 1
+    local f="" fn=${2:-git.functions}
+    declare -i n m
+    n=$(grep -n "^function $1(" "$fn" 2>&3 | cut -d: -f1 | tail -n1)
+    m=$(grep -n "^export -f $1" "$fn" 2>&3 | cut -d: -f1 | tail -n1)
+    test $n -le 0 -o $m -le 0 ||\
+        f=$(head -n$m "$fn" 2>&3 | tail -n$[m-n])
+    if [ -z "$f" -a -z "${2:-}" ]; then
+        gfreloadafunc "$1" git.shell
+        return $?
+    fi
+    test -z "$f" && return 1
+    eval "$f" && echo -e "\n${DONE}: function '$1' reloaded\n"
+}
+export -f gfreloadafunc
+
 function gfreload() {
     local p
     if [ -z "${1:-}" ]; then
@@ -184,6 +201,10 @@ function gfreload() {
         test -n "$p" || return 1
         egnc -q "export -f _gitshell" "$p" || return 1
         gfreload_pathname="$p"
+    elif [ "x$1" == "x-f" ]; then
+        shift
+        gfreloadafunc "$@"
+        return $?
     else
         return 1
     fi
