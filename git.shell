@@ -106,6 +106,7 @@ function _gitshell() {
             echo 'gfreload() { echo -e "\n'$WARNING': reload is not allowed is this gitshell\n"; }'
             echo 'gfupdate() { echo -e "\n'$WARNING': update is not allowed is gitshell\n"; }'
             echo 'exit() { command exit ${1:-} 2>&3; }'
+            echo 'gitshell() { _gitshell "$@"; }'
             echo 'gfexit() { exit 123; }'
         fi | tee "${gitshrc}" >&3
         chmod a-w "${gitshrc}"
@@ -117,7 +118,6 @@ function _gitshell() {
         echo "GFRELOAD=1 source ${gitshrc} >&3"
         GITSHLVL=$(set +u; declare -i i=${GITSHLVL:-0}; echo $i) # RAF: sanitize the integer
         if [ $GITSHLVL -le 0 ]; then
-            echo 'gitshell() { _gitshell "$@"; }'
             echo 'gfreload() { if [ "x${1:-}" == "x-f" ]; then shift; gfreloadafunc "$@"; return $?; fi; command exit 2>&3; }'
             echo 'echo -e "${blcyn}WELCOME${crst}: enter ${blwht}gfexit${crst} to leave\n"'
             echo "export GITSHLVL=1"
