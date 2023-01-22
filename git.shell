@@ -16,8 +16,8 @@ if [ ${GFRELOAD:-0} -eq 0 ]; then
 fi
 type gitshell 2>&1 | grep -q "is a function" && return 0
 
-trap 'echo -e "\n'${ERROR:-ERROR}': in '${BASH_SOURCE[0]##*/}\
-     ' at line ${LINENO} occured, try again with set -x\n" >&2' ERR
+trap 'echo -e "\n${ERROR:-ERROR}: in '${BASH_SOURCE[0]##*/}\
+' at line ${LINENO} occured, try again with set -x\n" >&2' ERR
 
 ###############################################################################
 
