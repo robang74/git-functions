@@ -23,14 +23,14 @@ trap 'echo -e "\n${ERROR:-ERROR}: in '${BASH_SOURCE[0]##*/}\
 
 function _op_action() { false; }; export -f _op_action
 
-SRC_FILE=$(readlink -fem ${BASH_SOURCE[0]})
-export gfbasicenv_filepath="${SRC_FILE%/*}/git.basicenv"
-
 if [ ${GITSHLVL:-0} -lt 1 ]; then
     # RAF: restricted shell cannot redirect to file but it is fine
     #      to redirect to a open file descriptor towards /dev/null
     #      So, also exec could fail but in gitshell &3 is just open
     exec 3>/dev/null || return $?
+
+    SRC_FILE=$(readlink -f ${BASH_SOURCE[0]})
+    export gfbasicenv_pathname="${SRC_FILE%/*}/git.basicenv"
     GFRELOAD=1 source "${gfbasicenv_pathname}" || return $?
     : #RAF: the line above will be stripped
 fi #>&3
@@ -214,7 +214,7 @@ export -f pa
 
 function ugit() {
     declare -i ret=0
-    local solib="${gfrefdir_path}/isatty_override.so"
+    local solib="${gfrefdir_pathdir}/isatty_override.so"
     test -r "${solib}" || solib=""
     LD_PRELOAD="${solib}" git -P "$@" || ret=$?
     echo; return $ret
@@ -251,7 +251,7 @@ function cr() {
     declare -i ret=0
     _git_core_editor_export
     export irebase_sha_to_reword=$sha
-    local edcr="${gfrefdir_path}/bin/cr-editor.sh"
+    local edcr="${gfrefdir_pathdir}/bin/cr-editor.sh"
     GIT_EDITOR="${edcr}" GIT_SEQUENCE_EDITOR="${edcr}" irebase "$sha" || ret=1
     unset irebase_sha_to_reword git_core_editor
     test $ret -ne 0 && abrt
@@ -315,7 +315,7 @@ function lt() {
 export -f lt
 
 function st() {
-	_git status "$@"
+        _git status "$@"
 }
 export -f st
 

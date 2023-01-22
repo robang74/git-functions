@@ -29,13 +29,14 @@ if [ ${GITSHLVL:-0} -lt 1 ]; then
     echo "Loading ${BASH_SOURCE[0]##*/} into current bash enviroment"
 
     SRC_FILE=${SRC_FILE:-$(readlink -f ${BASH_SOURCE[0]})}
-    export gfreload_pathname="${gfreload_pathname:-${SRC_FILE}}"
-    export gfrefdir_path="$(dirname ${gfreload_pathname})"
-    export gfunctions_pathname="${gfrefdir_path}/git.functions"
-    export gfcolors_pathname="${gfrefdir_path}/colors.shell"
-    export gitshell_pathname="${gfrefdir_path}/git.shell"
-    if ! echo "${PATH}" | egrep -q ${gfrefdir_path}; then
-        export PATH="${gfrefdir_path}/bin:${PATH}"
+    export gfrefdir_pathdir="${SRC_FILE%/*}"
+    export gfbasicenv_pathname="${gfrefdir_pathdir}/git.basicenv"
+    export gfunctions_pathname="${gfrefdir_pathdir}/git.functions"
+    export gfcolors_pathname="${gfrefdir_pathdir}/colors.shell"
+    export gitshell_pathname="${gfrefdir_pathdir}/git.shell"
+    export gfreload_pathname="${gitshell_pathname}"
+    if ! echo "${PATH}" | egrep -q ${gfrefdir_pathdir}; then
+        export PATH="${gfrefdir_pathdir}/bin:${PATH}"
     fi
     export gf_gitshell_rcinit=".gitshrc"
 fi
