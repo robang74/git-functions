@@ -42,7 +42,7 @@ with `git switch devel` and the run the installer from that branch.
 
 Alternatively, you can do a remote installation with these comands
 
-    branch=main
+    branch=gitshell
     repo=https://raw.githubusercontent.com/robang74/git-functions
     wget $repo/$branch/install.sh -O - | bash
 
@@ -75,6 +75,10 @@ Since the last commit in 'main' branch these are the functions that changed:
 * `lsrmt`: was a replica of `rmt` now is a short for `rmt -v`
 * `ff`, `sw`: in git use -w (ignore blank spaces) as default
 * `gfreload`: opt:-f added to reload a single function
+
+The branch `gitshell` is supposed to be stable but temporary, thus inheriting
+this `README.md` from branch `devel` and some APIs here presented but
+experimental could have not been imported here.
 
 
 List of the functions
