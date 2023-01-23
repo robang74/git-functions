@@ -8,11 +8,24 @@ Rationale
 
 Every comfortable command-line UI should be verbose enough to be descriptive
 and self-explanatory and IMHO `git` achieved this goal very well. However, for
-an intensive use - after having learned the command-line UI - verbosity impairs
-productivity and there is no way to avoid writing `git` in front of every 
+intensive use - after having learned the command-line UI - verbosity impairs
+productivity and there is no way to avoid writing `git` in front of every
 command unless a functions-set wrap layer is used. This is the point in which
-`git-functions` arrives and aim to help those whose hands wish to be faster
-than their minds. Have fun <3
+`git-functions` arrives and aims to help those whose hands wish to be faster
+than their minds.
+
+Have fun <3
+
+
+About using the bash
+--------------------
+
+The `dash` which is the standard by default shell in GNU/Debian Linux is about
+2x faster than `bash` to execute commands and probably `bash` is the slowest
+shell of all. However, bashism are somewhat powerful shell-scripting tricks and
+moreover, the user interaction with small functions does not require any
+particular performance to be acceptable and in any case `git` is the real
+bottle-neck in performances especially when it queries a remote host.
 
 
 Usage
@@ -37,13 +50,47 @@ script without any argument
 
 then follow the instructions, in particular source the `git.fuctions` in your
 current bash environment. To install the development version switch the branch
-with `git switch devel` and the run the installer from that branch.
+with `git switch devel` and then run the installer from that branch.
+
+Alternatively, you can do a remote installation with these commands
+
+    branch=main
+    repo=https://raw.githubusercontent.com/robang74/git-functions
+    wget $repo/$branch/install.sh -O - | bash
+
+You might want to change the branch in `devel` but that branch, from time to
+time, could be totally broken. Other branches might have the same problem.
+However, also for the `main` branch, it is not assured of the lack of bugs.
+
+
+Usage
+-----
+
+After installation your .bashrc will be modified in such a way the `gitshell`
+will be defined as a function. Calling it - in your git repository - will give
+you the access to the wrap layer:
+
+    cd my-repo.git
+    gitshell
+    gfhelp
+
+This command will display the functions available which are reported and
+briefly described here below. If you need more functions, feel free to add to
+the source code and share the change with the author. Or ask for an addition.
+
+
+API changes
+-----------
+
+* `lsrmt`: was a replica of `rmt` now is a short for `rmt -v`
+* `ff`, `sw`: in git use -w (ignore blank spaces) as default
+* `gfreload`: opt:-f added to reload a single function
 
 
 List of the functions
 ---------------------
 
-The following list is divided for class of usage and roles
+The following list is divided for class of usage and roles:
 
 #### Service functions
 
@@ -164,11 +211,11 @@ on which commands are currently executing. The single quotes around the
 commands string are necessary to avoid that the variable is expanded before
 starting the loop.
 
-In case the last command fails then the loop stops and spawn a emergency `bash`
+In case the last command fails then the loop stops and spawns an emergency `bash`
 in that shell - which is restricted - the operator can handle the issue and
 then decide to proceed further with `exit` or definitely stop with `exit 1`.
 
-    Switched to branch 'devel'
+    Switch to branch 'devel'
     Your branch is up-to-date with 'origin/devel'.
 
     branch: devel, KO
