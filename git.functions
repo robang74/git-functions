@@ -90,10 +90,18 @@ function _opst_msg() {
     local op=$(opst)
     test -z "$op" && return 1
     echo -e "\n${WARNING}: operation '$op' in progress, abort\n"
-    st -s
+    st -m
     echo
 }
 export -f _opst_msg
+
+function _chgs_msg() {
+    local ch=$(st -m)
+    test -z "$ch" && return 1
+    echo -e "\n${WARNING}: changes pending, please stash or commit, abort.\n" >&2
+    echo -e "$ch\n"
+}
+export -f _chgs_msg
 
 ################################################################################
 test ${gflistshow:-0} -ne 0 && set -x && resetx="set +x" #######################
@@ -159,6 +167,7 @@ reset_git ######################################################################
 
 function ce() {
     _opst_msg && return $?
+    _chgs_msg && return $?
     test -z "${1:-}" && return 1
     declare -i ret=0 quit=0
     if [ "x$1" == "x--abort" -a -n "${commit_edit_head:-}" ]; then
@@ -233,6 +242,7 @@ export -f ugit
 
 function irb() {
     _opst_msg && return $?
+    _chgs_msg && return $?
     if [ -z "${1:-}" ]; then irebase HEAD; return $?; fi
     if [ "x${1:0:1}" == "x~" -o "x${1:0:1}" == "x-" ]; then
         test -z "${1:1}" || \
@@ -253,6 +263,7 @@ function cr() {
     local sha=$(_is_sha_in_line $1)
     test -n "$sha" || return 1
     _opst_msg && return $?
+    _chgs_msg && return $?
 
     declare -i ret=0
     _git_core_editor_export
@@ -761,6 +772,7 @@ export -f hcur
 
 function for-all-other-branches() {
     test -z "${1:-}" && return 1
+    _opst_msg && return $?
 
     local cur=$(bcur -c)
     if [ "$cur" == "" ]; then
@@ -802,11 +814,7 @@ function for-all-other-branches() {
     done
 
     if [ $stashpop -eq 0 ]; then
-        local warn=$(st | grep -e "^Changes [not]* ")
-        if [ -n "$warn" ]; then
-            echo -e "\n${WARNING}: changes pending, please stash (-s) or commit, abort.\n" >&2
-            return 1
-        fi
+        _chgs_msg && return $?
     fi
 
     if [ -z "${BRANCHES:-}" ]; then
