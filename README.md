@@ -2,17 +2,44 @@
 
 source the `git.functions` to improve the git users experience in your bash
 
-
 Rationale
 ---------
 
 Every comfortable command-line UI should be verbose enough to be descriptive
 and self-explanatory and IMHO `git` achieved this goal very well. However, for
-an intensive use - after having learned the command-line UI - verbosity impairs
-productivity and there is no way to avoid writing `git` in front of every 
+intensive use - after having learned the command-line UI - verbosity impairs
+productivity and there is no way to avoid writing `git` in front of every
 command unless a functions-set wrap layer is used. This is the point in which
-`git-functions` arrives and aim to help those whose hands wish to be faster
-than their minds. Have fun <3
+`git-functions` arrives and aims to help those whose hands wish to be faster
+than their minds.
+
+Have fun <3
+
+
+About using the bash
+--------------------
+
+The `dash` which is the standard by default shell in GNU/Debian Linux is about
+2x faster than `bash` to execute commands and probably `bash` is the slowest
+shell of all. However, bashism are somewhat powerful shell-scripting tricks and
+moreover, the user interaction with small functions does not require any
+particular performance to be acceptable and in any case `git` is the real
+bottle-neck in performances especially when it queries a remote host.
+
+
+Restricted shell
+----------------
+
+After the `v0.4-rc1` the development went towards allowing the function to wrap
+`git` only into a restricted shell which is the bare minimum requirement to
+offer these shortcuts as a remote service. However, the limitations of the
+restricted shell could be easily by-passed leveraging a PATH. In fact, usually
+bash is in the PATH so it can be executed in interactive mode `bash -i` without
+limitations.
+
+This shows clearly that `rbash` is not sufficient to restrict the user but also
+the environment should be controlled and usually the easy way to achieve this
+goal is to let the users play into a chroot-ed-environment specifically prepared
 
 
 Usage
@@ -38,39 +65,37 @@ script without any argument
 
 then follow the instructions, in particular source the `git.shell` in your
 current bash environment. To install the development version switch the branch
-with `git switch devel` and the run the installer from that branch.
+with `git switch devel` and then run the installer from that branch.
 
-Alternatively, you can do a remote installation with these comands
+Alternatively, you can do a remote installation with these commands
 
     branch=main
     repo=https://raw.githubusercontent.com/robang74/git-functions
     wget $repo/$branch/install.sh -O - | bash
 
-You might want to change the branch in `devel` but that branch, time to time,
-could be totally broken. Others brnach migh exist could have the same problem.
-However, also for the `main` branch, it is not assured the lacks of bugs.
+You might want to change the branch in `devel` but that branch, from time to
+time, could be totally broken. Other branches might have the same problem.
+However, also for the `main` branch, it is not assured of the lack of bugs.
 
 
 Usage
 -----
 
 After installation your .bashrc will be modified in such a way the `gitshell`
-will be defined as funtion. Calling it - in your git repository - will give
+will be defined as a function. Calling it - in your git repository - will give
 you the access to the wrap layer:
 
-    cd my-repo.git
-    gitshell
-    gfhelp
+    cd my-repo.git
+    gitshell
+    gfhelp
 
-this command will display the functions available which are reported and
+This command will display the functions available which are reported and
 briefly described here below. If you need more functions, feel free to add to
 the source code and share the change with the author. Or ask for an addition.
 
 
 API changes
 -----------
-
-Since the last commit in 'main' branch these are the functions that changed:
 
 * `lsrmt`: was a replica of `rmt` now is a short for `rmt -v`
 * `ff`, `sw`: in git use -w (ignore blank spaces) as default
@@ -81,17 +106,17 @@ List of the functions
 ---------------------
 
 The following list is divided for class of usage and roles. Only the main
-functions are loaded by `~/.bashrc` in the user bash enviroment while all the
-others are available inside the `gitshell` enviroment.
+functions are loaded by `~/.bashrc` in the user bash environment while all the
+others are available inside the `gitshell` environment.
 
 #### Main functions
 
-* `gitshell`: spawns a restricted shell with the git-funtcions enviroment
+* `gitshell`: spawns a restricted shell with the git-funtcions environment
 * `gfupdate`: update the installation and reload the git-functions
 * `gfhelp`: like `gflist` but in a fancier way
 * `gflist`: list the functions available
 * `gfreloadafunc`: reload a single function
-* `gfreload`: reload the functions, opt:-f reload a singe function
+* `gfreload`: reload the functions, opt:-f reload a single function
 
 #### Service functions
 
@@ -213,11 +238,11 @@ on which commands are currently executing. The single quotes around the
 commands string are necessary to avoid that the variable is expanded before
 starting the loop.
 
-In case the last command fails then the loop stops and spawn a emergency `bash`
+In case the last command fails then the loop stops and spawns an emergency `bash`
 in that shell - which is restricted - the operator can handle the issue and
 then decide to proceed further with `exit` or definitely stop with `exit 1`.
 
-    Switched to branch 'devel'
+    Switch to branch 'devel'
     Your branch is up-to-date with 'origin/devel'.
 
     branch: devel, KO
