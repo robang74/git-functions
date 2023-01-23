@@ -896,9 +896,9 @@ function lgrp() {
     redef_git -u
     local strn="$1"; shift
     if [ $sha -ne 0 ]; then
-        lgnc "$@" | egnc "$strn" | awk '{print $2}'
+        lgnc "$@" | grnc "$strn" | awk '{print $2}'
     else
-        lg "$@" | command egrep --color=always "$strn"
+        lg "$@" | command grep --color=always "$strn"
     fi
     ret=${PIPESTATUS[1]}
     reset_git
