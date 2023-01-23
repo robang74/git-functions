@@ -12,9 +12,7 @@
 # RAF: restricted shell cannot redirect to file but it is fine
 #      to redirect to a open file descriptor towards /dev/null
 #      So, also exec could fail but in gitshell &3 is just open
-if [ ${GITSHLVL:-0} -lt 1 ]; then
-    exec 3>/dev/null
-fi
+exec 3>/dev/null
 
 function exit() {
     trap -- ERR
