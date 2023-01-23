@@ -123,6 +123,7 @@ function _gitshell() {
         echo "GFRELOAD=1 source ${gitshrc} >&3"
         GITSHLVL=$(set +u; declare -i i=${GITSHLVL:-0}; echo $i) # RAF: sanitize the integer
         if [ $GITSHLVL -le 0 ]; then
+            echo 'gfupdate() { command exit 234 2>&3; }'
             echo 'gfreload() { if [ "x${1:-}" == "x-f" ]; then shift; gfreloadafunc "$@"; return $?; fi; command exit 2>&3; }'
             echo 'echo -e "${blcyn}WELCOME${crst}: enter ${blwht}gfexit${crst} to leave\n"'
             echo "export GITSHLVL=1"
@@ -175,6 +176,8 @@ function gitshell() {
     while [ $ret -ne 123 ]; do
         if [ $ret -eq 0 ]; then
             gfreload
+        elif [ $ret -eq 234 ]; then
+            gfupdate
         else
             echo
         fi
@@ -231,7 +234,17 @@ function gfreload() {
 export -f gfreload
 
 function gfupdate() {
-    ${gfrefdir_pathdir}/install.sh update
+    local tmpf=$(mktemp -p "${TMPDIR:-/tmp}" gfupdate.XXXX)
+    ${gfrefdir_pathdir}/install.sh update 2>&1 | tee -a "$tmpf"
+    local strn=$(sed -ne "s,.*DONE.* install path \(.*\),\\1,p" "$tmpf")
+    test -z "$strn" && return 1
+    if [ "$gfrefdir_pathdir" != "$strn" ]; then
+        echo -e "${WARNING}: install and reload paths differ, no reload\n"
+        return 1
+    fi
+#   export gfrefdir_pathdir="$strn"
+    gfreload "${gfrefdir_pathdir}/git.shell" | tail -n +2
+    return ${PIPESTATUS[0]}
 }
 export -f gfupdate
 
