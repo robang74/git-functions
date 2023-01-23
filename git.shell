@@ -48,10 +48,9 @@ echo "Loading ${BASH_SOURCE[0]##*/} into current bash enviroment"
 
 ###############################################################################
 
-function egnc() {
-    command egrep --color=never "$@"
-}
-export -f egnc
+if ! type grnc >&3 2>&3; then
+    function grnc() { command grep --color=never "$@"; }
+fi
 
 gitglobign=$(command git config --global --get core.excludesfile)
 if [ -z "${gitglobign}" ]; then
@@ -60,7 +59,7 @@ if [ -z "${gitglobign}" ]; then
 fi
 if [ -n "${gitglobign}" ]; then
     touch "${gitglobign}"
-    if ! egnc -q "^${gf_gitshell_rcinit}\*$" "${gitglobign}"; then
+    if ! grnc -q "^${gf_gitshell_rcinit}\*$" "${gitglobign}"; then
         echo "${gf_gitshell_rcinit}"'*' | tee -a "${gitglobign}" >&3
     fi
 fi
@@ -87,7 +86,7 @@ function _gitshell() {
         local vc="source.*gitshell_pathname"
         local vd="source.*gfbasicenv_pathname"
         echo -e "\n# START IMPORTING $1"
-        egnc -ve "$va" -ve "$vb" -ve "$vc" -ve "$vd" "$1"
+        grnc -ve "$va" -ve "$vb" -ve "$vc" -ve "$vd" "$1"
         echo -e "## STOP IMPORTING $1\n"
     }
 
@@ -190,8 +189,8 @@ function gfreloadafunc() {
     test -z "${1:-}" && return 1
     local f="" fn=${2:-git.functions}
     declare -i n m
-    n=$(grep -n "^function $1(" "$fn" 2>&3 | cut -d: -f1 | tail -n1)
-    m=$(grep -n "^export -f $1" "$fn" 2>&3 | cut -d: -f1 | tail -n1)
+    n=$(grnc -n "^function $1(" "$fn" 2>&3 | cut -d: -f1 | tail -n1)
+    m=$(grnc -n "^export -f $1" "$fn" 2>&3 | cut -d: -f1 | tail -n1)
     test $n -le 0 -o $m -le 0 ||\
         f=$(head -n$[m-1] "$fn" 2>&3 | tail -n$[m-n])
     if [ -z "${f:0:1}" -a -z "${2:-}" ]; then
@@ -221,7 +220,7 @@ function gfreload() {
     fi
 
     # RAF: a function that has been removed should not remain
-    unset -f $(gflist 2>&3 | grep -vw $FUNCNAME)
+    unset -f $(gflist 2>&3 | grnc -vw $FUNCNAME)
 
     # RAF: needed to grants that every script will be reloaded
     unset -f colors_codes_generation _op_action gitshell
@@ -238,7 +237,7 @@ export -f gfupdate
 
 function gflist() {
     test -r ${gfunctions_pathname} || return 1
-    sed -ne "s,^export -f \([^_][^ ]*\).*,\\1,p" ${gfunctions_pathname} | sort | uniq | egnc .
+    sed -ne "s,^export -f \([^_][^ ]*\).*,\\1,p" ${gfunctions_pathname} | sort | uniq | grnc .
 }
 export -f gflist
 

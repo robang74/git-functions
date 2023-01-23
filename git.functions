@@ -116,6 +116,11 @@ function egnc() {
 }
 export -f egnc
 
+function grnc() {
+    command grep --color=never "$@"
+}
+export -f grnc
+
 function ll() {
     command ls -al --color=always "$@"
 }
@@ -125,6 +130,16 @@ function eg() {
     command egrep --color=always "$@"
 }
 export -f eg
+
+function grep() {
+    command grep --color=always "$@"
+}
+export -f grep
+
+function egrep() {
+    command egrep --color=always "$@"
+}
+export -f egrep
 
 # RAF: these are just for gflist()
 if false; then
@@ -819,12 +834,12 @@ function for-all-other-branches() {
 
     if [ -z "${BRANCHES:-}" ]; then
         if [ -z "$fetch" ]; then
-        BRANCHES=${BRANCHES:-$(lsbr | grep -vwe "$cur")}
+        BRANCHES=${BRANCHES:-$(lsbr | grnc -vwe "$cur")}
         elif [ -n "$fetch" ] && ! frmt; then
             echo -e "\n${ERROR}: cannot fetch all remotes, abort.\n" >&2
             return 1
         else
-            BRANCHES=$(lsbr -r | cut -d/ -f2 | grep -vwe "$cur")
+            BRANCHES=$(lsbr -r | cut -d/ -f2 | grnc -vwe "$cur")
         fi
         if [ -z "${BRANCHES:-}" ]; then
             echo -e "\n${DONE}: there is only one branch '$cur' as current.\n" >&2
@@ -883,7 +898,7 @@ function lgrp() {
     if [ $sha -ne 0 ]; then
         lgnc "$@" | egnc "$strn" | awk '{print $2}'
     else
-        lg "$@" | egrep --color=always "$strn"
+        lg "$@" | command egrep --color=always "$strn"
     fi
     ret=${PIPESTATUS[1]}
     reset_git
