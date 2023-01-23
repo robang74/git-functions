@@ -177,8 +177,9 @@ Example of `redef_git` and `reset_git` usage:
 * `lg1`: like `lg` but just the first line
 * `rl`, `reflog`: shorts for `git reflog`
 * `sf`: show the file involved in a commit, SHAs as args
-* `ff`: short for `git diff -w`, opts -s:staged -o:origin
 * `sw`: short for `git show` with `sf` after, opt:-P for no pager
+* `ff`: short for `git diff -w`, opts -s:staged -o:origin
+* `st`: short for `git status`, opt:-m shows what `add -m` uses
 * `fpatch`: do a `git format-patch` for the commit, SHA and opts in arg
 * `bsw`: short for `git switch`, the branch name as arg or `-` for the last
 * `lgrp`: find a string into the `lg` output, opts -s:SHAs-only -1:first only
@@ -189,7 +190,6 @@ Example of `redef_git` and `reset_git` usage:
 * `hcur`: short for `git rev-parse --short HEAD`
 * `bcur`: short for `git branch --show-current`
 * `lstag`, `tagl`: shorts for `git tag -l`
-* `st`: short for `git status`
 
 #### Command execution on multiple branches
 
