@@ -45,12 +45,13 @@ goal is to let the users play into a chroot-ed-environment specifically prepared
 Usage
 -----
 
-Just to give it a try, source the `git.functions` in your environment and call
-them in your git local repository
+Just to give it a try, source the `git.shell` in your environment and call them
+in your git local repository
 
-    source git.functions
+    GFRELOAD=1 source git.shell
 
 this file also source the `colors.shell` in order to produce a color full output
+while functions will be loaded when `gitshell` will be lauched.
 
 
 Installation
