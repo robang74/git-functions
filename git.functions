@@ -760,20 +760,20 @@ function for-all-other-branches() {
 
     local cur=$(bcur -c)
     if [ "$cur" == "" ]; then
-        echo -e "${ERROR}: this is not the HEAD of a branch." >&2
+        echo -e "\n${ERROR}: this is not the HEAD of a branch.\n" >&2
         return 1
     fi
 
     if echo "x$@" | grep -q "fpush"; then
-        echo -e "${ERROR}: fpush is not allowed for safety." >&2
+        echo -e "\n${ERROR}: fpush is not allowed for safety.\n" >&2
         return 1
     fi
     if echo "x$@" | grep -qe "push.*-f"; then
-        echo -e "${ERROR}: push -f is not allowed for safety." >&2
+        echo -e "\n${ERROR}: push -f is not allowed for safety.\n" >&2
         return 1
     fi
     if echo "x$@" | grep -q -- "--force"; then
-        echo -e "${ERROR}: option --force is not allowed for safety." >&2
+        echo -e "\n${ERROR}: option --force is not allowed for safety.\n" >&2
         return 1
     fi
 
@@ -800,23 +800,23 @@ function for-all-other-branches() {
     if [ $stashpop -eq 0 ]; then
         local warn=$(st | grep -e "^Changes [not]* ")
         if [ -n "$warn" ]; then
-            echo -e "${WARNING}: changes pending, please stash (-s) or commit, abort." >&2
+            echo -e "\n${WARNING}: changes pending, please stash (-s) or commit, abort.\n" >&2
             return 1
         fi
     fi
 
     if [ -z "${BRANCHES:-}" ]; then
         if [ -z "$fetch" ]; then
-            BRANCHES=${BRANCHES:-$(lsbr | grep -vwe "$cur")}
+        BRANCHES=${BRANCHES:-$(lsbr | grep -vwe "$cur")}
         elif [ -n "$fetch" ] && ! frmt; then
-            echo -e "${ERROR}: cannot fetch all remotes, abort." >&2
+            echo -e "\n${ERROR}: cannot fetch all remotes, abort.\n" >&2
             return 1
         else
             BRANCHES=$(lsbr -r | cut -d/ -f2 | grep -vwe "$cur")
         fi
         if [ -z "${BRANCHES:-}" ]; then
-            echo -e "${DONE}: there is only one branch '$cur' as current." >&2
-            return 0
+            echo -e "\n${DONE}: there is only one branch '$cur' as current.\n" >&2
+        return 0
         fi
     fi
 
