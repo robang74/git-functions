@@ -94,7 +94,6 @@ elif [ "$1" == "help" -o "x$1" == "x-h" ]; then
     exit 0
 elif [ -n "$1" ]; then
     echo -e "\n${ERROR:-ERROR}: unrecognised '$1' option, try with help (-h)\n"
-    trap - ERR
     exit 1
 elif [ -d "${DESTDIR}" ]; then
     echo -e "\n${ERROR:-ERROR}: folder ${TOPDIR}/${DESTDIR} exists, try with update or reinstall\n"
