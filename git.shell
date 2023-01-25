@@ -85,9 +85,9 @@ function _gitshell() {
         local vb="source.*gfunctions_pathname"
         local vc="source.*gitshell_pathname"
         local vd="source.*gfbasicenv_pathname"
-        echo -e "\n# START IMPORTING $1"
+        echo -e "\nGFRELOAD=1 ## START IMPORTING $1"
         grnc -ve "$va" -ve "$vb" -ve "$vc" -ve "$vd" "$1"
-        echo -e "## STOP IMPORTING $1\n"
+        echo -e   "GFRELOAD=0 ### STOP IMPORTING $1\n"
     }
 
     local gitshrc="./${gf_gitshell_rcinit}"
@@ -169,6 +169,10 @@ export -f _gitshell
 
 function gitshell() {
     declare -i ret=1
+    if [ ${GITSHLVL:-0} -gt 0 ]; then
+        echo "${ERROR}: this is a sub-shell wrap mismatch, abort."
+        return 1
+    fi
     if [ "x${1:-}" == "x-r" ]; then
         shift
         ret=0
