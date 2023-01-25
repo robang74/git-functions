@@ -29,7 +29,8 @@ if [ ${GITSHLVL:-0} -lt 1 ]; then
     #      So, also exec could fail but in gitshell &3 is just open
     exec 3>/dev/null || return $?
 
-    SRC_FILE=$(readlink -f ${BASH_SOURCE[0]})
+    SRC_FILE=${SRC_FILE:-${gfreload_pathname:-}}
+    SRC_FILE=${SRC_FILE:-$(readlink -f ${BASH_SOURCE[0]})}
     export gfbasicenv_pathname="${SRC_FILE%/*}/git.basicenv"
     GFRELOAD=1 source "${gfbasicenv_pathname}" || return $?
     : #RAF: the line above will be stripped

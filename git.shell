@@ -29,7 +29,8 @@ if [ ${GITSHLVL:-0} -lt 1 ]; then
     #      So, also exec could fail but in gitshell &3 is just open
     exec 3>/dev/null || return $?
 
-    SRC_FILE=$(readlink -f ${BASH_SOURCE[0]})
+    SRC_FILE=${SRC_FILE:-${gfreload_pathname:-}}
+    SRC_FILE=${SRC_FILE:-$(readlink -f ${BASH_SOURCE[0]})}
     export gfbasicenv_pathname="${SRC_FILE%/*}/git.basicenv"
     GFRELOAD=1 source "${gfbasicenv_pathname}" || return $?
     : #RAF: the line above will be stripped
@@ -101,7 +102,7 @@ function _gitshell() {
             echo "#!/bin/env bash"
             ps1p
             echo "declare -rx GITSHELL=1 2>&1 | head -n0"
-            echo "export gfreload_pathname='${gfreload_pathname}'"
+            echo "export SRC_FILE='${gfreload_pathname}'"
             stripsource ${gfbasicenv_pathname}
             stripsource ${gfcolors_pathname}
             stripsource ${gitshell_pathname}
@@ -217,7 +218,7 @@ function gfreload() {
         p="$(readlink -e $1)"
         test -n "$p" || return 1
         grep -q "export -f _gitshell" "$p" || return 1
-        gfreload_pathname="$p"
+        export gfreload_pathname="$p"
     elif [ "x$1" == "x-f" ]; then
         shift
         gfreloadafunc "$@"
@@ -225,6 +226,9 @@ function gfreload() {
     else
         return 1
     fi
+
+    # RAF: forget the past source file path
+    unset SRC_FILE
 
     # RAF: a function that has been removed should not remain
     unset -f $(gflist 2>&3 | grnc -vw $FUNCNAME)

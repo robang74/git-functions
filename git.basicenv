@@ -28,6 +28,7 @@ if [ ${GITSHLVL:-0} -lt 1 ]; then
 
     echo "Loading ${BASH_SOURCE[0]##*/} into current bash enviroment"
 
+    SRC_FILE=${SRC_FILE:-${gfreload_pathname:-}}
     SRC_FILE=${SRC_FILE:-$(readlink -f ${BASH_SOURCE[0]})}
     export gfrefdir_pathdir="${SRC_FILE%/*}"
     export gfbasicenv_pathname="${gfrefdir_pathdir}/git.basicenv"
