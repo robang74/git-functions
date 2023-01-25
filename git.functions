@@ -181,8 +181,6 @@ export -f reset_git
 reset_git ######################################################################
 
 function ce() {
-    _opst_msg && return $?
-    _chgs_msg && return $?
     test -z "${1:-}" && return 1
     declare -i ret=0 quit=0
     if [ "x$1" == "x--abort" -a -n "${commit_edit_head:-}" ]; then
@@ -199,6 +197,8 @@ function ce() {
             ret=1
         fi
     else
+        _opst_msg && return $?
+        _chgs_msg && return $?
         _git_core_editor_export
         export commit_edit_note="use 'ce --abort/cont' while 'cm' has '--amend' by default here, enjoy."
         export commit_edit_opts="--amend"
@@ -275,12 +275,12 @@ function irebase() {
 export -f irebase
 
 function cr() {
+    declare -i ret=0
     local sha=$(_is_sha_in_line $1)
     test -n "$sha" || return 1
+
     _opst_msg && return $?
     _chgs_msg && return $?
-
-    declare -i ret=0
     _git_core_editor_export
     export irebase_sha_to_reword=$sha
     local edcr="${gfrefdir_pathdir}/bin/cr-editor.sh"
