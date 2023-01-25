@@ -9,7 +9,7 @@
 #
 # SPDX-License-Identifier: GPLv3
 #
-#set -x
+#set -x && do_not_delete=1
 
 if [ ${GITSHLVL:-0} -lt 1 ]; then
     # RAF: restricted shell cannot redirect to file but it is fine
@@ -36,7 +36,8 @@ echo "and $(type ${git_core_editor:-vi})"
 if [ "${1##*/}" == "git-rebase-todo" ]; then
     echo -e "\ncr sedding in progress... " >&2
     cp -af "$1" ${tmpf}
-    sed -i "s,pick \(${irebase_sha_to_reword:0:7} .*\),r \\1," ${tmpf}
+#   sed -i "s,pick \(${irebase_sha_to_reword:0:7} .*\),r \\1," ${tmpf}
+    sed -i "s,^pick \(${irebase_sha_to_reword:0:7}\),r \\1," ${tmpf}
 elif [ "${1##*/}" == "COMMIT_EDITMSG" ]; then
     echo -e "\ncr editing in progress... " >&2
     cp -af "$1" ${tmpf}
@@ -53,7 +54,7 @@ fi
 if [ -n "${CRDEBUG}" ]; then
     echo "shaedit: ${irebase_sha_to_reword}"
     echo "tmpfile: ${tmpf}"
-else
+elif [ ${do_not_delete:-0} -eq 0 ]; then
     rm -rf ${tmpd}
 fi
 exit $ret
