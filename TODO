@@ -1,5 +1,8 @@
 #################### TODO ####################
 
+questa cosa può essere molto interessante per fare grep sulle versioni precedenti
+git diff --stat --name-only $COMMIT^ $COMMIT | xargs git ls-tree --full-tree  $COMMIT
+
 quando siamo in stato operativo 'am' usare 'ff' come git am --show-current-patch=diff
 
 bash: /usr/lib/command-not-found: restricted: cannot specify `/' in command names

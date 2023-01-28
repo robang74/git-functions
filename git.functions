@@ -966,7 +966,17 @@ function tres() {
 export -f tres
 
 function mgrp() {
-    grep "$@" $(st -m)
+    local files=""
+    test -z "${1:-}" && return 1
+    if [ -n "${2:-}" ]; then
+        local sha=$(_is_sha_in_line $(hconv $2))
+        test -z "$sha" && return 1
+        files=$(git diff --stat --name-only $sha~1 $(hconv ${3:-}))
+        test -z "$files" && return 1
+    else
+        files=$(st -m)
+    fi
+    grep -n "$1" $files 2>&3
 }
 export -f mgrp
 

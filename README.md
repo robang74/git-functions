@@ -211,12 +211,12 @@ Example of `redef_git` and `reset_git` usage:
 * `lgrp`: find a string into the `lg` output, opts -s:SHAs-only -1:first only
 * `lsbr`: show the list of branches, arg branch name, opt: -r:remotes, -a:all
 * `lsrmt`: short for `rmt -v`, it shows the verbose list of remotes sources
+* `mgrp`: search a `'string'` into `st -m` changed file or from hash, default HEAD
 * `rcur`: remote origin which the current branch is tracking, opt:-c --show-current only
 * `rbcur`: remote branch which the current brach is tracking
 * `hcur`: short for `git rev-parse --short HEAD`
 * `bcur`: short for `git branch --show-current`
 * `lstag`, `tagl`: shorts for `git tag -l`
-* `mgrp`: grep on changed files `st -m`
 
 #### Command execution on multiple branches
 
