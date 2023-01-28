@@ -965,6 +965,11 @@ function tres() {
 }
 export -f tres
 
+function mgrp() {
+    grep "$@" $(st -m)
+}
+export -f mgrp
+
 function search() {
     test -z "${1:-}" && return 1
     _git log -p --source -s --oneline -S "$@"

@@ -216,6 +216,7 @@ Example of `redef_git` and `reset_git` usage:
 * `hcur`: short for `git rev-parse --short HEAD`
 * `bcur`: short for `git branch --show-current`
 * `lstag`, `tagl`: shorts for `git tag -l`
+* `mgrp`: grep on changed files `st -m`
 
 #### Command execution on multiple branches
 
