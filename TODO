@@ -1,5 +1,7 @@
 #################### TODO ####################
 
+ampatch fails spawning a useless sub-gitshell, to fix
+
 questa cosa può essere molto interessante per fare grep sulle versioni precedenti
 git diff --stat --name-only $COMMIT^ $COMMIT | xargs git ls-tree --full-tree  $COMMIT
 
