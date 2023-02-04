@@ -1,6 +1,6 @@
 # git-functions
 
-source the `git.functions` to improve the git users experience in your bash
+Install `git-functions` to improve your git user experience with `gitshell`
 
 Rationale
 ---------
@@ -86,9 +86,9 @@ After installation your .bashrc will be modified in such a way the `gitshell`
 will be defined as a function. Calling it - in your git repository - will give
 you the access to the wrap layer:
 
-    cd my-repo.git
-    gitshell
-    gfhelp
+    cd my-repo.git
+    gitshell
+    gfhelp
 
 This command will display the functions available which are reported and
 briefly described here below. If you need more functions, feel free to add to
