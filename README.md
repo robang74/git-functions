@@ -1,6 +1,6 @@
 # git-functions
 
-source the `git.functions` to improve the git users experience in your bash
+Install `git-functions` to improve your git user experience with `gitshell`
 
 Rationale
 ---------
