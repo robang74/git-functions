@@ -261,8 +261,7 @@ function irb() {
     _chgs_msg && return $?
     if [ -z "${1:-}" ]; then irebase HEAD; return $?; fi
     if [ "x${1:0:1}" == "x~" -o "x${1:0:1}" == "x-" ]; then
-        test -z "${1:1}" || \
-            irebase HEAD~${1:1}
+        test -z "${1:1}" || irb HEAD~${1:1}
         return $?
     fi
     local hash=$(_git rev-list --parents -n2 "$1" | tail -n1 | head -c40)
@@ -969,6 +968,10 @@ function mgrp() {
     local files=""
     test -z "${1:-}" && return 1
     if [ -n "${2:-}" ]; then
+        if [ "x${2:0:1}" == "x~" -o "x${2:0:1}" == "x-" ]; then
+            test -z "${2:1}" || mgrp "$1" HEAD~${2:1}
+            return $?
+        fi
         local sha=$(_is_sha_in_line $(hconv $2))
         test -z "$sha" && return 1
         files=$(git diff --stat --name-only $sha~1 $(hconv ${3:-}))

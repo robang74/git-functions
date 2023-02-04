@@ -86,9 +86,9 @@ After installation your .bashrc will be modified in such a way the `gitshell`
 will be defined as a function. Calling it - in your git repository - will give
 you the access to the wrap layer:
 
-    cd my-repo.git
-    gitshell
-    gfhelp
+    cd my-repo.git
+    gitshell
+    gfhelp
 
 This command will display the functions available which are reported and
 briefly described here below. If you need more functions, feel free to add to
@@ -171,7 +171,7 @@ Example of `redef_git` and `reset_git` usage:
 * `forig`: short for `git fetch origin`
 * `frmt`: short for `git fetch`, default the first in `rmt` or args with opt -a:--all
 * `search`: search for a string in all the commits and report the first found, arg string
-* `irb`, `irebase`: rebase starting from the hash passed or ~n, -n for `HEAD~n`
+* `irb`, `irebase`: rebase starting from the hash passed or ~n/-n for `HEAD~n`
 * `amd`, amend`: shorts for `git amend` but with opt:-a does `add -m`
 * `add`: short for `git add` but opt:-m add all the modified items
 * `pa`: format patch apply and create signed commit
@@ -211,7 +211,7 @@ Example of `redef_git` and `reset_git` usage:
 * `lgrp`: find a string into the `lg` output, opts -s:SHAs-only -1:first only
 * `lsbr`: show the list of branches, arg branch name, opt: -r:remotes, -a:all
 * `lsrmt`: short for `rmt -v`, it shows the verbose list of remotes sources
-* `mgrp`: search a `'string'` into `st -m` changed file or from hash, default HEAD
+* `mgrp`: search a `'string'` into `st -m` changed file or from hash, default `HEAD` or ~n/-n for `HEAD~n`
 * `rcur`: remote origin which the current branch is tracking, opt:-c --show-current only
 * `rbcur`: remote branch which the current brach is tracking
 * `hcur`: short for `git rev-parse --short HEAD`
