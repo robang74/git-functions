@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [ "${1:-}" != "sourceme" ]; then
+    source $0 sourceme "$@"
+    exit $?
+fi
+shift
+gitshell "$@"
+return $?
