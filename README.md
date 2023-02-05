@@ -124,7 +124,7 @@ others are available inside the `gitshell` environment.
 * `cdtop`: change directory to the top level of the repository and prints the full path
 * `redef_git`: redefine the function `_git()` which is used internally
 * `reset_git`: reset `_git()` to the default command `git`
-* `no-opts`: print every arg that does not start with minus
+* `noopts`: print every arg that does not start with minus
 
 * `ps1p`: print a custom PS1 for git users
 * `ps1s`: set the custom PS1 for git users

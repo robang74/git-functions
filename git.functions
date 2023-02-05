@@ -153,13 +153,13 @@ fi
 
 ################################################################################
 
-function no-opts() {
+function noopts() {
     local i
     for i in "$@"; do
         test "x${i:0:1}" != "x-" && echo $i
     done
 }
-export -f no-opts
+export -f noopts
 
 function redef_git() {
     unset -f _git
@@ -461,7 +461,7 @@ function sw() {
     if ! echo "$@" | egnc -q -- "--oneline"; then
         printf -- '_%.0s' {1..72}
         echo -e "\nfiles in commited:"
-        sf $(no-opts "$@") | sed -e "s,\(.*\),\t\\1,"
+        sf $(noopts "$@") | sed -e "s,\(.*\),\t\\1,"
         echo
     fi
 }
