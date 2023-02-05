@@ -233,7 +233,7 @@ function gfreload() {
     unset SRC_FILE
 
     # RAF: a function that has been removed should not remain
-    unset -f $(gflist 2>&3 | grnc -vw $FUNCNAME)
+    unset -f $(gflist 2>&3 | grnc -vw $FUNCNAME) _gitshell _git
 
     # RAF: needed to grants that every script will be reloaded
     unset -f colors_codes_generation _op_action gitshell
