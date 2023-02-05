@@ -81,14 +81,17 @@ function ps1s() {
 export -f ps1s
 
 function _gitshell() {
-    function stripsource() {
-        local va="source.*gfcolors_pathname"
-        local vb="source.*gfunctions_pathname"
-        local vc="source.*gitshell_pathname"
-        local vd="source.*gfbasicenv_pathname"
+    function stripsrc() {
+        # This function changed name and these strings have been splited by ""
+        # because they should not fit into the grep -ve cancellation, bugfix. 
+        local va="source.*g""fcolors_pathname"
+        local vb="source.*g""functions_pathname"
+        local vc="source.*g""itshell_pathname"
+        local vd="source.*g""fbasicenv_pathname"
         echo -e "\nGFRELOAD=1 ## START IMPORTING $1"
-        grnc -ve "$va" -ve "$vb" -ve "$vc" -ve "$vd" "$1"
-        echo -e   "GFRELOAD=0 ### STOP IMPORTING $1\n"
+        # This function should also work before git.functions, so it uses grep
+        command grep --color=never -ve "$va" -ve "$vb" -ve "$vc" -ve "$vd" "$1"
+        echo -e "GFRELOAD=0 ### STOP IMPORTING $1\n"
     }
 
     local gitshrc="./${gf_gitshell_rcinit}"
@@ -100,20 +103,19 @@ function _gitshell() {
     if [ ! -e "${gitshrc}" ]; then
         if true; then
             echo "#!/bin/env bash"
-            ps1p
             echo "declare -rx GITSHELL=1 2>&1 | head -n0"
             echo "export SRC_FILE='${gfreload_pathname}'"
-            stripsource ${gfbasicenv_pathname}
-            stripsource ${gfcolors_pathname}
-            stripsource ${gitshell_pathname}
-            stripsource ${gfunctions_pathname}
-#           echo "unset gfcolors_pathname gitshell_pathname"
+            stripsrc ${gfbasicenv_pathname}
+            stripsrc ${gfcolors_pathname}
+            stripsrc ${gitshell_pathname}
+            stripsrc ${gfunctions_pathname}
             echo "export gfunctions_pathname='${gitshrc}'"
             echo 'gfreload() { echo -e "\n'$WARNING': reload is not allowed is this gitshell\n"; }'
             echo 'gfupdate() { echo -e "\n'$WARNING': update is not allowed is gitshell\n"; }'
             echo 'exit() { command exit ${1:-} 2>&3; }'
             echo 'gitshell() { _gitshell "$@"; }'
             echo 'gfexit() { exit 123; }'
+            ps1p
         fi | tee "${gitshrc}" >&3
         chmod a-w "${gitshrc}"
     fi
@@ -121,6 +123,8 @@ function _gitshell() {
     local tmpf=$(mktemp ${gitshrc}.XXXX)
     if true; then
         echo "#!/bin/env bash"
+        echo "trap 'rm -f $tmpf' EXIT"
+        echo "trap 'rm -f $tmpf; exit' QUIT KILL"
         echo "GFRELOAD=1 source ${gitshrc} >&3"
         GITSHLVL=$(set +u; declare -i i=${GITSHLVL:-0}; echo $i) # RAF: sanitize the integer
         if [ $GITSHLVL -le 0 ]; then
@@ -133,8 +137,6 @@ function _gitshell() {
         fi
         echo "$@"
         echo "set +x"
-        echo "trap 'rm -f $tmpf' EXIT"
-        echo "trap 'rm -f $tmpf; exit' QUIT KILL"
         echo "declare -rxf gfreload gitshell gfupdate gfexit"
         echo "echo local gitshrc: ${tmpf}; echo"
     fi | tee ${tmpf} >&3
