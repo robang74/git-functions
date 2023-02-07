@@ -945,24 +945,27 @@ export -f hrst
 
 function res() {
     local opt=""
-    if [ "x${1:-}" == "x-S" ]; then
+    if [ "x${1:-}" == "x-s" ]; then
         opt="--staged"
         shift
+    elif [ "x${1:-}" == "x-h" ]; then
+        sres "$@" 2>&3
+        co "$@"
+        return $?
     fi
     _git restore $opt "$@"
 }
 export -f res
 
 function sres() {
-    res -S "$@"
+    res -s "$@"
 }
 export -f sres
 
-function tres() {
-    res "$@"
-    res -S "$@"
+function hres() {
+    res -h "$@"
 }
-export -f tres
+export -f hres
 
 function mgrp() {
     local files=""

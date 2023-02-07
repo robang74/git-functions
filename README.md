@@ -186,10 +186,10 @@ Example of `redef_git` and `reset_git` usage:
 * `pop`: short for `git stash pop`
 * `chpk`: short for `git cherry-pick`
 * `rst()`: short for `git reset`, opt -h:--hard
-* `res()`: short for `git restore`, opt -S:--staged
+* `res()`: short for `git restore`, opt -s:--staged, -h:hres()
 * `hrst()`: short for `git reset --hard`, opt -r:remote
-* `sres()`: short for `git restore i--staged`
-* `tres()`: total restore res -S and res, both
+* `sres()`: short for `git restore --staged`
+* `hres()`: it performs sres() and then co()
 * `ampatch()`: short for `git amend` a patch/set
 * `amff()`: short for `git am --show-current-patch=diff`
 
