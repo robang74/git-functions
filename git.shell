@@ -171,11 +171,11 @@ function _gitshell() {
 export -f _gitshell
 
 function gitshell() {
-    declare -i ret=1
     if [ ${GITSHLVL:-0} -gt 0 ]; then
         echo "${ERROR}: this is a sub-shell wrap mismatch, abort."
         return 1
     fi
+    declare -i ret=1
     if [ "x${1:-}" == "x-r" ]; then
         shift
         ret=0
@@ -192,6 +192,7 @@ function gitshell() {
         ret=$?
     done
     echo
+    return $ret
 }
 export -f gitshell
 
