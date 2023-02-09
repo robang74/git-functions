@@ -104,6 +104,19 @@ function _chgs_msg() {
 }
 export -f _chgs_msg
 
+function _copy_function() {
+    test -z "${2:-}" && return 1
+    test -n "$(declare -f "$1")" && eval "${_/$1/$2}"
+}
+export -f _copy_function
+
+function _rename_function() {
+    test -z "${2:-}" && return 1
+    _copy_function "$1" "$2"
+    unset -f $1
+}
+export -f _rename_function
+
 ################################################################################
 test ${gflistshow:-0} -ne 0 && set -x && resetx="set +x" #######################
 
@@ -218,9 +231,19 @@ function ce() {
             fi
             command exit ${1:-} 2>&3
         }
-        _gitshell "$(declare -pf exit; declare -p git_core_editor);"\
+        _copy_function add _add
+        function add() {
+            if [ "x${1:-}" == "x-a" ]; then
+                shift
+                _add "$@" $(sf ${commit_edit_hash})
+                return $?
+            fi
+            _add "$@"
+        }
+        _gitshell "$(declare -pf exit add _add; declare -p git_core_editor);"\
             "git commit-edit ${commit_edit_hash}"' || exit $?' || ret=$?
         test -n "$prev_exit_func" && eval "$prev_exit_func"
+        _rename_function _add add
     fi
     unset commit_edit_opts commit_edit_brch \
           commit_edit_head commit_edit_hash \
