@@ -299,13 +299,13 @@ export -f irebase
 
 function cr() {
     declare -i ret=0
-    local sha=$(_is_sha_in_line $1)
+    local sha=$(_is_sha_in_line ${1:-HEAD})
     test -n "$sha" || return 1
 
     _opst_msg && return $?
     _chgs_msg && return $?
     _git_core_editor_export
-    export irebase_sha_to_reword=$sha
+    export irebase_sha_to_reword="$sha"
     local edcr="${gfrefdir_pathdir}/bin/cr-editor.sh"
     GIT_EDITOR="${edcr}" GIT_SEQUENCE_EDITOR="${edcr}" irebase "$sha" || ret=1
     unset irebase_sha_to_reword git_core_editor
