@@ -180,6 +180,11 @@ function gitshell() {
         shift
         ret=0
     fi
+    local i
+#   for i in $(ls --color=never -1 ${gf_gitshell_rcinit}.???? 2>/dev/null); do
+    for i in ${gf_gitshell_rcinit}.???? ; do
+        command ps -aef | grnc -qe  "[0-9] *bash.*rcfile.*$i" || rm -f $i
+    done
     while [ $ret -ne 123 ]; do
         if [ $ret -eq 0 ]; then
             gfreload
