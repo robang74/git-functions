@@ -972,6 +972,7 @@ function res() {
         opt="--staged"
         shift
     elif [ "x${1:-}" == "x-h" ]; then
+        shift
         sres "$@" 2>&3
         co "$@"
         return $?
