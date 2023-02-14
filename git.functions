@@ -439,7 +439,7 @@ export -f amend
 function ampatch() {
     for i in "$@"; do
         if ! _git am --keep-cr < "$i"; then
-            _gitshell "git am --show-current-patch=diff" || return $?
+            git am --show-current-patch=diff || return $?
         fi
     done
 }
