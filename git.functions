@@ -387,6 +387,9 @@ function ff() {
 	elif [ "${1:-}" == "-o" ]; then
         opt="origin/${2:-$(bcur)}"
 		shift
+	elif [ "${1:-}" == "-r" ]; then
+        opt="$(rcur)/${2:-$(bcur)}"
+		shift
 	fi
 	_git diff -w $opt "$@"
 }
