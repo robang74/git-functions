@@ -899,7 +899,7 @@ function for-all-other-branches() {
 	done
     unset BRANCHES
     test "$cur" != "$branch" && bsw $cur
-    test $stashpop -ne 0 && pop
+    if [ $stashpop -ne 0 ]; then pop -q; st -s; fi
     return $ret
 }
 export -f for-all-other-branches
