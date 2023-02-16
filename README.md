@@ -82,7 +82,7 @@ However, also for the `main` branch, it is not assured of the lack of bugs.
 Usage
 -----
 
-After installation your .bashrc will be modified in such a way the `gitshell`
+After installation your `.bashrc` will be modified in such a way the `gitshell`
 will be defined as a function. Calling it - in your git repository - will give
 you the access to the wrap layer:
 
@@ -223,13 +223,13 @@ Example of `redef_git` and `reset_git` usage:
 This is a special function used to execute commands (cmds) on multiple branches:
 
 * `for-all-other-branches`: execute the args as commands for the branches
-  * --: per default runs over all the branches but not the current one
-  * -a: all the branches included the current
-  * -p: `git pull` before cmds
-  * -r: `git pull --rebase` before cmds
-  * -n: not fail despite the last command failure
-  * -s: `git stash` before go and `git stash pop` when returns
-  * -f: fetch all the remotes before starting otherwise run only on locals
+  * `--`: per default runs over all the branches but not the current one
+  * `-a`: all the branches included the current
+  * `-p`: `git pull` before cmds
+  * `-r`: `git pull --rebase` before cmds
+  * `-n`: not fail despite the last command failure
+  * `-s`: `git stash` before go and `git stash pop` when returns
+  * `-f`: fetch all the remotes before starting otherwise run only on locals
 
 A custom branches selection could be specified in this way:
 
