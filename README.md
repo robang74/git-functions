@@ -177,6 +177,7 @@ Example of `redef_git` and `reset_git` usage:
 * `pa`: format patch apply and create signed commit
 * `ce`: commit edit within a restricted shell
 * `cr`: commit reword, a single SHA as arg
+* `ren`: short for `git mv`
 * `cm`: short for `git commit`
 * `co`: short for `git checkout`
 * `pull`: short for `git pull`
