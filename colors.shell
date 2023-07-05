@@ -83,7 +83,7 @@ declare -r${optx} UDL="\033[4"     || :   # underline
 declare -r${optx} FLS="\033[5"     || :   # blinking -> flashing
 declare -r${optx} RVS="\033[7"     || :   # reverse
 declare -r${optx} HDN="\033[8"     || :   # hidden
-declare -r${optx} STR="\033[9"     || :   # strikethrough
+declare -r${optx} SRK="\033[9"     || :   # strikethrough
 
 # Regular Colors
 
@@ -129,7 +129,7 @@ fi 2>&3
 # List of Colors and Displaying Modes
 
 COLORS="BLK RED GRN YLW BLU PRL CYN WHT"
-DMODES="NRM BLD DRK ITL UDL FLS RVS STR"
+DMODES="NRM BLD DRK ITL UDL FLS RVS SRK"
 
 # This declares the basic variables in lower case and exports them optx=x
 
