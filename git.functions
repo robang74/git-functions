@@ -689,6 +689,14 @@ function tagadd() {
 }
 export -f tagadd
 
+function tagren() {
+	test -n "${2:-}" || return 1
+	local sha=$(hconv "$1")
+	test -n "$sha" || return 1
+	tagdel "$1" && tagadd "$2" $sha
+}
+export -f tagren
+
 function tagmv() {
     test -z "${2:-}" && return 1
     tagdel "$1"

@@ -162,6 +162,7 @@ Example of `redef_git` and `reset_git` usage:
 * `tagmv`: move a tag to hash (as args) and push the changes
 * `tagadd`: add a tag to a commit (sha as arg) and push tags
 * `tagdel`: del a tag (as arg) and push the change
+* `tagren`: rename a tag and push the change
 * `rmtadd`: add a remote repository to the local
 * `rmtdel`: delete a remote repository
 * `rmt`: short for `git remote`
