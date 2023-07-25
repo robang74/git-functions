@@ -412,7 +412,7 @@ export -f reflog
 
 function add() {
     if [ "x$1" == "x-m" ]; then
-        _git add $(st -m)
+        _git add $(st -m | sed -e "s,^.* -> ,,")
     else
         _git add "$@"
     fi
