@@ -957,6 +957,11 @@ function tagl() {
 }
 export -f tagl
 
+function tagls() {
+    lstag
+}
+export -f tagls
+
 function rst() {
     test -n "${1:-}" || return 1
     local i rm="" bn="" opts="" hd=""
