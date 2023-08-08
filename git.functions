@@ -698,9 +698,9 @@ function tagren() {
 export -f tagren
 
 function tagmv() {
-    test -z "${2:-}" && return 1
+    test -z "${1:-}" && return 1
     tagdel "$1"
-    tagadd "$1" "$2"
+    tagadd "$1" "${2:-HEAD}"
 }
 export -f tagmv
 
