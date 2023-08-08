@@ -63,7 +63,7 @@ function _op_action() {
         ;;
     esac
     _git ${op:-none} $2 || return $?
-    test -z "$op" || echo -e "\ngit ${op} $2: ${OK}\n"
+    test -n "$op" && echo -e "\ngit ${op} $2: ${OK}\n"
 }
 export -f _op_action
 
@@ -82,14 +82,14 @@ function _git_core_editor_export() {
 export -f _git_core_editor_export
 
 function _is_sha_in_line() {
-    test -z "${1:-}" && return 1
+    test -n "${1:-}" || return 1
     command git log --abbrev-commit --no-color --format=format:'%h' | egnc "$(hconv $1)"
 }
 export -f _is_sha_in_line
 
 function _opst_msg() {
     local op=$(opst)
-    test -z "$op" && return 1
+    test -n "$op" || return 1
     echo -e "\n${WARNING}: operation '$op' in progress, abort\n"
     st -m
     echo
@@ -98,20 +98,20 @@ export -f _opst_msg
 
 function _chgs_msg() {
     local ch=$(st -m)
-    test -z "$ch" && return 1
+    test -n "$ch" || return 1
     echo -e "\n${WARNING}: changes pending, please stash or commit, abort.\n" >&2
     echo -e "$ch\n"
 }
 export -f _chgs_msg
 
 function _copy_function() {
-    test -z "${2:-}" && return 1
+    test -n "${2:-}" || return 1
     test -n "$(declare -f "$1")" && eval "${_/$1/$2}"
 }
 export -f _copy_function
 
 function _rename_function() {
-    test -z "${2:-}" && return 1
+    test -n "${2:-}" || return 1
     _copy_function "$1" "$2"
     unset -f $1
 }
@@ -195,7 +195,7 @@ export -f reset_git
 reset_git ######################################################################
 
 function ce() {
-    test -z "${1:-}" && return 1
+    test -n "${1:-}" || return 1
     declare -i ret=0 quit=0
     if [ "x$1" == "x--abort" -a -n "${commit_edit_head:-}" ]; then
         git reset --hard ${commit_edit_head:-} && abrt
@@ -254,7 +254,7 @@ function ce() {
 }
 
 function pa() {
-    test -z "${1:-}" && return 1
+    test -n "${1:-}" || return 1
     redef_git -u
     for i in "$@"; do
         if _git apply --check --stat "$i" && \
@@ -284,7 +284,7 @@ function irb() {
     _chgs_msg && return $?
     if [ -z "${1:-}" ]; then irebase HEAD; return $?; fi
     if [ "x${1:0:1}" == "x~" -o "x${1:0:1}" == "x-" ]; then
-        test -z "${1:1}" || irb HEAD~${1:1}
+        test -n "${1:1}" && irb HEAD~${1:1}
         return $?
     fi
     local hash=$(_git rev-list --parents -n2 "$1" | tail -n1 | head -c40)
@@ -334,7 +334,7 @@ function ren() {
 export -f ren
 
 function rmtadd() {
-    test -z "${2:-}" && return 1
+    test -n "${2:-}" || return 1
     if [ "x$1" == "x-r" ]; then
         shift
         if rmt | grep -qw "$1"; then
@@ -349,7 +349,7 @@ function rmtadd() {
 export -f rmtadd
 
 function rmtdel() {
-    test -z "${1:-}" && return 1
+    test -n "${1:-}" || return 1
     _git remote remove "$1"
 }
 export -f rmtdel
@@ -456,7 +456,7 @@ function amff() {
 export -f amff
 
 function editorset() {
-    test -z "${1:-}" && return 1
+    test -n "${1:-}" || return 1
     _git config --global core.editor "$1"
 }
 export -f editorset
@@ -582,7 +582,7 @@ function pcache() {
 	    local pc="cache --timeout=$t"
         local gitpasswd=$(getgit_passwd "$d/.gitpasswd")
         local ch="!f() { echo password='$gitpasswd'; }; f"
-        test -z "$gitpasswd" && ch="manager"
+        test -n "$gitpasswd" || ch="manager"
 
         if [ -n "$gituser" ]; then
             for i in $(rmt); do
@@ -657,7 +657,7 @@ function pop() {
 export -f pop
 
 function tagdel() {
-    test -z "${1:-}" && return 1
+    test -n "${1:-}" || return 1
     if [ ${#} -eq 2 ]; then
         _git push --delete "$1" "$2"
         shift
@@ -672,7 +672,7 @@ export -f tagdel
 
 function tagadd() {
     declare ret=1
-    test -z "${1:-}" && return 1
+    test -n "${1:-}" || return 1
     local tag="$1"; shift
     if _git tag -a "$tag" "${1:-HEAD}" -m "$tag"; then
         if _git push $(rcur | head -n1) --follow-tags; then
@@ -698,7 +698,7 @@ function tagren() {
 export -f tagren
 
 function tagmv() {
-    test -z "${1:-}" && return 1
+    test -n "${1:-}" || return 1
     tagdel "$1"
     tagadd "$1" "${2:-HEAD}"
 }
@@ -710,7 +710,7 @@ function pull() {
 export -f pull
 
 function fpatch() {
-    test -z "${1:-}" && return 1
+    test -n "${1:-}" || return 1
 	_git format-patch -1 "$@"
 }
 export -f fpatch
@@ -755,7 +755,7 @@ export -f lsbr
 export BRNC_SWTC_CURR_BRNC="${BRNC_SWTC_CURR_BRNC:-}"
 
 function bsw() {
-    test -z "${1:-}" && return 1
+    test -n "${1:-}" || return 1
     local cb="$(bcur)" ch=$(hcur) nb=""
           cb=${cb:-$BRNC_SWTC_CURR_BRNC}
     if [ "x$1" == "x-" -a -n "${2:-}" ]; then
@@ -814,7 +814,7 @@ function cdtop() {
 export -f cdtop
 
 function hconv() {
-    test -z "${1:-}" && return 1
+    test -n "${1:-}" || return 1
     local sha=$(command git rev-list -n1 $1)
     echo ${sha:0:7} | egnc "......."
 }
@@ -826,7 +826,7 @@ function hcur() {
 export -f hcur
 
 function for-all-other-branches() {
-    test -z "${1:-}" && return 1
+    test -n "${1:-}" || return 1
     _opst_msg && return $?
 
     local cur=$(bcur -c)
@@ -918,7 +918,7 @@ function for-all-other-branches() {
 export -f for-all-other-branches
 
 function lgrp() {
-    test -z "${1:-}" && return 1
+    test -n "${1:-}" || return 1
     declare -i sha=0
     while true; do
         if [ "${1:-}" == "-s" ]; then
@@ -958,7 +958,7 @@ function tagl() {
 export -f tagl
 
 function rst() {
-    test -z "${1:-}" && return 1
+    test -n "${1:-}" || return 1
     local i rm="" bn="" opts="" hd=""
     for i in "$@"; do
         if [ "x$1" == "x-h" ]; then
@@ -1009,16 +1009,16 @@ export -f hres
 
 function mgrp() {
     local files=""
-    test -z "${1:-}" && return 1
+    test -n "${1:-}" || return 1
     if [ -n "${2:-}" ]; then
         if [ "x${2:0:1}" == "x~" -o "x${2:0:1}" == "x-" ]; then
-            test -z "${2:1}" || mgrp "$1" HEAD~${2:1}
+            test -n "${2:1}" && mgrp "$1" HEAD~${2:1}
             return $?
         fi
         local sha=$(_is_sha_in_line $(hconv $2))
-        test -z "$sha" && return 1
+        test -n "$sha" || return 1
         files=$(git diff --stat --name-only $sha~1 $(hconv ${3:-}))
-        test -z "$files" && return 1
+        test -n "$files" || return 1
     else
         files=$(st -m)
     fi
@@ -1027,14 +1027,14 @@ function mgrp() {
 export -f mgrp
 
 function search() {
-    test -z "${1:-}" && return 1
+    test -n "${1:-}" || return 1
     _git log -p --source -s --oneline -S "$@"
 }
 export -f search
 
 function rbcur() {
     local i cb=$(bcur) rcb=""
-    test -z "$cb" && return 1
+    test -n "$cb" || return 1
     rcb=$(lsbr -r | egnc "/${cb}$")
     if echo "$rcb" | egnc "^origin/"; then
         return 0
