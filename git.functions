@@ -377,7 +377,7 @@ export -f lt
 function st() {
     if [ "x${1:-}" == "x-m" ]; then
         shift
-        _git status -s "$@" | sed -ne 's,^[ A]*M *\(.*\),\1,p' | grnc .
+        _git status -s "$@" | sed -ne 's,^[ AU]*[MU] *\(.*\),\1,p' | grnc .
     else
         _git status "$@"
     fi
@@ -426,12 +426,17 @@ export -f cm
 
 function amd() {
     local i
-    for i in "$@"; do
-        if [ "x$i" == "x-a" ]; then
-            add -m
-            break
-        fi
-    done
+    if [ "x${1:-}" == "x-m" ]; then
+        shift
+        add -m
+    else
+        for i in "$@"; do
+            if [ "x$i" == "x-a" ]; then
+                add -m
+                break
+            fi
+        done
+    fi
 	_git commit --amend "$@"
 }
 export -f amd
@@ -618,6 +623,10 @@ function opst() {
 export -f opst
 
 function cont() {
+    if [ "x${1:-}" == "x-m" ]; then
+        shift
+        add -m
+    fi
     if [ "${1:-}" == "ce" ]; then
         ce --continue
     else
