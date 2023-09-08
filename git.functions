@@ -377,7 +377,7 @@ export -f lt
 function st() {
     if [ "x${1:-}" == "x-m" ]; then
         shift
-        _git status -s "$@" | sed -ne 's,^[ AU]*[MU]\+ *\(.*\),\1,p' | grnc .
+        _git status -s "$@" | sed -ne 's,^[ MAU]\{2\} *\(.*\),\1,p' | grnc .
     else
         _git status "$@"
     fi
