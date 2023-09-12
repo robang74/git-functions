@@ -254,11 +254,13 @@ function ce() {
 }
 
 function pa() {
+    local i wopts
     test -n "${1:-}" || return 1
     redef_git -u
     for i in "$@"; do
-        if _git apply --check --stat "$i" && \
-           _git am -p1 --keep-cr --signoff "$i" \
+        wopts="--ignore-space-change --ignore-whitespace"
+        if _git apply --check --stat $wopts "$i" && \
+           _git am -p1 --keep-cr $wopts --signoff "$i" \
         && sw -P; then
             echo -e "\n${DONE}: applying '$(basename $i)'.\n"
         else
@@ -377,7 +379,7 @@ export -f lt
 function st() {
     if [ "x${1:-}" == "x-m" ]; then
         shift
-        _git status -s "$@" | sed -ne 's,^[ MAU]\{2\} *\(.*\),\1,p' | grnc .
+        _git status -s "$@" | sed -ne 's,^[ MAUR]\{2\} *\(.*\),\1,p' | grnc .
     else
         _git status "$@"
     fi
