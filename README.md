@@ -74,6 +74,11 @@ Alternatively, you can do a remote installation with these commands
     repo=https://raw.githubusercontent.com/robang74/git-functions
     wget $repo/$branch/install.sh -O - | bash
 
+or
+
+    curl -sSL $repo/$branch/install.sh | bash
+
+
 You might want to change the branch in `devel` but that branch, from time to
 time, could be totally broken. Other branches might have the same problem.
 However, also for the `main` branch, it is not assured of the lack of bugs.
