@@ -2,8 +2,26 @@
 
 Install `git-functions` to improve your git user experience with `gitshell`
 
-Rationale
----------
+### UI changes
+
+Changes since `legacy` was published, when it was `main`branch
+
+* `ff`, `sw`: in git use -w (ignore blank spaces) as default, opt:-r added
+* `ren`, `tagren`, `mgrp`, `amff`, `rmtadd`, `rmtdel`: added new
+* `lsrmt`: was a replica of `rmt` now is a short for `rmt -v`
+* `install.sh`: does not work within a `gitshell` sessione
+* `gfreload`: opt:-f added to reload a single function
+* `bcur`: opt:-c added to show current branch, only
+* `st`: opt:-m added to show `add -m` workbase
+* `amd`: opt:-m added to include modifications
+* `add`: opt:-a renamed in opt:-m
+* `lsrmt`: short for `rmt -v`
+
+Incomplete list (working in progress) of the changes since v0.4
+
+</br>
+
+## Rationale
 
 Every comfortable command-line UI should be verbose enough to be descriptive
 and self-explanatory and IMHO `git` achieved this goal very well. However, for
@@ -16,8 +34,7 @@ than their minds.
 Have fun <3
 
 
-About using the bash
---------------------
+## About using bash
 
 The `dash` which is the standard by default shell in GNU/Debian Linux is about
 2x faster than `bash` to execute commands and probably `bash` is the slowest
@@ -27,8 +44,7 @@ particular performance to be acceptable and in any case `git` is the real
 bottle-neck in performances especially when it queries a remote host.
 
 
-Restricted shell
-----------------
+## Restricted shell
 
 After the `v0.4-rc1` the development went towards allowing the function to wrap
 `git` only into a restricted shell which is the bare minimum requirement to
@@ -42,8 +58,7 @@ the environment should be controlled and usually the easy way to achieve this
 goal is to let the users play into a chroot-ed-environment specifically prepared
 
 
-Usage
------
+## Give it a try
 
 Just to give it a try, source the `git.shell` in your environment and call them
 in your git local repository
@@ -54,8 +69,7 @@ this file also source the `colors.shell` in order to produce a color full output
 while functions will be loaded when `gitshell` will be lauched.
 
 
-Installation
-------------
+## Installation
 
 To install in your system in a way they will be loaded by `~/.bashrc` use this
 script without any argument
@@ -84,8 +98,7 @@ time, could be totally broken. Other branches might have the same problem.
 However, also for the `main` branch, it is not assured of the lack of bugs.
 
 
-Usage
------
+## Usage
 
 After installation your `.bashrc` will be modified in such a way the `gitshell`
 will be defined as a function. Calling it - in your git repository - will give
@@ -100,16 +113,7 @@ briefly described here below. If you need more functions, feel free to add to
 the source code and share the change with the author. Or ask for an addition.
 
 
-API changes
------------
-
-* `ff`, `sw`: in git use -w (ignore blank spaces) as default, opt:-r added
-* `lsrmt`: was a replica of `rmt` now is a short for `rmt -v`
-* `gfreload`: opt:-f added to reload a single function
-
-
-List of the functions
----------------------
+## List of functions
 
 The following list is divided for class of usage and roles. Only the main
 functions are loaded by `~/.bashrc` in the user bash environment while all the
@@ -192,16 +196,16 @@ Example of `redef_git` and `reset_git` usage:
 * `stash`: short for `git stash`
 * `pop`: short for `git stash pop`
 * `chpk`: short for `git cherry-pick`
-* `rst()`: short for `git reset`, opt -h:--hard
-* `res()`: short for `git restore`, opt -s:--staged, -h:hres()
-* `hrst()`: short for `git reset --hard`, opt -r:remote
-* `sres()`: short for `git restore --staged`
-* `hres()`: it performs sres() and then co()
-* `ampatch()`: short for `git amend` a patch/set
-* `amff()`: short for `git am --show-current-patch=diff`
+* `rst`: short for `git reset`, opt -h:--hard
+* `res`: short for `git restore`, opt -s:--staged, -h:hres()
+* `hrst`: short for `git reset --hard`, opt -r:remote
+* `sres`: short for `git restore --staged`
+* `hres`: it performs sres() and then co()
+* `ampatch`: short for `git amend` a patch/set
+* `amff`: short for `git am --show-current-patch=diff`
 
 #### Functions which do NOT alter the repositories
- 
+
 * `hconv`: convert the hash reference into a standard 7-chars hash
 * `lg`: show the log in a compact and fancy way, SHAs or files as args
 * `lgnc`: the same of `lg` but without colors, for scripting
@@ -261,8 +265,7 @@ then decide to proceed further with `exit` or definitely stop with `exit 1`.
     +git:devel> exit 1
 
 
-Password cache
---------------
+## Password cache
 
 The use of the password cache function `pcache` could undermine your git remote
 repository security especially if used in combination with `.gitpasswd`.
@@ -293,8 +296,7 @@ Otherwise the username will be asked by the cache manager but will be lost when
 the cache will expire. Setting the user works on https remote repositories.
 
 
-isatty() override
------------------
+## isatty() override
 
 To improve dramatically the fancy coloured output combined with some features
 like grepping and lessing, it has been used the trick to override `isatty()`
@@ -304,9 +306,9 @@ using a small piece of code `isatty_override.c` which produces `.so` library:
 
 This is an example of usage which resembles the core of the 'ugit' function.
 
+</br>
 
-License
--------
+# License
 
 Almost all the files are under one of many FOSS licenses and the others are in
 the public domain. Instead, the composition of these files is protected by the
@@ -353,8 +355,7 @@ For further information or requests about licensing and how to obtain a fork
 suitable for your own business, please write to the project maintainer and 
 copyleft owner.
 
-Author
-------
+## Author
 
 * Roberto A. Foglietta <roberto.foglietta@gmail.com>
 
