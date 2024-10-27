@@ -28,7 +28,6 @@ cd ${TOPDIR}
 
 DESTDIR=".git-functions"
 SRCNAME=$(readlink -fem "$HOME/${DESTDIR}/git.shell")
-SRCOLRS=${SRCNAME/%git.shell/colors.shell}
 GITREPO="https://github.com/robang74/git-functions.git"
 SRCCMD="unset -f gitshell; test -r ${SRCNAME} && GFRELOAD=1 source ${SRCNAME} >/dev/null"
 BRANCH="$(git branch --show-current 2>&3 || echo main)"
