@@ -345,6 +345,13 @@ function rmtadd() {
         url="https://github.com/$repo/$1.git"
         rmtadd $repo ${url/.git.git/.git}
         return $?
+    elif [ "x${1:-}" == "x-g" ]; then
+        shift
+        test -n "${1:-}" || return 1
+        repo=${1%/*}
+        repo=${repo##*/}
+        rmtadd $repo $1
+        return $?
     fi
     test -n "${1:-}" || return 1
     repo=$(noopts "$@" | head -n1)
