@@ -6,6 +6,7 @@ Install `git-functions` to improve your git user experience with `gitshell`
 
 Changes since `legacy` was published, when it was `main`branch
 
+* `merge`, `mtool`, `mclean`: added new
 * `rmtadd` improved with github support, opt:-G/-g added
 * `ff`, `sw`: in git use -w (ignore blank spaces) as default, opt:-r added
 * `ren`, `tagren`, `mgrp`, `amff`, `rmtadd`, `rmtdel`, `ch`: added new
@@ -204,6 +205,9 @@ Example of `redef_git` and `reset_git` usage:
 * `hres`: it performs sres() and then co()
 * `ampatch`: short for `git amend` a patch/set
 * `amff`: short for `git am --show-current-patch=diff`
+* `merge`: short for git merge
+* `mtool`: short for git mergetool
+* `mclean`: find and delete all files about merge collision
 
 #### Functions which do NOT alter the repositories
 
@@ -216,7 +220,7 @@ Example of `redef_git` and `reset_git` usage:
 * `rl`, `reflog`: shorts for `git reflog`
 * `sf`: show the file involved in a commit, SHAs as args
 * `st`: short for `git status`, opt:-m shows what `add -m` uses
-* `ch`: added new as shortcut for status but without untracked
+* `ch`: added new as short for status but without untracked
 * `sw`: short for `git show` with `sf` after, opt:-P for no pager
 * `ff`: short for `git diff -w`, opts -s:staged -o:origin -r:remote
 * `fpatch`: do a `git format-patch` for the commit, SHA and opts in arg

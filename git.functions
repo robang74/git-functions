@@ -330,6 +330,24 @@ function rmt() {
 }
 export -f rmt
 
+function merge() {
+    _git merge "$@"
+}
+export -f merge
+
+function mtool {
+    _git mergetool "$@"
+}
+export -f mergetool
+
+function mclean() {
+    local i
+    for i in BACKUP BASE LOCAL REMOTE; do
+        find . -name \*_${i}_\* -delete
+    done
+}
+export -f mclean
+
 function ren() {
     _git mv "$@"
 }
