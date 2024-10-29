@@ -354,6 +354,7 @@ function ren() {
 export -f ren
 
 function rmtadd() {
+    local repo url
     if [ "x${1:-}" == "x-G" ]; then
         shift
         test -n "${1:-}" || return 1
