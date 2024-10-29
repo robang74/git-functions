@@ -8,8 +8,13 @@
 #
 # set -euo pipefail
 
-exec 3>/dev/null || exit $?                                         # RAF
-source ${0%/*}/../colors.shell >&3                                  # RAF
+exec 3>/dev/null || exit $?                                                     # RAF
+#source ${0%/*}/../colors.shell >&3                                             # RAF
+
+function is_commit_in_branch() {                                                # RAF
+    command git log --color=never --abbrev-commit --format=format:'%h' \        # RAF
+        | egrep -q  "^$1"                                                       # RAF
+}                                                                               # RAF
 
 export script_name=${0##*/}
 warn () { echo -e "$script_name: $*" >&2; }
@@ -19,13 +24,13 @@ die () { warn "$@"; exit 1; }
 
 # Default to editing the parent of the most recent commit
 # The most recent commit can be edited with `git commit --amend`
-#commit=$(git rev-parse --short "${1:-HEAD~}")                      # RAF
-commit=$(git rev-parse --short "${1:-HEAD}")                        # RAF
-message=$(git log -1 --format="${BLWHT}%h${CRST}: %s" "$commit")    # RAF
+#commit=$(git rev-parse --short "${1:-HEAD~}")                                  # RAF
+commit=$(git rev-parse --short "${1:-HEAD}")                                    # RAF
+message=$(git log -1 --format="${BLWHT}%h${CRST}: %s" "$commit")                # RAF
 
 # RAF: this allows git-function:cm to behave properly
 test -n "${commit}" -a -n "${message}"
-if ! lgrp -s "${commit}" | egnc -q .; then
+if ! is_commit_in_branch "${commit}"; then                                      # RAF
     echo -e "\n${ERROR}: commit '${commit}' is out of this branch line, abort\n" >&2
     unset -f exit
     exit 1
