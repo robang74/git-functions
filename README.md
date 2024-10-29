@@ -6,6 +6,7 @@ Install `git-functions` to improve your git user experience with `gitshell`
 
 Changes since `legacy` was published, when it was `main`branch
 
+* `rmtadd` improved with github support, opt: -G
 * `ff`, `sw`: in git use -w (ignore blank spaces) as default, opt:-r added
 * `ren`, `tagren`, `mgrp`, `amff`, `rmtadd`, `rmtdel`: added new
 * `lsrmt`: was a replica of `rmt` now is a short for `rmt -v`
@@ -172,7 +173,7 @@ Example of `redef_git` and `reset_git` usage:
 * `tagadd`: add a tag to a commit (sha as arg) and push tags
 * `tagdel`: del a tag (as arg) and push the change
 * `tagren`: rename a tag and push the change
-* `rmtadd`: add a remote repository to the local
+* `rmtadd`: add & fetch a remote repository, opt: -G for github
 * `rmtdel`: delete a remote repository
 * `rmt`: short for `git remote`
 

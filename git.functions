@@ -336,23 +336,27 @@ function ren() {
 export -f ren
 
 function rmtadd() {
-    test -n "${2:-}" || return 1
-    if [ "x$1" == "x-r" ]; then
+    if [ "x${1:-}" == "x-G" ]; then
         shift
-        if rmt | grep -qw "$1"; then
-            _git remote remove "$1"
-        fi
+        test -n "${1:-}" || return 1
+        repo=${1:-};
+        shift
+        test -n "${1:-}" || return 1
+        url="https://github.com/$repo/$1.git"
+        rmtadd $repo ${url/.git.git/.git}
+        return $?
     fi
-    if ! rmt | grep -qw "$1"; then
-        _git remote add "$1" "${2:-}"
-    fi
-    frmt "$1"
+    test -n "${1:-}" || return 1
+    repo=$(noopts "$@" | head -n1)
+    test -n "$repo" || return 1
+    rmt add "$@" -f \
+    && lsbr -r | grnc -e "^$repo/"
 }
 export -f rmtadd
 
 function rmtdel() {
     test -n "${1:-}" || return 1
-    _git remote remove "$1"
+    rmt remove "$1"
 }
 export -f rmtdel
 
