@@ -7,6 +7,7 @@ Install `git-functions` to improve your git user experience with `gitshell`
 Changes since `legacy` was published, when it was `main`branch
 
 * `merge`, `mtool`, `mclean`: added new
+* `pop`: do not show untracked file anymore
 * `rmtadd` improved with github support, opt:-G/-g added
 * `ff`, `sw`: in git use -w (ignore blank spaces) as default, opt:-r added
 * `ren`, `tagren`, `mgrp`, `amff`, `rmtadd`, `rmtdel`, `ch`: added new
@@ -196,7 +197,7 @@ Example of `redef_git` and `reset_git` usage:
 * `rpull`: short for `git pull --rebase`
 * `rcont`: short for `git rebase --continue`
 * `stash`: short for `git stash`
-* `pop`: short for `git stash pop`
+* `pop`: short for `git stash pop -q; ch`
 * `chpk`: short for `git cherry-pick`
 * `rst`: short for `git reset`, opt -h:--hard
 * `res`: short for `git restore`, opt -s:--staged, -h:hres()

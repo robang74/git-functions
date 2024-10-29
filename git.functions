@@ -699,7 +699,7 @@ function stash() {
 export -f stash
 
 function pop() {
-	_git stash pop "$@"
+	_git stash pop -q "$@"; ch
 }
 export -f pop
 
