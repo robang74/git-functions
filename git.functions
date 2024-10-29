@@ -397,6 +397,11 @@ function st() {
 }
 export -f st
 
+function ch() {
+    _git status --untracked-files=no "$@"
+}
+export -f ch
+
 function ff() {
 	local opt=""
 	if [ "${1:-}" == "-s" ]; then
