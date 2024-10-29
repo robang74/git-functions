@@ -55,6 +55,23 @@ function bashrc_setup() {
     return 0
 }
 
+function compile_isatty_so() {
+    if which cc >&3; then
+        cc -c -fPIC isatty_override.c -o isatty_override.o
+        cc isatty_override.o -shared -o isatty_override.so
+        strip isatty_override.so 2>&3 || :
+        echo
+        echo -ne "${blcyn}Compiled${crst}: "
+        du -b isatty_override.so
+        rm -f isatty_override.o
+    elif [ "$(uname -m)" != "x86_64" ]; then
+        echo -e "\n${WARNING}: need to install the compiler for isatty_override.so"
+        rm -f isatty_override.so
+    else
+        echo -e "\n${NOTICE:-NOTICE}: using the pre-compiled x86_64 isatty_override.so"
+    fi
+}
+
 cd
 set -- "${1:-}"
 if [ "$1" == "install" -o -z "$1" ]; then
@@ -73,8 +90,10 @@ elif [ "$1" == "update" -a -d "${DESTDIR}" ]; then
     bashrc_clean
     bashrc_setup
     cd "${DESTDIR}"
+    git restore isatty_override.so
     git switch ${BRANCH}
     git pull --rebase 
+    compile_isatty_so
     eval "${SRCCMD}"
     echo -e "\n${DONE:-DONE}: install path ${PWD}\n"
     trap -- EXIT
@@ -101,20 +120,7 @@ git clone ${GITREPO} "${DESTDIR}"
 cd "${DESTDIR}"
 git switch "${BRANCH}"
 
-if which cc >&3; then
-    cc -c -fPIC isatty_override.c -o isatty_override.o
-    cc isatty_override.o -shared -o isatty_override.so
-    strip isatty_override.so 2>&3 || :
-    echo
-    echo -ne "${blcyn}Compiled${crst}: "
-    du -b isatty_override.so
-    rm -f isatty_override.o
-elif [ "$(uname -m)" != "x86_64" ]; then
-    echo -e "\n${WARNING}: need to install the compiler for isatty_override.so"
-    rm -f isatty_override.so
-else
-    echo -e "\n${NOTICE:-NOTICE}: using the pre-compiled x86_64 isatty_override.so"
-fi
+compile_isatty_so
 
 bashrc_setup
 echo -e "\n${DONE:-DONE}: git-functions installed in ${HOME}/${DESTDIR}\n"
