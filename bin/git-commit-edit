@@ -12,8 +12,8 @@ exec 3>/dev/null || exit $?                                                     
 #source ${0%/*}/../colors.shell >&3                                             # RAF
 
 function is_commit_in_branch() {                                                # RAF
-    command git log --color=never --abbrev-commit --format=format:'%h' \        # RAF
-        | egrep -q  "^$1"                                                       # RAF
+    opts="--color=never --abbrev-commit --format=format:'%h'"                   # RAF
+    command git log $opts | egrep -q  "^$1"                                     # RAF
 }                                                                               # RAF
 
 export script_name=${0##*/}
