@@ -338,7 +338,7 @@ export -f merge
 function mtool {
     _git mergetool "$@"
 }
-export -f mergetool
+export -f mtool
 
 function mclean() {
     local i
