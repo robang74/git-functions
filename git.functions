@@ -254,21 +254,25 @@ function ce() {
 }
 
 function pa() {
-    local i wopts
+    local i wopts popts aopts err=0
     test -n "${1:-}" || return 1
     redef_git -u
     for i in "$@"; do
         wopts="--ignore-space-change --ignore-whitespace"
-        if _git apply --check --stat $wopts "$i" && \
-           _git am -p1 --keep-cr $wopts --signoff "$i" \
+        popts="$wopts -N --inaccurate-eof --recount -3"
+        aopts="$wopts --rerere-autoupdate --keep-cr"
+        if _git apply --check --stat $popts "$i" && \
+           _git am -p1 $aopts --signoff "$i" \
         && sw -P; then
             echo -e "\n${DONE}: applying '$(basename $i)'.\n"
         else
             echo -e "\n${ERROR}: applying '$(basename $i)', abort.\n"
+            err=1
             break
         fi
     done
     reset_git
+    return $err
 }
 export -f pa
 
