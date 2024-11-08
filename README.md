@@ -187,7 +187,7 @@ Example of `redef_git` and `reset_git` usage:
 * `irb`, `irebase`: rebase starting from the hash passed or ~n/-n for `HEAD~n`
 * `amd`, amend`: shorts for `git amend` but with opt:-a does `add -m`
 * `add`: short for `git add` but opt:-m add all the modified items
-* `pa`: format patch apply and create signed commit
+* `pa`: git-formatted patch apply and create signed commit
 * `ce`: commit edit within a restricted shell
 * `cr`: commit reword, a single SHA as arg
 * `ren`: short for `git mv`
