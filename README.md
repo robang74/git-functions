@@ -11,14 +11,13 @@ Changes since `legacy` was published, when it was `main`branch
 * `rmtadd` improved with github support, opt:-G/-g added
 * `ff`, `sw`: in git use -w (ignore blank spaces) as default, opt:-r added
 * `ren`, `tagren`, `mgrp`, `amff`, `rmtadd`, `rmtdel`, `ch`: added new
-* `lsrmt`: was a replica of `rmt` now is a short for `rmt -v`
 * `install.sh`: does not work within a `gitshell` sessione
 * `gfreload`: opt:-f added to reload a single function
 * `bcur`: opt:-c added to show current branch, only
+* `lsrmt`: was a short of `rmt` but now for `rmt -v`
 * `st`: opt:-m added to show `add -m` workbase
 * `amd`: opt:-m added to include modifications
 * `add`: opt:-a renamed in opt:-m
-* `lsrmt`: short for `rmt -v`
 
 Incomplete list (working in progress) of the changes since v0.4
 
