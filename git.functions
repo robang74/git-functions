@@ -391,12 +391,12 @@ function rmtdel() {
 export -f rmtdel
 
 function lg() {
-	_git log --abbrev-commit --format=format:'* %C(bold cyan)%h%C(reset) - %C(white)%s%C(reset) %C(bold green)%d%C(reset)' "$@"
+	_git log --abbrev-commit --format=format:'%C(bold yellow)+%C(reset) %C(bold cyan)%h%C(reset) - %C(white)%s%C(reset) %C(bold green)%d%C(reset)' "$@"
 }
 export -f lg
 
 function lgnc() {
-	_git log --abbrev-commit --format=format:'* %h - %s %d' "$@"
+	_git log --abbrev-commit --format=format:'+ %h - %s %d' "$@"
 }
 export -f lgnc
 

@@ -4,6 +4,10 @@ Install `git-functions` to improve your git user experience with `gitshell`
 
 ### UI changes
 
+> [!WARNING]
+>
+> In `lg` and `lgnc` replaced `*` with `+` a more script friendly char
+
 Changes since `legacy` was published, when it was `main`branch
 
 * `merge`, `mtool`, `mclean`: added new
