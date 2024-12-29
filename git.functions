@@ -400,6 +400,11 @@ function lgnc() {
 }
 export -f lgnc
 
+function lgfw() {
+	_git log --follow --abbrev-commit --format=format:'+ %h - %s %d' "$@"
+}
+export -f lgfw
+
 function lg1() {
 	lg -n1 "$@"
 }
