@@ -10,6 +10,7 @@ Install `git-functions` to improve your git user experience with `gitshell`
 
 Changes since `legacy` was published, when it was `main`branch
 
+* `lg` shows date
 * `lgfw`: added new
 * `merge`, `mtool`, `mclean`: added new
 * `pop`: do not show untracked file anymore
@@ -217,12 +218,12 @@ Example of `redef_git` and `reset_git` usage:
 #### Functions which do NOT alter the repositories
 
 * `hconv`: convert the hash reference into a standard 7-chars hash
-* `lg`: show the log in a compact and fancy way, SHAs or files as args
+* `lg`: show the log in a compact and fancy way, SHAs or files as args, opt:-$n
 * `lgnc`: the same of `lg` but without colors, for scripting
 * `lgfw`: the same of `lgnc` but using `--follow` option for log
 * `lgrpnc`: the same of `lgrp` but without colors, for scriptings
 * `lt`: like `lg` but with all branches shown, files as args
-* `lg1`: like `lg` but just the first line
+* `lg1`: like `lg` but just the first line, shortcut for `lg -1`
 * `rl`, `reflog`: shorts for `git reflog`
 * `sf`: show the file involved in a commit, SHAs as args
 * `st`: short for `git status`, opt:-m shows what `add -m` uses
