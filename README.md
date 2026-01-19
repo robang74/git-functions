@@ -2,6 +2,19 @@
 
 Install `git-functions` to improve your git user experience with `gitshell`
 
+
+UI changes
+----------
+
+* `lsrmt`: was a replica of `rmt` now is a short for `rmt -v`
+* `ff`, `sw`: in git use -w (ignore blank spaces) as default
+* `gfreload`: opt:-f added to reload a single function
+
+The branch `gitshell` is supposed to be stable but temporary, thus inheriting
+this `README.md` from branch `devel` and some APIs here presented but
+experimental could have not been imported here.
+
+
 Rationale
 ---------
 
@@ -16,8 +29,8 @@ than their minds.
 Have fun <3
 
 
-About using the bash
---------------------
+About using bash
+----------------
 
 The `dash` which is the standard by default shell in GNU/Debian Linux is about
 2x faster than `bash` to execute commands and probably `bash` is the slowest
@@ -74,6 +87,10 @@ Alternatively, you can do a remote installation with these commands
     repo=https://raw.githubusercontent.com/robang74/git-functions
     wget $repo/$branch/install.sh -O - | bash
 
+or
+
+    curl -sSL $repo/$branch/install.sh | bash
+
 You might want to change the branch in `devel` but that branch, from time to
 time, could be totally broken. Other branches might have the same problem.
 However, also for the `main` branch, it is not assured of the lack of bugs.
@@ -95,20 +112,8 @@ briefly described here below. If you need more functions, feel free to add to
 the source code and share the change with the author. Or ask for an addition.
 
 
-API changes
------------
-
-* `lsrmt`: was a replica of `rmt` now is a short for `rmt -v`
-* `ff`, `sw`: in git use -w (ignore blank spaces) as default
-* `gfreload`: opt:-f added to reload a single function
-
-The branch `gitshell` is supposed to be stable but temporary, thus inheriting
-this `README.md` from branch `devel` and some APIs here presented but
-experimental could have not been imported here.
-
-
-List of the functions
----------------------
+List of functions
+-----------------
 
 The following list is divided for class of usage and roles. Only the main
 functions are loaded by `~/.bashrc` in the user bash environment while all the
@@ -198,7 +203,7 @@ Example of `redef_git` and `reset_git` usage:
 * `amff()`: short for `git am --show-current-patch=diff`
 
 #### Functions which do NOT alter the repositories
- 
+
 * `hconv`: convert the hash reference into a standard 7-chars hash
 * `lg`: show the log in a compact and fancy way, SHAs or files as args
 * `lgnc`: the same of `lg` but without colors, for scripting
@@ -340,6 +345,9 @@ header, here summarised:
 * `install.sh`: GPLv3
 * `git.shell`: GPLv3
 
+For further information or requests about licensing and how to obtain a fork
+suitable for your own business, please write to the project maintainer and
+copyleft owner.
 
 Author
 ------
