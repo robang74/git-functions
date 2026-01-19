@@ -8,7 +8,7 @@
 # SPDX-License-Identifier: GPLv3
 #
 #set -x && resetx="set +x" # RAF: source, paired with set +x at the end of file
-set -u                     # RAF: only for devel, comment in main
+#set -u                    # RAF: only for devel, comment in main
 
 if [ ${GFRELOAD:-0} -eq 0 ]; then
     echo "${BASH_SOURCE[0]##*/} not reloaded, try again with 'GFRELOAD=1 source'"
@@ -83,7 +83,7 @@ export -f ps1s
 function _gitshell() {
     function stripsrc() {
         # This function changed name and these strings have been splited by ""
-        # because they should not fit into the grep -ve cancellation, bugfix. 
+        # because they should not fit into the grep -ve cancellation, bugfix.
         local va="source.*g""fcolors_pathname"
         local vb="source.*g""functions_pathname"
         local vc="source.*g""itshell_pathname"
@@ -97,7 +97,7 @@ function _gitshell() {
     local gitshrc="./${gf_gitshell_rcinit}"
     export gitshell_prefix=${gitshell_prefix:-}
     if [ "x${gitshell_prefix:0:1}" == "x+" -o -z "${gitshell_prefix}" ]; then
-        gitshell_prefix="+${gitshell_prefix}" 
+        gitshell_prefix="+${gitshell_prefix}"
     fi
 
     if [ ! -e "${gitshrc}" ]; then
