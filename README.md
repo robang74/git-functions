@@ -2,13 +2,14 @@
 
 Install `git-functions` to improve your git user experience with `gitshell`
 
-### UI changes
+
+## UI changes
 
 > [!WARNING]
->
+> 
 > In `lg` and `lgnc` replaced `*` with `+` a more script friendly char
 
-Changes since `legacy` was published, when it was `main`branch
+Changes since `legacy` was published, when it was the `main` branch
 
 * `lg` shows date
 * `lgfw`: added new
@@ -27,7 +28,6 @@ Changes since `legacy` was published, when it was `main`branch
 
 Incomplete list (working in progress) of the changes since v0.4
 
-</br>
 
 ## Rationale
 
@@ -41,8 +41,7 @@ than their minds.
 
 Have fun <3
 
-
-## About using bash
+### About using bash
 
 The `dash` which is the standard by default shell in GNU/Debian Linux is about
 2x faster than `bash` to execute commands and probably `bash` is the slowest
@@ -51,8 +50,7 @@ moreover, the user interaction with small functions does not require any
 particular performance to be acceptable and in any case `git` is the real
 bottle-neck in performances especially when it queries a remote host.
 
-
-## Restricted shell
+### Restricted shell
 
 After the `v0.4-rc1` the development went towards allowing the function to wrap
 `git` only into a restricted shell which is the bare minimum requirement to
@@ -76,8 +74,7 @@ in your git local repository
 this file also source the `colors.shell` in order to produce a color full output
 while functions will be loaded when `gitshell` will be lauched.
 
-
-## Installation
+### Installation
 
 To install in your system in a way they will be loaded by `~/.bashrc` use this
 script without any argument
@@ -100,7 +97,6 @@ or
 
     curl -sSL $repo/$branch/install.sh | bash
 
-
 You might want to change the branch in `devel` but that branch, from time to
 time, could be totally broken. Other branches might have the same problem.
 However, also for the `main` branch, it is not assured of the lack of bugs.
@@ -120,8 +116,7 @@ This command will display the functions available which are reported and
 briefly described here below. If you need more functions, feel free to add to
 the source code and share the change with the author. Or ask for an addition.
 
-
-## List of functions
+### List of functions
 
 The following list is divided for class of usage and roles. Only the main
 functions are loaded by `~/.bashrc` in the user bash environment while all the
@@ -319,41 +314,35 @@ using a small piece of code `isatty_override.c` which produces `.so` library:
 
 This is an example of usage which resembles the core of the 'ugit' function.
 
-</br>
 
-# License
+## License
 
-Almost all the files are under one of many FOSS licenses and the others are in
-the public domain. Instead, the composition of these files is protected by the
-GPLv3 license under the effects of the [Copyright Act, title 17. USC §101](
-https://www.law.cornell.edu/uscode/text/17/101):
+Almost all the files are under MIT license or GPLv3 and the others are in the
+public domain. Instead, the composition of these files is protected by the GPLv3
+license.
 
-> Under the Copyright Act, a compilation [EdN: "composition" is used here as
-synonym because compilation might confuse the technical reader about code
-compiling] is defined as a "collection and assembling of preexisting materials
-or of data [EdN: data includes source code, as well] that are selected in such
-a way that the resulting work as a whole constitutes an original work of
-authorship."
+* [Copyright Act, title 17. U.S.C. § 101.](https://www.law.cornell.edu/uscode/text/17/101)
 
-This means, for example, that everyone can use a single MIT licensed file or a
-part of it under the MIT license terms. Instead, using two of them or two parts
-of them implies that you are using a subset of this collection which is a
-derived work of this collection which is licensed under the GPLv3, also.
+    Under the Copyright Act, a compilation [NDR: "composition" is used here as
+    synonym because compilation might confuse the reader about code compiling]
+    is defined as a "collection and assembling of preexisting materials or of
+    data [NDR: source code, as well] that are selected in such a way that the
+    resulting work as a whole constitutes an original work of authorship."
 
-The GPLv3 license applies to the composition unless you are the original author
-of a specific unmodified file. This means that every one that can legally claim
-rights about the original files maintains its rights, obviously. Therefore the
-original authors do not need to undergo the GPLv3 license applied to the
-composition and they maintains their original right in full. Unless, they use
-the entire composition or a part of it for which they had not the rights, 
-before.
+This means that everyone can use a single MIT licensed file or a part of it
+under the MIT license terms. Instead, using two of them or two parts of them
+implies that you are using a subset of this collection. Thus a derived work of
+this collection which is licensed under the GPLv3 also.
 
-Some files, documents, software or firmware components can make an exception to
-the above general approach due to their specific copyright and license
-restrictions. In doubt, follow the thumb rule of fair-use.
+The GPLv3 license applies to the composition unless you are the original
+copyright owner or the author of a specific unmodified file. This means that
+every one that can legally claim rights about the original files maintains its
+rights, obviously. So, it should not need to complain with the GPLv3 license
+applied to the composition. Unless, the composition is adopted for the part
+which had not the rights, before.
 
-In this project, the copyright notice, the license and the author is reported 
-in each file header and here just listed:
+The copyright notice, the license and the author is reported in each file
+header, here summarised:
 
 * `colors.shell`: MIT
 * `isatty_override.c`: MIT
