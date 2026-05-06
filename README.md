@@ -116,7 +116,22 @@ This command will display the functions available which are reported and
 briefly described here below. If you need more functions, feel free to add to
 the source code and share the change with the author. Or ask for an addition.
 
-### List of functions
+
+API changes
+-----------
+
+* `lsrmt`: was a replica of `rmt` now is a short for `rmt -v`
+* `ff`, `sw`: in git use -w (ignore blank spaces) as default
+* `gfreload`: opt:-f added to reload a single function
+* `fwd`, `rwd`: add new for speed-up `merge`/`rebase` doing
+
+The branch `gitshell` is supposed to be stable but temporary, thus inheriting
+this `README.md` from branch `devel` and some APIs here presented but
+experimental could have not been imported here.
+
+
+List of the functions
+---------------------
 
 The following list is divided for class of usage and roles. Only the main
 functions are loaded by `~/.bashrc` in the user bash environment while all the
@@ -196,6 +211,7 @@ Example of `redef_git` and `reset_git` usage:
 * `pull`: short for `git pull`
 * `rpull`: short for `git pull --rebase`
 * `rcont`: short for `git rebase --continue`
+* `fwd`, `rwd`: all files get `ours`,`theirs` changes for a quick conflict resolution
 * `stash`: short for `git stash`
 * `pop`: short for `git stash pop -q; ch`
 * `chpk`: short for `git cherry-pick`

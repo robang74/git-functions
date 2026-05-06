@@ -1109,6 +1109,16 @@ function rcur() {
 }
 export -f rcur
 
+function fwd() {
+    grnc -lr '<<<<<<<' ${@:-.} | xargs git checkout --ours
+}
+export -f fwd
+
+function rwd() {
+    grnc -lr '<<<<<<<' ${@:-.} | xargs git checkout --theirs
+}
+export -f rwd
+
 ################################################################################
 ${resetx:-}
 trap -- ERR
