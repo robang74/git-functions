@@ -1110,12 +1110,12 @@ function rcur() {
 export -f rcur
 
 function fwd() {
-    grnc -lr '<<<<<<<' ${@:-.} | xargs git checkout --ours
+    st -m | xargs git checkout --ours
 }
 export -f fwd
 
 function rwd() {
-    grnc -lr '<<<<<<<' ${@:-.} | xargs git checkout --theirs
+    st -m | xargs git checkout --theirs
 }
 export -f rwd
 
