@@ -63,7 +63,7 @@ function _op_action() {
         ;;
     esac
     _OP_LAST=$op
-    _git ${op:-none} $2 || return $?
+    _git ${op:-none} ${2:-} || return $?
     test -n "$op" && echo -e "\ngit ${op} $2: ${OK}\n"
 }
 export -f _op_action
@@ -691,7 +691,7 @@ function abrt() {
     ce --abort
     return $?
 	else
-		if ! _op_action $op --abort; then
+		if ! _op_action "$op" --abort; then
 		  err=$?
 		  if [ "$_OP_LAST" == "restore" ]; then
 		    stash || err=$?
