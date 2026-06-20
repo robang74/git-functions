@@ -812,15 +812,12 @@ export BRNC_SWTC_CURR_BRNC="${BRNC_SWTC_CURR_BRNC:-}"
 
 function bsw() {
     test -n "${1:-}" || return 1
-    local cb="$(bcur)" ch=$(hcur) nb=""
-          cb=${cb:-$BRNC_SWTC_CURR_BRNC}
-    if [ "x$1" == "x-" -a -n "${2:-}" ]; then
-        return 1
-    else
-        if [ "x$1" == "x-" ]; then
-            nb="${BRNC_SWTC_PREV_BRNC:-$cb}"
-            set --
-        fi
+    local cb=$(bcur) ch=$(hcur) nb=""
+    cb=${cb:-$BRNC_SWTC_CURR_BRNC}
+    if [ "x$1" == "x-" ]; then
+        test -n "${2:-}" && return 1
+        nb="${BRNC_SWTC_PREV_BRNC:-$cb}"
+        set --
     fi
     declare -i ret=0
     if _git switch "$@" ${nb}; then
