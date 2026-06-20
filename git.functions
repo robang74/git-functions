@@ -280,7 +280,7 @@ function ugit() {
     declare -i ret=0
     local solib="${gfrefdir_pathdir}/isatty_override.so"
     test -r "${solib}" || solib=""
-    LD_PRELOAD="${solib}" git -P "$@" || ret=$?
+    LD_PRELOAD="${solib}" command git -P "$@" || ret=$?
     echo; return $ret
 }
 export -f ugit
