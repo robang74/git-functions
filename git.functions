@@ -62,10 +62,12 @@ function _op_action() {
     *) op=$(opst)
         ;;
     esac
+    _OP_LAST=$op
     _git ${op:-none} $2 || return $?
     test -n "$op" && echo -e "\ngit ${op} $2: ${OK}\n"
 }
 export -f _op_action
+export _OP_LAST
 
 function _git_core_editor_export() {
     unset -f vi vim
@@ -416,12 +418,13 @@ function lt() {
 export -f lt
 
 function st() {
-    if [ "x${1:-}" == "x-m" ]; then
-        shift
-        _git status -s "$@" | sed -ne 's,^[ MAUR]\{2\} *\(.*\),\1,p' | grnc .
-    else
-        _git status "$@"
-    fi
+  if [ "x${1:-}" == "x-m" ]; then
+    shift
+    _git status -s "$@" 2>&- |\
+      sed -ne 's,^[ MAUR]\{2\} *\(.*\),\1,p' | grnc .
+  else
+    _git status    "$@" 2>&-
+  fi
 }
 export -f st
 
@@ -683,12 +686,20 @@ function cont() {
 export -f cont
 
 function abrt() {
-    if [ "${1:-}" == "ce" ]; then
-        ce --abort
-        return $?
-    fi
-    _op_action "${1:-}" --abort || return $?
-    test ${GITSHLVL:-0} -gt 1 && exit
+	local op=${1:-} err=0
+  if [ "$op" == "ce" ]; then
+    ce --abort
+    return $?
+	else
+		if ! _op_action $op --abort; then
+		  err=$?
+		  if [ "$_OP_LAST" == "restore" ]; then
+		    stash || err=$?
+		  fi
+		  return $err
+		fi
+	fi
+  test ${GITSHLVL:-0} -gt 1 && exit
 }
 export -f abrt
 
